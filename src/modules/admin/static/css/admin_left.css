@@ -1,0 +1,1555 @@
+/********************************************************************
+ * File      : src/modules/admin/static/css/admin_left.css
+ * Cập nhật  : 2025-07-17
+ * Lý do     : Tooltip UX tối ưu, collapsed chuẩn, code clean a-z
+ ********************************************************************/
+
+/* ==================== VARIABLES ================================ */
+:root {
+    --sidebar-border-radius: 0.75rem;
+    --sidebar-edge-gap: 8px;
+    --sidebar-footer-h: calc((var(--sidebar-icon-box) * 2) + (var(--sidebar-nav-pt) * 2) + 0.5rem);
+    --sidebar-icon-box: 2.25rem;
+    --sidebar-logo-size: 26px;
+    --sidebar-nav-pe: .75rem;
+    --sidebar-nav-ps: .75rem;
+    --sidebar-nav-pt: .5rem;
+    --sidebar-scroll-bg: #DBEAFE;
+    --sidebar-scroll-thumb: #1E3A8A;
+}
+
+/* ===== 1. BASIC ICON & BUTTON STYLES ========================= */
+.icon-btn,
+.sidebar-icon,
+.arrow-icon,
+.right-indicator {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    display: flex;
+    justify-content: center;
+}
+
+.icon-btn {
+    transition: background-color 0.15s;
+}
+
+.icon-btn svg,
+.sidebar-icon svg,
+.arrow-icon svg,
+.right-indicator svg {
+    display: block;
+    height: 18px !important;
+    width: 18px !important;
+}
+
+/* ===== 2. SIDEBAR WRAPPER & HEADER ============================ */
+#admin-sidebar {
+    display: flex;
+    flex: 0 0 256px;
+    flex-direction: column;
+    transition: width 0.2s;
+}
+
+#admin-sidebar.sidebar-open {
+    width: 256px;
+}
+
+#admin-sidebar.sidebar-collapsed {
+    flex-basis: 60px;
+    width: 60px;
+}
+
+/* ===== 3. HEADER & LOGO ======================================= */
+#admin-sidebar header {
+    align-items: center;
+    background: var(--sidebar-scroll-bg);
+    border-bottom: 1px solid #E5E7EB;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    min-height: 60px;
+    /* đảm bảo ≥ 60 px */
+    padding: var(--sidebar-nav-pt) var(--sidebar-nav-ps);
+    /* đều 4 hướng */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#admin-sidebar-header-slot {
+    align-items: center;
+    display: flex;
+    height: var(--sidebar-icon-box);
+    justify-content: center;
+    position: relative;
+    width: var(--sidebar-icon-box);
+}
+
+#admin-sidebar-logo {
+    transition: opacity 0.15s;
+}
+
+#admin-sidebar.sidebar-collapsed.toggle-ready:hover #admin-sidebar-logo {
+    opacity: 0;
+}
+
+/* ===== 4. TOGGLE BUTTONS ====================================== */
+#btn-admin-toggle-sidebar-open,
+#btn-admin-toggle-sidebar-collapsed {
+    background: transparent;
+    border-radius: var(--sidebar-border-radius);
+    display: none;
+    height: var(--sidebar-icon-box);
+    width: var(--sidebar-icon-box);
+}
+
+#btn-admin-toggle-sidebar-open:hover,
+#btn-admin-toggle-sidebar-collapsed:hover {
+    background-color: #BFDBFE;
+}
+
+.sidebar-open #btn-admin-toggle-sidebar-open {
+    display: flex !important;
+}
+
+.sidebar-collapsed.toggle-ready:hover #btn-admin-toggle-sidebar-collapsed {
+    display: flex !important;
+}
+
+#btn-admin-toggle-sidebar-collapsed {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ===== 5. SIDEBAR SCROLLBAR =================================== */
+.sidebar-scrollbar {
+    background: var(--sidebar-scroll-bg);
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding-right: 0rem;
+    scrollbar-color: var(--sidebar-scroll-thumb) var(--sidebar-scroll-bg);
+    scrollbar-width: thin;
+    /*padding-left: 0.1rem;
+    /* Giảm khoảng cách bên trái của thanh cuộn */
+    /* Giảm khoảng cách bên phải để đưa thanh cuộn sát vào */
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+    background: var(--sidebar-scroll-bg);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--sidebar-scroll-thumb);
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 138, 0.7);
+}
+
+/* ===== 6. NAV ITEMS =========================================== */
+.sidebar-link {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    display: flex;
+    height: var(--sidebar-icon-box);
+    overflow: visible !important;
+    padding: 0 var(--sidebar-nav-pe);
+    position: relative;
+    transition: background-color 0.15s;
+    width: 100%;
+    z-index: 10;
+}
+
+.sidebar-open .sidebar-link:hover {
+    background: transparent !important;
+}
+
+.sidebar-icon {
+    border-radius: var(--sidebar-border-radius);
+    cursor: pointer;
+    height: var(--sidebar-icon-box);
+    padding: 6px;
+    transition: background-color 0.15s;
+    width: var(--sidebar-icon-box);
+}
+
+.sidebar-icon:hover {
+    background: #BFDBFE;
+}
+
+.sidebar-label {
+    font-weight: 400;
+    line-height: var(--sidebar-icon-box) !important;
+    margin-left: 0.2rem;
+    transition: opacity 0.15s;
+}
+
+.shortcut {
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 0.15s, visibility 0.15s;
+    visibility: hidden;
+}
+
+.sidebar-open .sidebar-link:hover .shortcut {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== TOOLTIP ================================================ */
+.sidebar-tooltip {
+    background: #22292f;
+    border: none;
+    border-radius: 12.6px;
+    /* Giảm bo tròn 10% */
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
+    color: #fff;
+    font-size: 10.8px;
+    /* Giảm size 10% */
+    font-weight: 500;
+    left: 54px;
+    letter-spacing: 0;
+    opacity: 0;
+    padding: 4.5px 10.8px;
+    /* Giảm padding 10% */
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.9);
+    transition: opacity 0.18s, visibility 0.18s, left 0.2s, transform 0.22s cubic-bezier(.4, 2, .6, 1);
+    visibility: hidden;
+    white-space: nowrap;
+    z-index: 9999 !important;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-link:hover .sidebar-tooltip,
+#admin-sidebar.sidebar-collapsed .sidebar-link:focus-within .sidebar-tooltip {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(-50%) scale(1);
+    visibility: visible !important;
+}
+
+/* ẨN LABEL KHI COLLAPSED */
+.sidebar-collapsed .sidebar-label,
+.sidebar-collapsed .shortcut {
+    display: none !important;
+}
+
+/* ===== 7. ACTIVE & HOVER STATES =============================== */
+.admin-left-nav-link {
+    color: #1E3A8A;
+    transition: background-color 0.2s;
+}
+
+.admin-left-nav-link:hover,
+.admin-left-nav-link.active {
+    background: transparent !important;
+}
+
+.admin-left-nav-link.active .sidebar-label {
+    font-weight: 600;
+}
+
+/* ===== 8. ARROW & RIGHT-INDICATOR ============================= */
+.arrow-icon,
+.right-indicator {
+    border-radius: var(--sidebar-border-radius);
+    flex-shrink: 0;
+    height: var(--sidebar-icon-box);
+    margin-left: auto;
+    transition: transform 0.2s, opacity 0.15s;
+    width: var(--sidebar-icon-box);
+}
+
+.right-indicator {
+    opacity: 0;
+}
+
+.sidebar-open .accordion-content a:hover .right-indicator,
+.accordion-content a.active .right-indicator {
+    opacity: 1;
+}
+
+/* Ẩn arrow-icon khi sidebar collapsed */
+#admin-sidebar.sidebar-collapsed .arrow-icon {
+    display: none !important;
+}
+
+/* ===== 9. ACCORDION CONTENT =================================== */
+.accordion-content,
+.sidebar-subnav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: var(--sidebar-icon-box);
+}
+
+.accordion-content a,
+.sidebar-subnav a {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    color: #1E3A8A;
+    display: flex;
+    font-size: 0.875rem;
+    height: var(--sidebar-icon-box);
+    padding: 0.5rem var(--sidebar-nav-pe);
+    transition: background-color 0.15s;
+    width: 100%;
+}
+
+.accordion-content a:hover {
+    background: #BFDBFE;
+}
+
+.accordion-content a.active {
+    background: transparent !important;
+    font-weight: 600;
+}
+
+.accordion-content {
+    padding-top: 4px;
+    position: relative;
+}
+
+.accordion-content::before {
+    background: #CBD5E1;
+    bottom: 15px;
+    content: '';
+    left: calc(var(--sidebar-nav-pe) + (var(--sidebar-icon-box)/2) - 1px);
+    opacity: 0.9;
+    pointer-events: none;
+    position: absolute;
+    top: 5px;
+    width: 2px;
+}
+
+.accordion-content.hidden::before {
+    display: none;
+}
+
+.accordion-content a.active::after {
+    background-color: #1E3A8A;
+    border-radius: 9999px;
+    content: '';
+    height: 6px;
+    left: calc(var(--sidebar-nav-pe) + (var(--sidebar-icon-box)/2));
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(calc(-50% - 36px), -50%);
+    width: 6px;
+    z-index: 2;
+}
+
+/* ===== 10. ACCORDION BUTTON STATE ============================= */
+.sidebar-accordion>button {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    display: flex;
+    font-weight: 400;
+    height: var(--sidebar-icon-box);
+    position: relative;
+    transition: none !important;
+}
+
+.sidebar-accordion.child-active>button,
+.sidebar-accordion:hover>button.open {
+    background: transparent !important;
+}
+
+/* ===== 11. MAIN CONTENT AREA ================================== */
+#admin-main,
+#admin-frame {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* ===== 12. HOVER FOR PARENT & CHILD ITEMS ===================== */
+.sidebar-link:hover .sidebar-icon,
+.admin-left-nav-link.active .sidebar-icon {
+    background: #BFDBFE;
+}
+
+.accordion-content a:hover .right-indicator,
+.accordion-content a.active .right-indicator {
+    background: #BFDBFE;
+}
+
+/* ===== 13. HIGHLIGHT ARROW-ICON FOR PARENT ITEMS ============== */
+.sidebar-open .sidebar-accordion>button:hover .arrow-icon,
+.sidebar-open .admin-left-nav-link.active .arrow-icon {
+    background: #BFDBFE;
+}
+
+/* ===== 14. PILL BACKGROUND FOR HOVER & ACTIVE ================= */
+.admin-left-nav-link,
+.accordion-content a {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-open .admin-left-nav-link:hover::before,
+.sidebar-open .admin-left-nav-link.active::before,
+.sidebar-open .accordion-content a:hover::before,
+.sidebar-open .accordion-content a.active::before {
+    background: #BFDBFE;
+    bottom: 0;
+    border-radius: var(--sidebar-border-radius);
+    content: "";
+    left: var(--sidebar-nav-ps);
+    pointer-events: none;
+    position: absolute;
+    right: var(--sidebar-nav-pe);
+    top: 0;
+    z-index: -1;
+}
+
+/* ===== 15. PILL BG FOR PARENT WHEN CHILD-ACTIVE =============== */
+.sidebar-accordion.child-active>button::before {
+    background: #BFDBFE;
+    bottom: 0;
+    border-radius: var(--sidebar-border-radius);
+    content: "";
+    left: var(--sidebar-nav-pe);
+    pointer-events: none;
+    position: absolute;
+    right: var(--sidebar-nav-pe);
+    top: 0;
+    z-index: -1;
+}
+
+.accordion-content.hidden {
+    display: none !important;
+}
+
+.accordion-content::after {
+    background-color: #CBD5E1;
+    bottom: 15px;
+    border-radius: 9999px;
+    content: '';
+    height: 6px;
+    left: calc(var(--sidebar-nav-pe) + (var(--sidebar-icon-box)/2));
+    pointer-events: none;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 6px;
+    z-index: 1;
+}
+
+/* ===== 16. DROPDOWN WHEN SIDEBAR COLLAPSED ==================== */
+#admin-collapsed-dropdown {
+    /* khung chứa dropdown */
+    background-color: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 36px rgba(30, 41, 59, 0.18),
+        0 2px 8px rgba(30, 41, 59, 0.10);
+    font-family: inherit;
+    min-width: 200px;
+    max-width: 300px;
+    padding: 0.5rem;
+    /* 8 px */
+    width: auto;
+    /* co giãn theo nội dung */
+    z-index: 100;
+}
+
+/* ───────────────────── ITEM ───────────────────── */
+#admin-collapsed-dropdown .dropdown-item {
+    /* flex hàng ngang: label + arrow */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: #000 !important;
+    /* text đen mặc định */
+    text-decoration: none;
+    transition: background-color 0.15s, font-weight 0.15s;
+}
+
+/* mũi tên ở bên phải */
+#admin-collapsed-dropdown .dropdown-item .right-indicator {
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+/* ────────── HOVER ────────── */
+#admin-collapsed-dropdown .dropdown-item:hover {
+    background-color: #DBEAFE;
+    font-weight: 500;
+}
+
+#admin-collapsed-dropdown .dropdown-item:hover .right-indicator {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ────────── ACTIVE ────────── */
+#admin-collapsed-dropdown .dropdown-item.active {
+    background-color: #DBEAFE;
+    font-weight: 600;
+    color: #1E3A8A !important;
+    /* text xanh khi active */
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .right-indicator {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* spacing giữa các item */
+#admin-collapsed-dropdown .dropdown-item:not(:last-child) {
+    margin-bottom: 0.25rem;
+}
+
+/* ===== 17. SIDEBAR COLLAPSED MISC ============================= */
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar {
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+#admin-sidebar-header-slot {
+    position: relative;
+}
+
+#admin-sidebar-header-slot .icon-btn {
+    inset: 0 !important;
+    position: absolute !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#admin-sidebar-header-slot #btn-admin-toggle-sidebar-collapsed {
+    bottom: 0;
+    height: var(--sidebar-icon-box) !important;
+    left: 0;
+    margin: auto;
+    position: absolute !important;
+    right: 0;
+    top: 0;
+    transform: none !important;
+    width: var(--sidebar-icon-box) !important;
+}
+
+/* Đảm bảo tooltip không bị che khi sidebar collapsed */
+#admin-sidebar.sidebar-collapsed,
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar,
+#admin-sidebar.sidebar-collapsed nav,
+#admin-sidebar.sidebar-collapsed .sidebar-link {
+    overflow: visible !important;
+}
+
+/* Ẩn tooltip nếu button cha đang dropdown-open (khi mở dropdown) */
+#admin-sidebar.sidebar-collapsed .sidebar-link.dropdown-open .sidebar-tooltip {
+    display: none !important;
+}
+
+#admin-sidebar-header-slot {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    height: 36px !important;
+    justify-content: center;
+    min-height: 36px !important;
+    min-width: 36px !important;
+    position: relative;
+    width: 36px !important;
+}
+
+#admin-sidebar-logo {
+    display: block;
+    height: var(--sidebar-logo-size) !important;
+    max-height: var(--sidebar-logo-size) !important;
+    max-width: var(--sidebar-logo-size) !important;
+    min-height: var(--sidebar-logo-size) !important;
+    min-width: var(--sidebar-logo-size) !important;
+    object-fit: contain;
+    transition: opacity 0.15s;
+    width: var(--sidebar-logo-size) !important;
+}
+
+/* Thanh cuộn của sidebar */
+.sidebar-scrollbar {
+    background: var(--sidebar-scroll-bg);
+    overflow-x: hidden;
+    /* Ẩn thanh cuộn ngang */
+    overflow-y: auto;
+    /* Thay vì scroll, dùng auto để chỉ hiện khi cần thiết */
+    padding-right: 0rem;
+    /* Đảm bảo thanh cuộn không bị lệch */
+    scrollbar-color: var(--sidebar-scroll-thumb) var(--sidebar-scroll-bg);
+    scrollbar-width: thin;
+    /* Định dạng thanh cuộn */
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+    background: var(--sidebar-scroll-bg);
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--sidebar-scroll-thumb);
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 138, 0.7);
+}
+
+/* Cập nhật padding cho các mục trong sidebar */
+.sidebar-link {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    display: flex;
+    height: var(--sidebar-icon-box);
+    overflow: visible !important;
+    padding: 0 var(--sidebar-nav-pe);
+    /* Điều chỉnh padding ngang */
+    position: relative;
+    transition: background-color 0.15s;
+    width: 100%;
+    z-index: 10;
+}
+
+/* Điều chỉnh padding cho icon sidebar */
+.sidebar-icon {
+    border-radius: var(--sidebar-border-radius);
+    cursor: pointer;
+    height: var(--sidebar-icon-box);
+    padding: 6px;
+    /* Điều chỉnh padding của icon để căn giữa */
+    transition: background-color 0.15s;
+    width: var(--sidebar-icon-box);
+}
+
+/* Điều chỉnh label text */
+.sidebar-label {
+    font-weight: 400;
+    line-height: var(--sidebar-icon-box) !important;
+    margin-left: 0.2rem;
+    /* Điều chỉnh khoảng cách của label */
+    transition: opacity 0.15s;
+}
+
+#admin-sidebar header {
+    z-index: 99;
+}
+
+.sidebar-open .accordion-content a:hover::before,
+.sidebar-open .accordion-content a.active::before {
+    left: 6px;
+    /* Hoặc giá trị bạn muốn */
+}
+
+/* ===== 17. Đảm bảo mục cha luôn in đậm khi submenu active ===== */
+.sidebar-accordion.child-active>button .sidebar-label {
+    font-weight: 600;
+}
+
+/* Override màu text mặc định */
+.admin-left-nav-link,
+.accordion-content a,
+#admin-collapsed-dropdown a {
+    color: #000 !important;
+}
+
+/* Active state: trả về màu xanh như thiết kế ban đầu */
+.admin-left-nav-link.active,
+.accordion-content a.active,
+#admin-collapsed-dropdown a.active {
+    color: #1E3A8A !important;
+}
+
+/* ===== 18. ICON COLOR SWITCH ĐEN/XANH KHI ACTIVE ============ */
+/* 1. Mặc định: ẩn icon-xanh, chỉ show icon-den */
+.sidebar-icon .icon-xanh,
+.arrow-icon .icon-xanh,
+.right-indicator .icon-xanh {
+    display: none;
+}
+
+/* 2. Khi menu cha active hoặc child-active */
+.admin-left-nav-link.active .sidebar-icon .icon-den,
+.sidebar-accordion.child-active>button .sidebar-icon .icon-den,
+.sidebar-accordion.child-active>button .arrow-icon .icon-den {
+    display: none !important;
+}
+
+.admin-left-nav-link.active .sidebar-icon .icon-xanh,
+.sidebar-accordion.child-active>button .sidebar-icon .icon-xanh,
+.sidebar-accordion.child-active>button .arrow-icon .icon-xanh {
+    display: block !important;
+}
+
+/* 3. Khi submenu con active */
+.accordion-content a.active .right-indicator .icon-den {
+    display: none !important;
+}
+
+.accordion-content a.active .right-indicator .icon-xanh {
+    display: block !important;
+}
+
+/* ===== 19. ICON COLOR SWITCH ĐEN/XANH KHI ACTIVE ============ */
+
+/* 1. Footer sticky đáy */
+.sidebar-footer {
+    background: var(--sidebar-scroll-bg);
+    border-top: 1px solid #E5E7EB;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: var(--sidebar-nav-pt) 0;
+    position: sticky;
+    will-change: transform;
+    z-index: 9999;
+    /* cao hơn nav-items */
+    /* giảm giật trên Firefox */
+}
+
+/* 2. Link trong footer */
+.sidebar-footer .sidebar-link {
+    align-items: center;
+    border-radius: var(--sidebar-border-radius);
+    color: #1E3A8A;
+    display: flex;
+    font-size: 0.875rem;
+    height: var(--sidebar-icon-box);
+    padding: 0 var(--sidebar-nav-pe);
+    text-decoration: none;
+    transition: background-color 0.15s;
+    width: 100%;
+}
+
+/* 3. Icon */
+.sidebar-footer .sidebar-icon {
+    align-items: center;
+    display: flex;
+    height: var(--sidebar-icon-box);
+    justify-content: center;
+    padding: 6px;
+    width: var(--sidebar-icon-box);
+}
+
+/* 4. Label */
+.sidebar-footer .sidebar-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: var(--sidebar-icon-box);
+    margin-left: 0.2rem;
+}
+
+/* 5. Hover & active */
+.sidebar-footer .sidebar-link:hover {
+    background: #BFDBFE;
+}
+
+.sidebar-footer .sidebar-link.active {
+    background: transparent !important;
+    font-weight: 600;
+}
+
+
+
+/* 7. Đệm đáy cho nav để item cuối không bị footer che */
+#admin-sidebar-nav {
+    padding-bottom: var(--sidebar-footer-h);
+}
+
+/* Khi collapsed (footer ẩn) thu gọn lại */
+#admin-sidebar.sidebar-collapsed #admin-sidebar-nav {
+    padding-bottom: var(--sidebar-nav-pt);
+}
+
+#admin-sidebar-nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+/* chỉ nav cuộn */
+.sidebar-footer {
+    bottom: 0;
+    position: sticky;
+    z-index: 20;
+}
+
+/* khối cuộn chung */
+.scroll-area {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* nav chiếm hết phần còn lại, đẩy footer xuống */
+#admin-sidebar-nav {
+    flex: 1 0 auto;
+}
+
+/* footer sticky đáy ngay trong scroll-area */
+.sidebar-footer {
+    bottom: 0;
+    position: sticky;
+}
+
+/* nếu muốn ẩn footer khi collapsed */
+#admin-sidebar.sidebar-collapsed .sidebar-footer {
+    display: none;
+}
+
+/* ======= Fix 20. ICON COLOR SWITCH ĐEN/XANH KHI ACTIVE ======= */
+
+/* 1. KHÔNG ẩn footer khi sidebar collapsed */
+#admin-sidebar.sidebar-collapsed .sidebar-footer {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* 2. Ẩn label trong footer (icon-only mode) */
+#admin-sidebar.sidebar-collapsed .sidebar-footer .sidebar-label {
+    display: none !important;
+}
+
+/* 3. Nav vẫn chừa khoảng trống cho footer */
+#admin-sidebar.sidebar-collapsed #admin-sidebar-nav {
+    padding-bottom: var(--sidebar-footer-h) !important;
+}
+
+/* ======= Fix 21. Chỉnh slider bars footer X,Y ======= */
+
+/* Đảm bảo .sidebar-link và .sidebar-footer .sidebar-link đều giống flex layout */
+.sidebar-link,
+.sidebar-footer .sidebar-link {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    /* để icon sát text */
+    height: var(--sidebar-icon-box);
+    border-radius: var(--sidebar-border-radius);
+    position: relative;
+    width: 100%;
+    transition: background-color 0.15s;
+    /* KHÔNG gán justify-content nếu không cần icon bên phải */
+}
+
+/* Icon căn giữa trục X tuyệt đối giống nhau giữa nav và footer */
+.sidebar-icon,
+.sidebar-footer .sidebar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sidebar-icon-box);
+    height: var(--sidebar-icon-box);
+    padding: 6px;
+    border-radius: var(--sidebar-border-radius);
+    /* KHÔNG margin trái/phải ngoài trừ gap của group */
+}
+
+/* Đảm bảo label luôn căn giữa vertical với icon */
+.sidebar-label,
+.sidebar-footer .sidebar-label {
+    margin-left: 0.2rem;
+    line-height: var(--sidebar-icon-box);
+    font-weight: 400;
+    transition: opacity 0.15s;
+    /* font-size để ở .sidebar-label gốc là ok, KHÔNG cần override ở footer */
+}
+
+/* Nhóm icon + label luôn flex, không bị lệch */
+.sidebar-link>.flex,
+.sidebar-footer .sidebar-link>.flex {
+    align-items: center !important;
+    gap: 0;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+/* Nếu có icon ở bên phải (ví dụ indicator, tooltip, ...), luôn đẩy sát phải */
+.sidebar-link>.sidebar-tooltip,
+.sidebar-footer .sidebar-link>.sidebar-tooltip {
+    margin-left: auto;
+}
+
+/* ======= Fix 22. Chỉnh border ======= */
+/* Ẩn border-bottom header khi KHÔNG scroll */
+#admin-sidebar header {
+    border-bottom: 1px solid #E5E7EB;
+    /* Để mặc định có, nhưng sẽ bị rule .has-scroll-header che */
+}
+
+#admin-sidebar .sidebar-scrollbar:not(.has-scroll-header)+header,
+#admin-sidebar header:not(.has-scroll-header) {
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+/* Ẩn border-top footer khi KHÔNG scroll */
+.sidebar-footer {
+    border-top: 1px solid #E5E7EB;
+    /* Để mặc định có, nhưng sẽ bị rule .has-scroll-footer che */
+}
+
+.sidebar-footer:not(.has-scroll-footer) {
+    border-top: none !important;
+    box-shadow: none !important;
+}
+
+/* Ẩn vertical line khi sidebar bị collapsed */
+#admin-sidebar.sidebar-collapsed .accordion-content::before,
+#admin-sidebar.sidebar-collapsed .accordion-content::after {
+    display: none !important;
+    content: none !important;
+    opacity: 0 !important;
+}
+
+/* ======= Fix 23. Nền xanh icon cha khi sidebar collapsed & child-active ======= */
+#admin-sidebar.sidebar-collapsed .sidebar-accordion.child-active>button .sidebar-icon {
+    background: #BFDBFE;
+}
+
+/* ======= Fix 24. Ẩn dot, line, arrow khi sidebar collapsed ======= */
+#admin-sidebar.sidebar-collapsed .accordion-content::before,
+#admin-sidebar.sidebar-collapsed .accordion-content::after,
+#admin-sidebar.sidebar-collapsed .accordion-content a.active::after,
+#admin-sidebar.sidebar-collapsed .right-indicator {
+    display: none !important;
+}
+
+/* ======= Fix 25. Dropdown pop-out line & dot ======= */
+#admin-collapsed-dropdown.accordion-content::before,
+#admin-collapsed-dropdown.accordion-content::after,
+#admin-collapsed-dropdown a.active::after {
+    display: none !important;
+}
+
+/* ======= Fix 26. Ẩn triệt để dot & line khi SIDEBAR COLLAPSED ======= */
+#admin-sidebar.sidebar-collapsed .accordion-content::before,
+#admin-sidebar.sidebar-collapsed .accordion-content::after,
+#admin-sidebar.sidebar-collapsed .accordion-content a.active::after {
+    display: none !important;
+    /* ↑ thêm !important để áp đảo rule gốc */
+}
+
+/* ===== Fix 27. Hiển thị label trong dropdown khi sidebar collapsed ===== */
+#admin-collapsed-dropdown .sidebar-label {
+    display: inline !important;
+    opacity: 1 !important;
+}
+
+/* ===== Fix 28. Arrow slide & màu trong dropdown ================ */
+#admin-collapsed-dropdown .right-indicator {
+    width: var(--sidebar-icon-box);
+    height: var(--sidebar-icon-box);
+}
+
+#admin-collapsed-dropdown .right-indicator .icon-xanh {
+    display: none;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .right-indicator .icon-den {
+    display: none !important;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .right-indicator .icon-xanh {
+    display: block !important;
+}
+
+/* --- A. NGỪNG ẩn mũi tên trong dropdown ----------------- */
+/* ❶ Bỏ .right-indicator khỏi rule “Fix 24”  (hoặc xóa hẳn đoạn này) */
+#admin-sidebar.sidebar-collapsed .accordion-content::before,
+#admin-sidebar.sidebar-collapsed .accordion-content::after,
+#admin-sidebar.sidebar-collapsed .accordion-content a.active::after {
+    /* <-- giữ nguyên */
+    display: none !important;
+}
+
+/* ❷ Giữ mũi tên bị ẩn trong nav,  nhưng CHO PHÉP trong popup */
+#admin-sidebar.sidebar-collapsed .accordion-content .right-indicator {
+    display: none !important;
+    /* nav con – vẫn ẩn */
+}
+
+#admin-sidebar.sidebar-collapsed #admin-collapsed-dropdown .right-indicator {
+    display: flex !important;
+    /* dropdown – luôn hiện */
+}
+
+/* --- B. Hiệu ứng hover & active cho dropdown -------------- */
+#admin-collapsed-dropdown .dropdown-item:hover {
+    background: #DBEAFE;
+    font-weight: 500;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active {
+    background: #DBEAFE;
+    font-weight: 600;
+}
+
+#admin-collapsed-dropdown .dropdown-item .right-indicator {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity .15s, transform .15s;
+}
+
+#admin-collapsed-dropdown .dropdown-item:hover .right-indicator,
+#admin-collapsed-dropdown .dropdown-item.active .right-indicator {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Màu mũi tên đen/xanh */
+#admin-collapsed-dropdown .right-indicator .icon-xanh {
+    display: none;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .icon-den {
+    display: none !important;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .icon-xanh {
+    display: block !important;
+}
+
+/* --- C. Tăng hit-area & ẩn overflow để arrow trượt mượt --- */
+#admin-collapsed-dropdown .right-indicator {
+    width: var(--sidebar-icon-box);
+    height: var(--sidebar-icon-box);
+    overflow: hidden;
+}
+
+/* --- Fix 29. Right-indicator trong dropdown không còn nền riêng --- */
+#admin-collapsed-dropdown .right-indicator {
+    background: transparent !important;
+    /* xoá pill xanh         */
+}
+
+/* --- Fix 30. Lớp phủ nền hover / active toàn dòng -------------- */
+#admin-collapsed-dropdown .dropdown-item {
+    position: relative;
+    /* để ::before bám theo */
+}
+
+#admin-collapsed-dropdown .dropdown-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    background: #DBEAFE;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: -1;
+    /* nằm dưới nội dung   */
+}
+
+#admin-collapsed-dropdown .dropdown-item:hover::before,
+#admin-collapsed-dropdown .dropdown-item.active::before {
+    opacity: 1;
+}
+
+/* ◼️ 2.1  Kích thước & pill của dropdown-item
+   -------------------------------------------------------------- */
+#admin-collapsed-dropdown .dropdown-item {
+    height: var(--sidebar-icon-box);
+    /* 36 px */
+    border-radius: var(--sidebar-border-radius);
+    /* 0.75rem – match nav */
+    padding-left: var(--sidebar-nav-pe);
+    padding-right: var(--sidebar-nav-pe);
+}
+
+/* ◼️ 2.2  Arrow container (right-indicator) đồng bộ pill
+   -------------------------------------------------------------- */
+#admin-collapsed-dropdown .right-indicator {
+    width: var(--sidebar-icon-box);
+    height: var(--sidebar-icon-box);
+    border-radius: var(--sidebar-border-radius);
+    justify-content: center;
+    align-items: center;
+    transition: background-color .15s;
+}
+
+/* nền pill #BFDBFE khi hover / active */
+#admin-collapsed-dropdown .dropdown-item:hover .right-indicator,
+#admin-collapsed-dropdown .dropdown-item.active .right-indicator {
+    background: #BFDBFE;
+}
+
+/* ◼️ 2.3  Arrow icon swap màu đã có, chỉ chắc chắn không chồng rule */
+#admin-collapsed-dropdown .right-indicator .icon-xanh {
+    display: none;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .icon-den {
+    display: none !important;
+}
+
+#admin-collapsed-dropdown .dropdown-item.active .icon-xanh {
+    display: block !important;
+}
+
+/* ◼️ 2.4  Giữ hover toàn dòng (đã có ::before), đảm bảo z-index     */
+#admin-collapsed-dropdown .dropdown-item::before {
+    z-index: -1;
+}
+
+/* ===== 𝗙𝗶𝘅 31. Dropdown collapsed giống B =========================== */
+/* Container dropdown */
+#admin-collapsed-dropdown {
+    background-color: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 36px rgba(30, 41, 59, 0.18),
+        0 2px 8px rgba(30, 41, 59, 0.10);
+    font-family: inherit;
+    min-width: 192px;
+    padding: 0.5rem;
+    z-index: 100;
+}
+
+/* Item link */
+#admin-collapsed-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--sidebar-icon-box);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--sidebar-border-radius);
+    font-size: 0.875rem;
+    color: #1E3A8A !important;
+    text-decoration: none;
+    transition: background-color 0.15s, font-weight 0.15s;
+}
+
+/* Arrow container – slide-in pure CSS */
+#admin-collapsed-dropdown .dropdown-item .dropdown-arrow {
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+/* Hover & active */
+#admin-collapsed-dropdown .dropdown-item:hover,
+#admin-collapsed-dropdown .dropdown-item.active {
+    background-color: #DBEAFE;
+    font-weight: 600;
+}
+
+#admin-collapsed-dropdown .dropdown-item:hover .dropdown-arrow,
+#admin-collapsed-dropdown .dropdown-item.active .dropdown-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Khoảng cách giữa các mục */
+#admin-collapsed-dropdown .dropdown-item:not(:last-child) {
+    margin-bottom: 0.25rem;
+}
+
+/* Bỏ hết styles cũ của right-indicator trong dropdown */
+#admin-collapsed-dropdown .right-indicator {
+    display: none !important;
+}
+
+/* Fix 32: Đồng nhất bo tròn dropdown items với nav */
+/* --- Override toàn bộ border-radius cho dropdown-item về pill đồng nhất với nav --- */
+#admin-collapsed-dropdown .dropdown-item {
+    border-radius: var(--sidebar-border-radius) !important;
+    /* Loại bỏ hết 0.5rem hay rounded-md các chỗ khác */
+}
+
+/* --- Đồng bộ lớp phủ hover/active --- */
+#admin-collapsed-dropdown .dropdown-item::before {
+    border-radius: var(--sidebar-border-radius) !important;
+}
+
+/* --- Đảm bảo arrow container cũng bo tròn như nav (nếu có) --- */
+#admin-collapsed-dropdown .dropdown-arrow,
+#admin-collapsed-dropdown .right-indicator {
+    border-radius: var(--sidebar-border-radius) !important;
+}
+
+/* Giữ lại hiệu ứng hover/active như nav (nếu đang dùng ::before thì không cần background trực tiếp) */
+#admin-collapsed-dropdown .dropdown-item:hover,
+#admin-collapsed-dropdown .dropdown-item.active {
+    background: transparent !important;
+    /* Lớp phủ đã lo */
+}
+
+/* Kiểm tra lại các rule chồng nhau – GIỮ ĐOẠN DƯỚI CÙNG! */
+#admin-collapsed-dropdown .dropdown-item {
+    border-radius: var(--sidebar-border-radius) !important;
+}
+
+#admin-collapsed-dropdown .dropdown-item::before {
+    border-radius: var(--sidebar-border-radius) !important;
+}
+
+/* 24/07/2025 9:55 PM */
+/* === FIX LOGO NHÚT NHÍT (only) ================================= */
+#admin-sidebar-header-slot {
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+}
+
+#admin-sidebar-logo {
+    width: 26px !important;
+    height: 26px !important;
+    object-fit: contain;
+    display: block;
+    transition: none !important;
+    /* không cho nó mờ/zoom khi hover */
+}
+
+/* Ngăn subpixel rung do sticky + scroll */
+#admin-sidebar-header-slot,
+#admin-sidebar header {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+/* Fix 33. SCROLLBAR CHỈ HIỆN KHI HOVER ======================= */
+
+/* Ẩn scrollbar mặc định */
+.sidebar-scrollbar {
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    /* Chrome, Edge */
+    background: transparent;
+}
+
+/* Khi hover mới hiện scrollbar */
+.sidebar-scrollbar:hover {
+    scrollbar-width: thin;
+    /* Firefox: hiện thanh cuộn mảnh */
+    scrollbar-color: var(--sidebar-scroll-thumb) var(--sidebar-scroll-bg);
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar {
+    width: 6px;
+    /* Chrome, Edge: hiện lại */
+    height: 6px;
+    background: var(--sidebar-scroll-bg);
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: var(--sidebar-scroll-thumb);
+    border-radius: 3px;
+    transition: background 0.3s;
+}
+
+.sidebar-scrollbar:hover::-webkit-scrollbar-track {
+    background: var(--sidebar-scroll-bg);
+}
+
+/* Fix cho collapsed: không bao giờ hiện scrollbar */
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar,
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar:hover {
+    scrollbar-width: none !important;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar::-webkit-scrollbar,
+#admin-sidebar.sidebar-collapsed .sidebar-scrollbar:hover::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-link:focus-within .sidebar-tooltip,
+#admin-sidebar.sidebar-collapsed .sidebar-link:active .sidebar-tooltip {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* ===== 30. Smooth collapse/expand via flex-basis & label hide smooth =====
+   Đảm bảo triệt tiêu mọi width/flex-basis bug cũ
+========================================================================= */
+
+#admin-sidebar {
+    flex-shrink: 0;
+    flex-basis: 256px;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    transition: flex-basis 0.38s cubic-bezier(0.55, 0, 0.55, 1) !important;
+}
+
+#admin-sidebar.sidebar-collapsed {
+    flex-basis: 60px;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+.sidebar-label,
+.shortcut {
+    opacity: 1;
+    transition: opacity 0.10s cubic-bezier(0.55, 0, 0.55, 1) 0.09s;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-label,
+#admin-sidebar.sidebar-collapsed .shortcut {
+    opacity: 0;
+}
+
+#admin-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.scroll-area {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+#admin-sidebar-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 0;
+    /* hoặc 0.5rem nếu muốn chừa space nhỏ */
+}
+
+.sidebar-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: var(--sidebar-scroll-bg);
+}
+
+#admin-sidebar,
+#admin-sidebar .scroll-area,
+#admin-sidebar-nav,
+.sidebar-footer {
+    overflow-x: hidden !important;
+}
+
+#admin-sidebar {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-basis: 256px;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100vh;
+    transition: flex-basis 0.13s cubic-bezier(0.55, 0, 0.55, 1) !important;
+    overflow: hidden;
+    /* KHÔNG để overflow-x: hidden ở đây */
+}
+
+/* Scroll-area bọc cả nav và footer, chiếm full còn lại sau header */
+.scroll-area {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Không đặt height, chỉ cần flex: 1 1 0 + min-height: 0 */
+}
+
+/* Nav chiếm full còn lại, đẩy footer xuống đáy scroll */
+#admin-sidebar-nav {
+    flex: 1 0 auto;
+    min-height: 0;
+    padding-bottom: 0;
+    /* tuỳ chỉnh, tránh bị dư quá nhiều */
+    overflow-x: hidden;
+}
+
+/* Footer cố định sát đáy vùng scroll, luôn hiện */
+.sidebar-footer {
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    background: var(--sidebar-scroll-bg);
+    z-index: 20;
+    overflow-x: hidden;
+}
+
+/* Xử lý mọi overflow ngang */
+#admin-sidebar,
+#admin-sidebar .scroll-area,
+#admin-sidebar-nav,
+.sidebar-footer {
+    overflow-x: hidden !important;
+}
+
+/* -----------------------------------
+ * Fix+. Lý do: Tối ưu hiệu ứng ẩn/hiện text label sidebar siêu mượt chuẩn UX
+ * ----------------------------------- */
+
+.sidebar-label,
+.shortcut {
+    display: inline-block;
+    max-width: 120px;
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    filter: blur(0);
+    white-space: nowrap;
+    transition:
+        opacity 0.22s cubic-bezier(0.48, 0.06, 0.32, 1) 0.08s,
+        max-width 0.24s cubic-bezier(0.48, 0.06, 0.32, 1) 0.06s,
+        transform 0.21s cubic-bezier(0.48, 0.06, 0.32, 1) 0.05s,
+        filter 0.16s cubic-bezier(0.65, 0.05, 0.36, 1) 0.05s;
+}
+
+#admin-sidebar.sidebar-collapsed .sidebar-label,
+#admin-sidebar.sidebar-collapsed .shortcut {
+    opacity: 0;
+    max-width: 0 !important;
+    pointer-events: none;
+    transform: translateX(-22px);
+    filter: blur(2.5px);
+    transition:
+        opacity 0.14s cubic-bezier(0.55, 0, 0.55, 1),
+        max-width 0.17s cubic-bezier(0.55, 0, 0.55, 1) 0.03s,
+        transform 0.16s cubic-bezier(0.55, 0, 0.55, 1) 0.02s,
+        filter 0.13s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+/* ===== TOGGLE TOOLTIP (MỞ/THU GỌN THANH BÊN) ===================== */
+/* 1. Tooltip cho nút Toggle khi sidebar open/collapsed */
+#admin-sidebar.sidebar-open .sidebar-toggle:hover .sidebar-tooltip,
+#admin-sidebar.sidebar-open .sidebar-toggle:focus-visible .sidebar-tooltip,
+#admin-sidebar.sidebar-collapsed .sidebar-toggle:hover .sidebar-tooltip,
+#admin-sidebar.sidebar-collapsed .sidebar-toggle:focus-visible .sidebar-tooltip {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(-50%) scale(1);
+    left: calc(100% + 8px);
+    /* căn lề phải nút, giống nav/footer */
+    z-index: 9999 !important;
+}
+
+/* Đảm bảo tooltip toggle luôn nổi trên mọi lớp (nhất là z-20 của header/footer/nav) */
+.sidebar-toggle .sidebar-tooltip {
+    z-index: 9999 !important;
+}
+
+/* Fix trường hợp tooltip Toggle bị ẩn khi collapse + dropdown đang mở */
+#admin-sidebar.sidebar-collapsed .sidebar-toggle.dropdown-open .sidebar-tooltip {
+    display: none !important;
+}
+
+/* Footer & Toggle tooltip luôn cùng lớp cao nhất */
+.sidebar-tooltip {
+    z-index: 9999 !important;
+}
+
+/* FIX: Cho phép tooltip footer tràn khỏi sidebar */
+.sidebar-footer,
+#admin-sidebar.sidebar-collapsed .sidebar-footer {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+}
+
+.sidebar-tooltip {
+    background: #22292f;
+    border: none;
+    border-radius: 12.6px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
+    color: #fff;
+    font-size: 10.8px;
+    font-weight: 500;
+    padding: 4.5px 10.8px;
+    line-height: 1.2;
+    pointer-events: none;
+    position: absolute;
+    z-index: 9999 !important;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Ẩn submenu khi collapsed (giữ nguyên) */
+#admin-sidebar.sidebar-collapsed .accordion-content{
+  display:none!important;height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;
+}
+
+/* ✅ Spacing top-level khi collapsed = y hệt space-y-2 */
+#admin-sidebar.sidebar-collapsed #admin-sidebar-nav > * { margin-top: 0 !important; }             /* phần tử đầu: 0 */
+#admin-sidebar.sidebar-collapsed #admin-sidebar-nav > * + * { margin-top: .5rem !important; }     /* từ phần tử thứ 2 trở đi: 0.5rem */
+
+/* --- Fix tooltip cho nút Toggle (không trượt, không bắt chuột) --- */
+#admin-sidebar .sidebar-toggle { position: relative; }
+
+#admin-sidebar .sidebar-toggle .sidebar-tooltip{
+  left: calc(100% + 8px) !important;   /* luôn neo bên phải nút */
+  top: 50%;
+  transform: translateY(-50%);         /* bỏ scale để đỡ "nảy" */
+  transition: opacity .14s, visibility .14s, transform .14s !important; /* KHÔNG transition 'left' */
+  pointer-events: none !important;     /* không ăn sự kiện chuột để tránh hover-loop */
+}
+
+/* hiển thị bằng CSS thuần, không cần JS */
+#admin-sidebar .sidebar-toggle:hover .sidebar-tooltip,
+#admin-sidebar .sidebar-toggle:focus-visible .sidebar-tooltip{
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* === Tooltip cho nút Toggle =========================================
+   - Khi sidebar OPEN: tooltip nằm BÊN DƯỚI, căn giữa theo nút
+   - Khi sidebar COLLAPSED: giữ nguyên nằm bên PHẢI như cũ
+===================================================================== */
+
+/* đảm bảo phần header/nút không cắt tooltip */
+#admin-sidebar header,
+#admin-sidebar .sidebar-toggle { overflow: visible !important; }
+
+/* OPEN → tooltip bên dưới, căn giữa */
+#admin-sidebar.sidebar-open header .sidebar-toggle .sidebar-tooltip {
+  left: 50% !important;
+  top: calc(100% + 8px) !important;     /* 8px khoảng cách với nút */
+  transform: translateX(-50%) !important;
+}
+
+/* COLLAPSED → giữ tooltip ở bên phải (hành vi hiện tại) */
+#admin-sidebar.sidebar-collapsed header .sidebar-toggle .sidebar-tooltip {
+  left: calc(100% + 8px) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}

@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="571mm" xmlns="http://www.w3.org/2000/svg" height="253mm" version="1.1" viewBox="0 0 2160 959" xmlns:xlink="http://www.w3.org/1999/xlink">
+   <polyline fill="none" points="932,459 876,459 876,460 812,460" stroke="#8080ff" stroke-width="1"/>
+   <text x="897" y="450" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="607,507 682,507 682,460 748,460" stroke="#8080ff" stroke-width="1"/>
+   <text x="635" y="502" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1064,479 1064,479 1065,479 1065,527" stroke="#8080ff" stroke-width="1"/>
+   <text x="1048" y="499" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="1064,613 1064,593 1064,593 1064,574" stroke="#8080ff" stroke-width="1"/>
+   <text x="1046" y="592" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="607,567 682,567 682,628 745,628" stroke="#8080ff" stroke-width="1"/>
+   <text x="629" y="583" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="937,628 876,628 876,627 814,627" stroke="#8080ff" stroke-width="1"/>
+   <text x="908" y="616" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,1</text>
+   <polyline fill="none" points="1191,625 1438,625 1438,222" stroke="#8080ff" stroke-width="1"/>
+   <text x="1220" y="620" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1438,114 1438,175" stroke="#8080ff" stroke-width="1"/>
+   <text x="1420" y="141" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1555,50 1572,50 1572,50 1597,50" stroke="#8080ff" stroke-width="1"/>
+   <text x="1579" y="42" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1700,49 1687,49 1687,49 1663,49" stroke="#8080ff" stroke-width="1"/>
+   <text x="1683" y="40" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1064,724 1064,765 1064,765 1064,806" stroke="#8080ff" stroke-width="1"/>
+   <text x="1075" y="751" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="805,850 920,850 920,850 1041,850" stroke="#8080ff" stroke-width="1"/>
+   <text x="833" y="845" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1189,724 1189,761 1472,761" stroke="#8080ff" stroke-width="1"/>
+   <text x="1201" y="751" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="1451,902 1518,902 1518,788" stroke="#8080ff" stroke-width="1"/>
+   <text x="1480" y="897" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="805,905 1024,905" stroke="#8080ff" stroke-width="1"/>
+   <text x="833" y="900" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1187,905 1104,905" stroke="#8080ff" stroke-width="1"/>
+   <text x="1159" y="915" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1191,711 1718,711 1718,784" stroke="#8080ff" stroke-width="1"/>
+   <text x="1220" y="706" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1718,885 1718,784" stroke="#8080ff" stroke-width="1"/>
+   <text x="1707" y="864" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1191,652 1689,652" stroke="#8080ff" stroke-width="1"/>
+   <text x="1220" y="647" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,1</text>
+   <polyline fill="none" points="1718,368 1718,610" stroke="#8080ff" stroke-width="1"/>
+   <text x="1729" y="394" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1191,681 1520,681 1520,681 1845,681" stroke="#8080ff" stroke-width="1"/>
+   <text x="1220" y="676" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="1955,418 1955,683 1920,683" stroke="#8080ff" stroke-width="1"/>
+   <text x="1968" y="445" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="2033,418 2033,577 2033,577 2033,737" stroke="#8080ff" stroke-width="1"/>
+   <text x="2054" y="443" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="2033,846 2033,792" stroke="#8080ff" stroke-width="1"/>
+   <text x="2022" y="825" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="2036,294 2036,255 2036,255 2036,216" stroke="#8080ff" stroke-width="1"/>
+   <text x="2017" y="281" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="2034,75 2034,169" stroke="#8080ff" stroke-width="1"/>
+   <text x="2045" y="102" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1028,724 1028,758 844,758" stroke="#8080ff" stroke-width="1"/>
+   <text x="1041" y="751" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="224,769 722,769" stroke="#8080ff" stroke-width="1"/>
+   <text x="252" y="764" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,1</text>
+   <polyline fill="none" points="1060,294 1060,222" stroke="#8080ff" stroke-width="1"/>
+   <text x="1047" y="273" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="1064,126 1064,176" stroke="#8080ff" stroke-width="1"/>
+   <text x="1077" y="152" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="1196,351 1237,351 1237,351 1282,351" stroke="#8080ff" stroke-width="1"/>
+   <text x="1225" y="346" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="1313,510 1313,366" stroke="#8080ff" stroke-width="1"/>
+   <text x="1302" y="489" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="142,812 142,873" stroke="#8080ff" stroke-width="1"/>
+   <text x="153" y="838" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="544,905 248,905" stroke="#8080ff" stroke-width="1"/>
+   <text x="515" y="915" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="275,65 449,65 449,296" stroke="#8080ff" stroke-width="1"/>
+   <text x="304" y="60" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,1</text>
+   <polyline fill="none" points="932,315 723,315 723,313 511,313" stroke="#8080ff" stroke-width="1"/>
+   <text x="895" y="303" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="142,738 142,683" stroke="#8080ff" stroke-width="1"/>
+   <text x="131" y="717" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">0,n</text>
+   <polyline fill="none" points="142,595 142,637" stroke="#8080ff" stroke-width="1"/>
+   <text x="157" y="612" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="682,164 682,196 912,196" stroke="#8080ff" stroke-width="1"/>
+   <text x="694" y="191" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="950,294 950,222" stroke="#8080ff" stroke-width="1"/>
+   <text x="937" y="273" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="237,239 330,239 330,320" stroke="#8080ff" stroke-width="1"/>
+   <text x="264" y="234" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,1</text>
+   <polyline fill="none" points="932,355 361,355" stroke="#8080ff" stroke-width="1"/>
+   <text x="896" y="347" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="202,413 363,413" stroke="#8080ff" stroke-width="1"/>
+   <text x="229" y="408" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <polyline fill="none" points="932,413 535,413" stroke="#8080ff" stroke-width="1"/>
+   <text x="898" y="404" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">1,n</text>
+   <defs>
+      <linearGradient id="Gradient1" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1916" y="846" fill="url(#Gradient1)" width="242" height="111" stroke="#00aaaa" stroke-width="1"/>
+   <text x="2037" y="857" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">departments</text>
+   <line x1="1916" x2="2158" y1="863" y2="863" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1921" y="872" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">dept_id</text>
+   <text x="1921" y="885" fill="#000000" font-size="8" font-family="Arial">dept_name</text>
+   <text x="1921" y="898" fill="#000000" font-size="8" font-family="Arial">dept_email</text>
+   <text x="1921" y="911" fill="#000000" font-size="8" font-family="Arial">dept_phone</text>
+   <text x="1921" y="924" fill="#000000" font-size="8" font-family="Arial">dept_website</text>
+   <text x="1921" y="937" fill="#000000" font-size="8" font-family="Arial">dept_created_at</text>
+   <text x="1921" y="950" fill="#000000" font-size="8" font-family="Arial">dept_updated_at</text>
+   <text x="2010" y="872" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="2039" y="872" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="2039" y="885" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="2039" y="898" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="2039" y="911" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="2039" y="924" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="2039" y="937" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="2039" y="950" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient2" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="932" y="294" fill="url(#Gradient2)" width="264" height="185" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1064" y="305" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">users</text>
+   <line x1="932" x2="1196" y1="311" y2="311" stroke="#00aaaa" stroke-width="1"/>
+   <text x="936" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">user_id</text>
+   <text x="936" y="333" fill="#000000" font-size="8" font-family="Arial">user_name</text>
+   <text x="936" y="346" fill="#000000" font-size="8" font-family="Arial">user_display_name</text>
+   <text x="936" y="359" fill="#000000" font-size="8" font-family="Arial">user_email</text>
+   <text x="936" y="372" fill="#000000" font-size="8" font-family="Arial">user_password_hash</text>
+   <text x="936" y="385" fill="#000000" font-size="8" font-family="Arial">user_role</text>
+   <text x="936" y="398" fill="#000000" font-size="8" font-family="Arial">user_status</text>
+   <text x="936" y="411" fill="#000000" font-size="8" font-family="Arial">user_oauth_provider</text>
+   <text x="936" y="424" fill="#000000" font-size="8" font-family="Arial">user_oauth_sub</text>
+   <text x="936" y="437" fill="#000000" font-size="8" font-family="Arial">user_email_verified</text>
+   <text x="936" y="450" fill="#000000" font-size="8" font-family="Arial">user_register_ip</text>
+   <text x="936" y="463" fill="#000000" font-size="8" font-family="Arial">user_created_at</text>
+   <text x="936" y="476" fill="#000000" font-size="8" font-family="Arial">user_updated_at</text>
+   <text x="1040" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1069" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1069" y="333" fill="#000000" font-size="8" font-family="Arial">Variable characters (100)</text>
+   <text x="1069" y="346" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1069" y="359" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1069" y="372" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1069" y="385" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="1069" y="398" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="1069" y="411" fill="#000000" font-size="8" font-family="Arial">Variable characters (50)</text>
+   <text x="1069" y="424" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1069" y="437" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="1069" y="450" fill="#000000" font-size="8" font-family="Arial">INET</text>
+   <text x="1069" y="463" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1069" y="476" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient3" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1310" y="2" fill="url(#Gradient3)" width="245" height="112" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1432" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">documents</text>
+   <line x1="1310" x2="1555" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1314" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">doc_id</text>
+   <text x="1314" y="41" fill="#000000" font-size="8" font-family="Arial">doc_file_path</text>
+   <text x="1314" y="54" fill="#000000" font-size="8" font-family="Arial">doc_ocr_text_path</text>
+   <text x="1314" y="67" fill="#000000" font-size="8" font-family="Arial">doc_title</text>
+   <text x="1314" y="80" fill="#000000" font-size="8" font-family="Arial">doc_status</text>
+   <text x="1314" y="93" fill="#000000" font-size="8" font-family="Arial">doc_created_at</text>
+   <text x="1314" y="106" fill="#000000" font-size="8" font-family="Arial">doc_updated_at</text>
+   <text x="1409" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1438" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1438" y="41" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1438" y="54" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1438" y="67" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1438" y="80" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="1438" y="93" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1438" y="106" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient4" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1700" y="2" fill="url(#Gradient4)" width="229" height="74" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1814" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">document_attachment</text>
+   <line x1="1700" x2="1929" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1704" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">attachment_id</text>
+   <text x="1704" y="41" fill="#000000" font-size="8" font-family="Arial">attachment_file_path</text>
+   <text x="1704" y="54" fill="#000000" font-size="8" font-family="Arial">attachment_description</text>
+   <text x="1704" y="67" fill="#000000" font-size="8" font-family="Arial">attachment_created_at</text>
+   <text x="1822" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1851" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1851" y="41" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1851" y="54" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1851" y="67" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient5" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="937" y="613" fill="url(#Gradient5)" width="254" height="111" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1064" y="624" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chat_histories</text>
+   <line x1="937" x2="1191" y1="630" y2="630" stroke="#00aaaa" stroke-width="1"/>
+   <text x="941" y="639" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">chat_id</text>
+   <text x="941" y="652" fill="#000000" font-size="8" font-family="Arial">chat_title</text>
+   <text x="941" y="665" fill="#000000" font-size="8" font-family="Arial">chat_tokens_input</text>
+   <text x="941" y="678" fill="#000000" font-size="8" font-family="Arial">chat_tokens_output</text>
+   <text x="941" y="691" fill="#000000" font-size="8" font-family="Arial">chat_deleted</text>
+   <text x="941" y="704" fill="#000000" font-size="8" font-family="Arial">chat_created_at</text>
+   <text x="941" y="717" fill="#000000" font-size="8" font-family="Arial">chat_updated_at</text>
+   <text x="1040" y="639" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1069" y="639" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1069" y="652" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1069" y="665" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1069" y="678" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1069" y="691" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="1069" y="704" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1069" y="717" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient6" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="544" y="820" fill="url(#Gradient6)" width="261" height="137" stroke="#00aaaa" stroke-width="1"/>
+   <text x="674" y="831" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">model_variants</text>
+   <line x1="544" x2="805" y1="837" y2="837" stroke="#00aaaa" stroke-width="1"/>
+   <text x="549" y="846" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">model_id</text>
+   <text x="549" y="858" fill="#000000" font-size="8" font-family="Arial">model_name</text>
+   <text x="549" y="871" fill="#000000" font-size="8" font-family="Arial">model_provider</text>
+   <text x="549" y="884" fill="#000000" font-size="8" font-family="Arial">model_type</text>
+   <text x="549" y="897" fill="#000000" font-size="8" font-family="Arial">model_description</text>
+   <text x="549" y="910" fill="#000000" font-size="8" font-family="Arial">model_enabled</text>
+   <text x="549" y="923" fill="#000000" font-size="8" font-family="Arial">model_access_scope</text>
+   <text x="549" y="936" fill="#000000" font-size="8" font-family="Arial">model_created_at</text>
+   <text x="549" y="949" fill="#000000" font-size="8" font-family="Arial">model_updated_at</text>
+   <text x="656" y="846" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="685" y="846" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="685" y="858" fill="#000000" font-size="8" font-family="Arial">Variable characters (100)</text>
+   <text x="685" y="871" fill="#000000" font-size="8" font-family="Arial">Variable characters (100)</text>
+   <text x="685" y="884" fill="#000000" font-size="8" font-family="Arial">Variable characters (50)</text>
+   <text x="685" y="897" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="685" y="910" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="685" y="923" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="685" y="936" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="685" y="949" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient7" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1589" y="294" fill="url(#Gradient7)" width="258" height="74" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1718" y="305" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chat_feedbacks</text>
+   <line x1="1589" x2="1847" y1="311" y2="311" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1594" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">feedback_id</text>
+   <text x="1594" y="333" fill="#000000" font-size="8" font-family="Arial">feedback_corrected_response</text>
+   <text x="1594" y="346" fill="#000000" font-size="8" font-family="Arial">feedback_text</text>
+   <text x="1594" y="359" fill="#000000" font-size="8" font-family="Arial">feedback_created_at</text>
+   <text x="1740" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1769" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1769" y="333" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1769" y="346" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1769" y="359" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient8" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1909" y="294" fill="url(#Gradient8)" width="249" height="124" stroke="#00aaaa" stroke-width="1"/>
+   <text x="2033" y="305" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">scheduled_emails</text>
+   <line x1="1909" x2="2158" y1="311" y2="311" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1914" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">email_id</text>
+   <text x="1914" y="333" fill="#000000" font-size="8" font-family="Arial">email_title</text>
+   <text x="1914" y="346" fill="#000000" font-size="8" font-family="Arial">email_recipient</text>
+   <text x="1914" y="359" fill="#000000" font-size="8" font-family="Arial">email_body</text>
+   <text x="1914" y="372" fill="#000000" font-size="8" font-family="Arial">email_send_time</text>
+   <text x="1914" y="385" fill="#000000" font-size="8" font-family="Arial">email_status</text>
+   <text x="1914" y="398" fill="#000000" font-size="8" font-family="Arial">email_created_at</text>
+   <text x="1914" y="411" fill="#000000" font-size="8" font-family="Arial">email_updated_at</text>
+   <text x="2009" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="2038" y="320" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="2038" y="333" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="2038" y="346" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="2038" y="359" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="2038" y="372" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="2038" y="385" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="2038" y="398" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="2038" y="411" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient9" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1972" y="2" fill="url(#Gradient9)" width="186" height="73" stroke="#00aaaa" stroke-width="1"/>
+   <text x="2065" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">scheduled_email_attachments</text>
+   <line x1="1972" x2="2158" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1977" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">att_id</text>
+   <text x="1977" y="41" fill="#000000" font-size="8" font-family="Arial">att_file_path</text>
+   <text x="1977" y="54" fill="#000000" font-size="8" font-family="Arial">att_description</text>
+   <text x="1977" y="67" fill="#000000" font-size="8" font-family="Arial">att_created_at</text>
+   <text x="2054" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="2083" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="2083" y="41" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="2083" y="54" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="2083" y="67" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient10" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2" y="738" fill="url(#Gradient10)" width="222" height="74" stroke="#00aaaa" stroke-width="1"/>
+   <text x="113" y="749" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chat_features</text>
+   <line x1="2" x2="224" y1="755" y2="755" stroke="#00aaaa" stroke-width="1"/>
+   <text x="7" y="764" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">cf_id</text>
+   <text x="7" y="777" fill="#000000" font-size="8" font-family="Arial">cf_type_name</text>
+   <text x="7" y="790" fill="#000000" font-size="8" font-family="Arial">cf_metadata</text>
+   <text x="7" y="803" fill="#000000" font-size="8" font-family="Arial">cf_created_at</text>
+   <text x="82" y="764" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="111" y="764" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="111" y="777" fill="#000000" font-size="8" font-family="Arial">Variable characters (50)</text>
+   <text x="111" y="790" fill="#000000" font-size="8" font-family="Arial">JSONB</text>
+   <text x="111" y="803" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient11" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1613" y="885" fill="url(#Gradient11)" width="211" height="72" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1718" y="896" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chat_history_versions</text>
+   <line x1="1613" x2="1824" y1="902" y2="902" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1618" y="911" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">version_id</text>
+   <text x="1618" y="924" fill="#000000" font-size="8" font-family="Arial">version_question</text>
+   <text x="1618" y="937" fill="#000000" font-size="8" font-family="Arial">version_ai_response</text>
+   <text x="1618" y="950" fill="#000000" font-size="8" font-family="Arial">version_created_at</text>
+   <text x="1721" y="911" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1750" y="911" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1750" y="924" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1750" y="937" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1750" y="950" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient12" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="326" y="484" fill="url(#Gradient12)" width="281" height="125" stroke="#00aaaa" stroke-width="1"/>
+   <text x="466" y="495" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">projects</text>
+   <line x1="326" x2="607" y1="501" y2="501" stroke="#00aaaa" stroke-width="1"/>
+   <text x="330" y="510" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">project_id</text>
+   <text x="330" y="523" fill="#000000" font-size="8" font-family="Arial">project_name</text>
+   <text x="330" y="536" fill="#000000" font-size="8" font-family="Arial">project_description</text>
+   <text x="330" y="549" fill="#000000" font-size="8" font-family="Arial">project_prompt</text>
+   <text x="330" y="562" fill="#000000" font-size="8" font-family="Arial">project_color</text>
+   <text x="330" y="575" fill="#000000" font-size="8" font-family="Arial">project_file_path</text>
+   <text x="330" y="588" fill="#000000" font-size="8" font-family="Arial">project_created_at</text>
+   <text x="330" y="601" fill="#000000" font-size="8" font-family="Arial">project_updated_at</text>
+   <text x="430" y="510" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="459" y="510" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="459" y="523" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="459" y="536" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="459" y="549" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="459" y="562" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="459" y="575" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="459" y="588" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="459" y="601" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="584" y="510" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;M&gt;</text>
+   <defs>
+      <linearGradient id="Gradient13" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="748" y="437" rx="17" ry="23" fill="url(#Gradient13)" width="64" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="780" y="453" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">tao</text>
+   <line x1="748" x2="812" y1="459" y2="459" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient14" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1024" y="527" rx="17" ry="23" fill="url(#Gradient14)" width="80" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="1064" y="544" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">doan_chat</text>
+   <line x1="1024" x2="1104" y1="550" y2="550" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient15" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="745" y="605" rx="17" ry="23" fill="url(#Gradient15)" width="69" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="780" y="622" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">thuoc_ve</text>
+   <line x1="745" x2="814" y1="628" y2="628" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient16" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1406" y="175" rx="17" ry="23" fill="url(#Gradient16)" width="64" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="1438" y="192" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">gan_tep</text>
+   <line x1="1406" x2="1470" y1="198" y2="198" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient17" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1597" y="25" rx="17" ry="23" fill="url(#Gradient17)" width="66" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1630" y="49" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">dinh_kem</text>
+   <line x1="1599" x2="1660" y1="61" y2="61" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient18" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1031" y="806" rx="17" ry="23" fill="url(#Gradient18)" width="66" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1064" y="822" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">khoi_tao</text>
+   <line x1="1031" x2="1097" y1="828" y2="828" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient19" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1187" y="847" fill="url(#Gradient19)" width="264" height="110" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1319" y="858" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chat_messages</text>
+   <line x1="1187" x2="1451" y1="864" y2="864" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1192" y="873" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">message_id</text>
+   <text x="1192" y="886" fill="#000000" font-size="8" font-family="Arial">message_question</text>
+   <text x="1192" y="899" fill="#000000" font-size="8" font-family="Arial">message_ai_response</text>
+   <text x="1192" y="912" fill="#000000" font-size="8" font-family="Arial">message_tokens_input</text>
+   <text x="1192" y="925" fill="#000000" font-size="8" font-family="Arial">message_tokens_output</text>
+   <text x="1192" y="938" fill="#000000" font-size="8" font-family="Arial">message_created_at</text>
+   <text x="1192" y="951" fill="#000000" font-size="8" font-family="Arial">message_updated_at</text>
+   <text x="1312" y="873" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1341" y="873" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1341" y="886" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1341" y="899" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="1341" y="912" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1341" y="925" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1341" y="938" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1341" y="951" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1419" y="873" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;M&gt;</text>
+   <defs>
+      <linearGradient id="Gradient20" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1472" y="741" rx="17" ry="23" fill="url(#Gradient20)" width="92" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="1518" y="758" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">co_tin_nhan</text>
+   <line x1="1472" x2="1564" y1="764" y2="764" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient21" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1024" y="882" rx="17" ry="23" fill="url(#Gradient21)" width="80" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1064" y="898" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">tao_tra_loi</text>
+   <line x1="1024" x2="1104" y1="904" y2="904" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient22" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1655" y="745" rx="14" ry="19" fill="url(#Gradient22)" width="127" height="39" stroke="#8080ff" stroke-width="1"/>
+   <text x="1718" y="756" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">co_phien_ban</text>
+   <line x1="1655" x2="1782" y1="762" y2="762" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient23" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1681" y="610" rx="17" ry="23" fill="url(#Gradient23)" width="70" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1716" y="627" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">phan_hoi</text>
+   <line x1="1681" x2="1751" y1="633" y2="633" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient24" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1845" y="660" rx="17" ry="23" fill="url(#Gradient24)" width="75" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1883" y="677" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">dat_email</text>
+   <line x1="1845" x2="1920" y1="683" y2="683" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient25" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1942" y="737" rx="20" ry="27" fill="url(#Gradient25)" width="170" height="55" stroke="#8080ff" stroke-width="1"/>
+   <text x="2027" y="748" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">nhan_mail</text>
+   <line x1="1944" x2="2110" y1="754" y2="754" stroke="#8080ff" stroke-width="1"/>
+   <text x="1968" y="763" fill="#000000" font-size="8" font-family="Arial">email_id</text>
+   <text x="1968" y="776" fill="#000000" font-size="8" font-family="Arial">dept_id</text>
+   <text x="2018" y="763" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="2018" y="776" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <defs>
+      <linearGradient id="Gradient26" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2002" y="169" rx="17" ry="23" fill="url(#Gradient26)" width="64" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="2034" y="186" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">tap_tin</text>
+   <line x1="2002" x2="2066" y1="192" y2="192" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient27" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="715" y="732" rx="15" ry="20" fill="url(#Gradient27)" width="130" height="40" stroke="#8080ff" stroke-width="1"/>
+   <text x="780" y="743" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">co_chuc_nang</text>
+   <line x1="715" x2="845" y1="749" y2="749" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient28" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="943" y="2" fill="url(#Gradient28)" width="242" height="124" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1064" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">verify_codes</text>
+   <line x1="943" x2="1185" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="948" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">vc_id</text>
+   <text x="948" y="41" fill="#000000" font-size="8" font-family="Arial">vc_email</text>
+   <text x="948" y="54" fill="#000000" font-size="8" font-family="Arial">vc_code</text>
+   <text x="948" y="67" fill="#000000" font-size="8" font-family="Arial">vc_attempts</text>
+   <text x="948" y="80" fill="#000000" font-size="8" font-family="Arial">vc_max_attempt</text>
+   <text x="948" y="93" fill="#000000" font-size="8" font-family="Arial">vc_send_count</text>
+   <text x="948" y="106" fill="#000000" font-size="8" font-family="Arial">vc_expires_at</text>
+   <text x="948" y="119" fill="#000000" font-size="8" font-family="Arial">vc_created_at</text>
+   <text x="1034" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1063" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1063" y="41" fill="#000000" font-size="8" font-family="Arial">Variable characters (255)</text>
+   <text x="1063" y="54" fill="#000000" font-size="8" font-family="Arial">Characters (6)</text>
+   <text x="1063" y="67" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1063" y="80" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1063" y="93" fill="#000000" font-size="8" font-family="Arial">Integer</text>
+   <text x="1063" y="106" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1063" y="119" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient29" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1032" y="176" rx="17" ry="23" fill="url(#Gradient29)" width="64" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1064" y="193" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">nhan</text>
+   <line x1="1032" x2="1096" y1="199" y2="199" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient30" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="522" y="2" fill="url(#Gradient30)" width="304" height="162" stroke="#00aaaa" stroke-width="1"/>
+   <text x="674" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">user_settings</text>
+   <line x1="522" x2="826" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="527" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">setting_user_id</text>
+   <text x="527" y="41" fill="#000000" font-size="8" font-family="Arial">setting_default_prompt</text>
+   <text x="527" y="54" fill="#000000" font-size="8" font-family="Arial">setting_theme</text>
+   <text x="527" y="67" fill="#000000" font-size="8" font-family="Arial">setting_user_avatar_url</text>
+   <text x="527" y="80" fill="#000000" font-size="8" font-family="Arial">setting_allow_memory_lookup</text>
+   <text x="527" y="93" fill="#000000" font-size="8" font-family="Arial">setting_allow_memory_storage</text>
+   <text x="527" y="106" fill="#000000" font-size="8" font-family="Arial">setting_remembered_summary</text>
+   <text x="527" y="119" fill="#000000" font-size="8" font-family="Arial">setting_timezone</text>
+   <text x="527" y="132" fill="#000000" font-size="8" font-family="Arial">setting_enable_mapping</text>
+   <text x="527" y="145" fill="#000000" font-size="8" font-family="Arial">setting_created_at</text>
+   <text x="527" y="158" fill="#000000" font-size="8" font-family="Arial">setting_updated_at</text>
+   <text x="681" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="710" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="710" y="41" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="710" y="54" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="710" y="67" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="710" y="80" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="710" y="93" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="710" y="106" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="710" y="119" fill="#000000" font-size="8" font-family="Arial">Variable characters (50)</text>
+   <text x="710" y="132" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="710" y="145" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="710" y="158" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient31" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1187" y="510" fill="url(#Gradient31)" width="221" height="73" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1297" y="521" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">password_reset_tokens</text>
+   <line x1="1187" x2="1408" y1="527" y2="527" stroke="#00aaaa" stroke-width="1"/>
+   <text x="1192" y="536" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">prt_id</text>
+   <text x="1192" y="549" fill="#000000" font-size="8" font-family="Arial">prt_token</text>
+   <text x="1192" y="562" fill="#000000" font-size="8" font-family="Arial">prt_expires_at</text>
+   <text x="1192" y="575" fill="#000000" font-size="8" font-family="Arial">prt_created_at</text>
+   <text x="1268" y="536" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="1297" y="536" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="1297" y="549" fill="#000000" font-size="8" font-family="Arial">Variable characters (64)</text>
+   <text x="1297" y="562" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="1297" y="575" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient32" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="1281" y="320" rx="17" ry="23" fill="url(#Gradient32)" width="64" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="1313" y="337" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">co_the</text>
+   <line x1="1281" x2="1345" y1="343" y2="343" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient33" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2" y="2" fill="url(#Gradient33)" width="273" height="125" stroke="#00aaaa" stroke-width="1"/>
+   <text x="138" y="13" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">system_settings</text>
+   <line x1="2" x2="275" y1="19" y2="19" stroke="#00aaaa" stroke-width="1"/>
+   <text x="7" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">system_id</text>
+   <text x="7" y="41" fill="#000000" font-size="8" font-family="Arial">system_register</text>
+   <text x="7" y="54" fill="#000000" font-size="8" font-family="Arial">system_login</text>
+   <text x="7" y="67" fill="#000000" font-size="8" font-family="Arial">system_maintenance</text>
+   <text x="7" y="80" fill="#000000" font-size="8" font-family="Arial">setting_updated_at</text>
+   <text x="7" y="93" fill="#000000" font-size="8" font-family="Arial">system_domain_mode</text>
+   <text x="7" y="106" fill="#000000" font-size="8" font-family="Arial">system_allowed_models</text>
+   <text x="7" y="119" fill="#000000" font-size="8" font-family="Arial">system_enabled_tools</text>
+   <text x="129" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="158" y="28" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="158" y="41" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="158" y="54" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="158" y="67" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="158" y="80" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="158" y="93" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="158" y="106" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="158" y="119" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <defs>
+      <linearGradient id="Gradient34" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="36" y="873" rx="24" ry="32" fill="url(#Gradient34)" width="212" height="64" stroke="#8080ff" stroke-width="1"/>
+   <text x="142" y="884" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">lien_ket</text>
+   <line x1="39" x2="245" y1="890" y2="890" stroke="#8080ff" stroke-width="1"/>
+   <text x="65" y="899" fill="#000000" font-size="8" font-family="Arial">cf_id</text>
+   <text x="65" y="912" fill="#000000" font-size="8" font-family="Arial">model_id</text>
+   <text x="65" y="925" fill="#000000" font-size="8" font-family="Arial">link_created_at</text>
+   <text x="145" y="899" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="145" y="912" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="145" y="925" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient35" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="386" y="296" rx="15" ry="20" fill="url(#Gradient35)" width="125" height="40" stroke="#8080ff" stroke-width="1"/>
+   <text x="448" y="307" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">cap_nhat_boi</text>
+   <line x1="387" x2="511" y1="313" y2="313" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient36" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2" y="498" fill="url(#Gradient36)" width="280" height="97" stroke="#00aaaa" stroke-width="1"/>
+   <text x="142" y="509" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">tool_definitions</text>
+   <line x1="2" x2="282" y1="515" y2="515" stroke="#00aaaa" stroke-width="1"/>
+   <text x="7" y="524" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">tood_id</text>
+   <text x="7" y="537" fill="#000000" font-size="8" font-family="Arial">tool_name</text>
+   <text x="7" y="550" fill="#000000" font-size="8" font-family="Arial">tool_description</text>
+   <text x="7" y="563" fill="#000000" font-size="8" font-family="Arial">tool_enabled</text>
+   <text x="7" y="576" fill="#000000" font-size="8" font-family="Arial">tool_access_scope</text>
+   <text x="7" y="589" fill="#000000" font-size="8" font-family="Arial">tool_created_at</text>
+   <text x="102" y="524" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="131" y="524" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="131" y="537" fill="#000000" font-size="8" font-family="Arial">Variable characters (50)</text>
+   <text x="131" y="550" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="131" y="563" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="131" y="576" fill="#000000" font-size="8" font-family="Arial">Variable characters (20)</text>
+   <text x="131" y="589" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <text x="250" y="524" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;M&gt;</text>
+   <defs>
+      <linearGradient id="Gradient37" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="110" y="637" rx="17" ry="23" fill="url(#Gradient37)" width="64" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="142" y="654" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">chon</text>
+   <line x1="110" x2="174" y1="660" y2="660" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient38" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="912" y="176" rx="17" ry="23" fill="url(#Gradient38)" width="75" height="46" stroke="#8080ff" stroke-width="1"/>
+   <text x="950" y="193" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">tuy_chinh</text>
+   <line x1="912" x2="987" y1="199" y2="199" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient39" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2" y="181" fill="url(#Gradient39)" width="235" height="123" stroke="#00aaaa" stroke-width="1"/>
+   <text x="119" y="192" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">system_admin_logs</text>
+   <line x1="2" x2="237" y1="198" y2="198" stroke="#00aaaa" stroke-width="1"/>
+   <text x="7" y="207" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">log_id</text>
+   <text x="7" y="220" fill="#000000" font-size="8" font-family="Arial">log_action</text>
+   <text x="7" y="233" fill="#000000" font-size="8" font-family="Arial">log_target_table</text>
+   <text x="7" y="246" fill="#000000" font-size="8" font-family="Arial">log_target_id</text>
+   <text x="7" y="259" fill="#000000" font-size="8" font-family="Arial">log_description</text>
+   <text x="7" y="272" fill="#000000" font-size="8" font-family="Arial">log_before</text>
+   <text x="7" y="285" fill="#000000" font-size="8" font-family="Arial">log_after</text>
+   <text x="7" y="298" fill="#000000" font-size="8" font-family="Arial">log_created_at</text>
+   <text x="93" y="207" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="122" y="207" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="122" y="220" fill="#000000" font-size="8" font-family="Arial">Variable characters (100)</text>
+   <text x="122" y="233" fill="#000000" font-size="8" font-family="Arial">Variable characters (100)</text>
+   <text x="122" y="246" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="122" y="259" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="122" y="272" fill="#000000" font-size="8" font-family="Arial">JSONB</text>
+   <text x="122" y="285" fill="#000000" font-size="8" font-family="Arial">JSONB</text>
+   <text x="122" y="298" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient40" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#b0ffff"/>
+      </linearGradient>
+   </defs>
+   <rect x="2" y="373" fill="url(#Gradient40)" width="200" height="84" stroke="#00aaaa" stroke-width="1"/>
+   <text x="102" y="384" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">system_notifications</text>
+   <line x1="2" x2="202" y1="390" y2="390" stroke="#00aaaa" stroke-width="1"/>
+   <text x="7" y="399" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">notify_id</text>
+   <text x="7" y="412" fill="#000000" font-size="8" font-family="Arial">notify_content</text>
+   <text x="7" y="425" fill="#000000" font-size="8" font-family="Arial">notify_visible</text>
+   <text x="7" y="438" fill="#000000" font-size="8" font-family="Arial">notify_target_roles</text>
+   <text x="7" y="451" fill="#000000" font-size="8" font-family="Arial">notify_created_at</text>
+   <text x="102" y="399" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">&lt;pi&gt;</text>
+   <text x="131" y="399" fill="#000000" font-size="8" font-family="Arial" text-decoration="underline">Characters (36)</text>
+   <text x="131" y="412" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="131" y="425" fill="#000000" font-size="8" font-family="Arial">Boolean</text>
+   <text x="131" y="438" fill="#000000" font-size="8" font-family="Arial">Text</text>
+   <text x="131" y="451" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+   <defs>
+      <linearGradient id="Gradient41" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="297" y="320" rx="17" ry="23" fill="url(#Gradient41)" width="66" height="47" stroke="#8080ff" stroke-width="1"/>
+   <text x="330" y="337" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">thay_doi</text>
+   <line x1="297" x2="363" y1="343" y2="343" stroke="#8080ff" stroke-width="1"/>
+   <defs>
+      <linearGradient id="Gradient42" x1="0%" x2="100%" y1="0%" y2="100%" gradientUnits="objectBoundingBox">
+         <stop offset="5%" stop-color="#ffffff"/>
+         <stop offset="95%" stop-color="#d0d0ff"/>
+      </linearGradient>
+   </defs>
+   <rect x="363" y="383" rx="22" ry="30" fill="url(#Gradient42)" width="172" height="60" stroke="#8080ff" stroke-width="1"/>
+   <text x="449" y="394" fill="#000000" font-size="8" font-family="Arial" text-anchor="middle">notification_recipients</text>
+   <line x1="365" x2="533" y1="400" y2="400" stroke="#8080ff" stroke-width="1"/>
+   <text x="390" y="409" fill="#000000" font-size="8" font-family="Arial">user_id</text>
+   <text x="390" y="422" fill="#000000" font-size="8" font-family="Arial">notify_id</text>
+   <text x="390" y="435" fill="#000000" font-size="8" font-family="Arial">read_at</text>
+   <text x="439" y="409" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="439" y="422" fill="#000000" font-size="8" font-family="Arial">Characters (36)</text>
+   <text x="439" y="435" fill="#000000" font-size="8" font-family="Arial">Timestamp</text>
+</svg>

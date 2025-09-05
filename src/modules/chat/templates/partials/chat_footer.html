@@ -1,0 +1,1148 @@
+<!-- file: src/modules/chat/templates/partials/chat_footer.html -->
+<!-- updated: 2025-09-02 (v2.2.2)
+     - Fix CSS: overscroll-beavior-inline → overscroll-behavior-inline
+     - Dropzone: bỏ trùng role, dùng role="button" + ARIA label rõ ràng
+     - Đặt aria-hidden="true" cho icon thuần trang trí
+     - Textarea: thêm autocomplete="off" autocapitalize="sentences" spellcheck="true"
+     - Giữ maxlength=100000 & CSS cho li[aria-disabled="true"]
+-->
+<footer id="chat-footer-shell" class="px-6 pb-4 sticky bottom-0 bg-[#181818] z-[40]"
+    data-user-role="{{ user_role|default('user') }}">
+    <style>
+        /* ======================
+           [n01] TOKENS / VARIABLES
+        ====================== */
+        #chat-footer-shell {
+            --cf-bg: rgb(36, 38, 40);
+            --cf-ring-inset: rgba(252, 252, 252, .06);
+            --cf-send: #0169CC;
+            --cf-fg: #fcfcfc;
+            --cf-accent: #8AB4F8;
+            --cf-sep: rgba(255, 255, 255, .08);
+
+            /* sizes */
+            --cf-btn-size: 36px;
+            --cf-btn-radius: 9999px;
+
+            /* input paddings */
+            --cf-pad-top: 10px;
+            --cf-pad-x: 10px;
+            --cf-pad-x-left: var(--cf-pad-x);
+            --cf-pad-x-right: var(--cf-pad-x);
+
+            /* input heights */
+            --cf-min-input: 40px;
+            --cf-max-input: 162px;
+
+            /* gaps */
+            --cf-controls-gap: 4px;
+            --cf-sep-gap-left: 8px;
+            --cf-sep-gap-right: 8px;
+            --cf-pad-left-nudge: 6px;
+
+            /* type colors */
+            --ext-pdf: #EF4444;
+            --ext-word: #1E4ED8;
+            --ext-excel: #16A34A;
+            --ext-ppt: #F97316;
+            --ext-code: #7C3AED;
+            --ext-generic: #2F3742;
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) {
+            --cf-menu-radius: 16px;
+            --cf-menu-item-radius: 12px;
+            --cf-panel-pad: 6px;
+            --cf-item-pad: 10px;
+            --cf-item-gap: 10px;
+            --cf-item-gap-v: var(--cf-item-pad);
+            --cf-menu-min: 220px;
+            --cf-menu-max: 320px;
+        }
+
+        /* ======================
+           [n02] WRAPPER
+        ====================== */
+        .cf-wrap {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--cf-bg);
+            color: var(--cf-fg);
+            border-radius: 24px;
+            position: relative;
+            padding: 8px 8px 44px;
+            overflow: visible;
+            box-shadow:
+                rgb(255 255 255) 0 0 0 0 inset,
+                var(--cf-ring-inset) 0 0 0 1px inset,
+                rgba(0, 0, 0, .05) 0 1px 3px 0,
+                rgba(0, 0, 0, .05) 0 1px 2px -1px;
+        }
+
+        .cf-wrap:hover,
+        .cf-wrap:focus-within {
+            box-shadow:
+                rgb(255 255 255) 0 0 0 0 inset,
+                var(--cf-ring-inset) 0 0 0 1px inset,
+                rgba(0, 0, 0, .12) 0 2px 6px 0,
+                rgba(0, 0, 0, .10) 0 2px 4px -2px;
+        }
+
+        .cf-wrap[aria-hidden="true"] {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* ======================
+           [n03] ATTACH CHIPS
+        ====================== */
+        .cf-attbar {
+            display: none;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            padding: 6px;
+            margin: 0 2px;
+            mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 40px), transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 40px), transparent 100%);
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .cf-attbar::-webkit-scrollbar {
+            width: 0;
+            height: 0
+        }
+
+        .cf-attbar.is-on {
+            display: flex
+        }
+
+        .cf-attbar:hover,
+        .cf-attbar.is-scroll {
+            overflow-x: auto;
+            overscroll-behavior-inline: contain;
+            /* fixed */
+            cursor: grab
+        }
+
+        .cf-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 44px;
+            padding: 6px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 12px;
+            position: relative;
+            color: var(--cf-fg);
+            font: 500 13px/1.25 "Be Vietnam Pro", system-ui, sans-serif;
+            flex: 0 0 auto;
+        }
+
+        .cf-chip:hover {
+            background: rgba(255, 255, 255, .06)
+        }
+
+        /* ======================
+           [n04] THUMBNAIL trong CHIP
+        ====================== */
+        .cf-thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 36px;
+            background: #2B2B2B;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .cf-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: inherit;
+        }
+
+        .cf-thumb .ext,
+        .cf-prev figure .ext {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center
+        }
+
+        .cf-thumb .ext .ic-18,
+        .cf-prev figure .ext .ic-18 {
+            width: 100% !important;
+            height: 100% !important;
+            display: grid;
+            place-items: center
+        }
+
+        .cf-thumb .ext svg,
+        .cf-prev figure .ext svg {
+            width: 64% !important;
+            height: 64% !important;
+            display: block
+        }
+
+        .cf-thumb svg {
+            width: 18px !important;
+            height: 18px !important;
+            display: block
+        }
+
+        .cf-thumb svg *[fill],
+        .cf-thumb svg *[stroke] {
+            fill: currentColor !important;
+            stroke: currentColor !important
+        }
+
+        .cf-chip .cf-chip-name {
+            max-width: 240px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            align-self: center
+        }
+
+        .cf-chip .cf-chip-x {
+            position: absolute;
+            right: -6px;
+            top: -6px;
+            width: 22px;
+            height: 22px;
+            display: grid;
+            place-items: center;
+            border-radius: 9999px;
+            background: #2A2A2A;
+            border: 1px solid rgba(255, 255, 255, .15);
+            color: #CDD6E5;
+            opacity: 0;
+            transform: scale(.5);
+            transition: .15s ease;
+        }
+
+        .cf-chip:hover .cf-chip-x {
+            opacity: 1;
+            transform: scale(1)
+        }
+
+        .cf-chip .cf-chip-x:hover {
+            background: #374151
+        }
+
+        .cf-chip-more {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            gap: 0;
+            border-radius: 9999px;
+            display: inline-grid;
+            place-items: center;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .12);
+            font: 700 12px/1 "Be Vietnam Pro";
+            flex: 0 0 auto
+        }
+
+        .cf-chip-more .cf-chip-name {
+            max-width: none
+        }
+
+        /* ======================
+           [n05] MÀU nền theo loại tệp
+        ====================== */
+        .cf-chip[data-ext="pdf"] .cf-thumb,
+        .cf-prev[data-ext="pdf"] figure {
+            background: var(--ext-pdf)
+        }
+
+        .cf-chip[data-ext="doc"] .cf-thumb,
+        .cf-prev[data-ext="doc"] figure,
+        .cf-chip[data-ext="docx"] .cf-thumb,
+        .cf-prev[data-ext="docx"] figure {
+            background: var(--ext-word)
+        }
+
+        .cf-chip[data-ext="xls"] .cf-thumb,
+        .cf-prev[data-ext="xls"] figure,
+        .cf-chip[data-ext="xlsx"] .cf-thumb,
+        .cf-prev[data-ext="xlsx"] figure,
+        .cf-chip[data-ext="csv"] .cf-thumb,
+        .cf-prev[data-ext="csv"] figure {
+            background: var(--ext-excel)
+        }
+
+        .cf-chip[data-ext="ppt"] .cf-thumb,
+        .cf-prev[data-ext="ppt"] figure,
+        .cf-chip[data-ext="pptx"] .cf-thumb,
+        .cf-prev[data-ext="pptx"] figure {
+            background: var(--ext-ppt)
+        }
+
+        .cf-chip[data-ext] {
+            /* code-ish */
+        }
+
+        .cf-chip[data-ext="js"] .cf-thumb,
+        .cf-chip[data-ext="ts"] .cf-thumb,
+        .cf-chip[data-ext="jsx"] .cf-thumb,
+        .cf-chip[data-ext="tsx"] .cf-thumb,
+        .cf-chip[data-ext="json"] .cf-thumb,
+        .cf-chip[data-ext="py"] .cf-thumb,
+        .cf-chip[data-ext="rb"] .cf-thumb,
+        .cf-chip[data-ext="php"] .cf-thumb,
+        .cf-chip[data-ext="java"] .cf-thumb,
+        .cf-chip[data-ext="kt"] .cf-thumb,
+        .cf-chip[data-ext="kts"] .cf-thumb,
+        .cf-chip[data-ext="c"] .cf-thumb,
+        .cf-chip[data-ext="h"] .cf-thumb,
+        .cf-chip[data-ext="cpp"] .cf-thumb,
+        .cf-chip[data-ext="hpp"] .cf-thumb,
+        .cf-chip[data-ext="cs"] .cf-thumb,
+        .cf-chip[data-ext="go"] .cf-thumb,
+        .cf-chip[data-ext="rs"] .cf-thumb,
+        .cf-chip[data-ext="html"] .cf-thumb,
+        .cf-chip[data-ext="htm"] .cf-thumb,
+        .cf-chip[data-ext="xml"] .cf-thumb,
+        .cf-chip[data-ext="css"] .cf-thumb,
+        .cf-chip[data-ext="scss"] .cf-thumb,
+        .cf-chip[data-ext="sass"] .cf-thumb,
+        .cf-chip[data-ext="less"] .cf-thumb,
+        .cf-chip[data-ext="md"] .cf-thumb,
+        .cf-chip[data-ext="sql"] .cf-thumb,
+        .cf-chip[data-ext="sh"] .cf-thumb,
+        .cf-chip[data-ext="bat"] .cf-thumb,
+        .cf-chip[data-ext="ps1"] .cf-thumb,
+        .cf-chip[data-ext="yml"] .cf-thumb,
+        .cf-chip[data-ext="yaml"] .cf-thumb,
+        .cf-chip[data-ext="toml"] .cf-thumb,
+        .cf-chip[data-ext="ini"] .cf-thumb,
+        .cf-chip[data-ext="gradle"] .cf-thumb,
+        .cf-chip[data-ext="m"] .cf-thumb,
+        .cf-chip[data-ext="mm"] .cf-thumb,
+        .cf-chip[data-ext="swift"] .cf-thumb,
+        .cf-chip[data-ext="dart"] .cf-thumb,
+        .cf-chip[data-ext="lua"] .cf-thumb,
+        .cf-chip[data-ext="r"] .cf-thumb,
+        .cf-chip[data-ext="pl"] .cf-thumb {
+            background: var(--ext-code)
+        }
+
+        /* ======================
+           [n06] INPUT
+        ====================== */
+        .cf-input-wrap {
+            position: relative;
+            z-index: 10;
+            font: 400 1rem/1.5 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif
+        }
+
+        .cf-input {
+            width: 100%;
+            background: transparent;
+            color: #E5E7EB;
+            border: 0;
+            outline: 0;
+            caret-color: #fff;
+            padding: var(--cf-pad-top) var(--cf-pad-x-right) 20px var(--cf-pad-x-left);
+            font: inherit;
+            resize: none;
+            min-height: var(--cf-min-input);
+            max-height: var(--cf-max-input);
+            overflow: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-gutter: stable;
+        }
+
+        .cf-input::placeholder {
+            color: #9aa0a6;
+            opacity: 1;
+            font: inherit;
+            line-height: inherit
+        }
+
+        /* ======================
+           [n07] CONTROLS
+        ====================== */
+        .cf-controls {
+            --cf-sep-color: rgba(255, 255, 255, .16);
+            --cf-sep-h: 18px;
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            display: flex;
+            gap: var(--cf-controls-gap);
+            align-items: center;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .cf-left,
+        .cf-right {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            pointer-events: auto
+        }
+
+        .cf-right {
+            padding-right: 2px;
+            padding-bottom: 2px
+        }
+
+        .cf-sep {
+            width: 1px;
+            height: var(--cf-sep-h, 13px);
+            background: var(--cf-sep-color);
+            align-self: center;
+            margin-left: var(--cf-sep-gap-left);
+            margin-right: var(--cf-sep-gap-right);
+            pointer-events: none
+        }
+
+        .cf-sep[hidden] {
+            display: none
+        }
+
+        .cf-pills {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px
+        }
+
+        .cf-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: var(--cf-btn-size);
+            padding: 0 12px;
+            border-radius: 9999px;
+            background: transparent;
+            color: var(--cf-accent);
+            border: 0;
+            cursor: pointer;
+            white-space: nowrap;
+            font: 600 14px/1 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            transition: background-color .12s ease, color .12s ease, filter .12s ease;
+        }
+
+        .cf-pill:hover {
+            background: rgba(255, 255, 255, .06)
+        }
+
+        .cf-pill .ic-18 {
+            width: 18px;
+            height: 18px;
+            display: inline-grid;
+            place-items: center;
+            flex: 0 0 18px
+        }
+
+        .cf-pill .ic-18 svg {
+            width: 18px !important;
+            height: 18px !important;
+            display: block
+        }
+
+        .cf-pill .ic-18 svg *[fill],
+        .cf-pill .ic-18 svg *[stroke] {
+            fill: currentColor !important;
+            stroke: currentColor !important
+        }
+
+        .cf-btn {
+            width: var(--cf-btn-size);
+            height: var(--cf-btn-size);
+            display: inline-grid;
+            place-items: center;
+            line-height: 0;
+            border-radius: var(--cf-btn-radius);
+            border: 0;
+            outline: 0;
+            cursor: pointer;
+            background: transparent;
+            transition: background-color .12s ease, transform .06s ease;
+        }
+
+        .cf-btn:hover {
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .cf-btn.is-open {
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .cf-btn:active {
+            transform: translateY(.5px)
+        }
+
+        .cf-btn:focus-visible {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .08) inset
+        }
+
+        .cf-btn[disabled] {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .cf-btn-send {
+            background: var(--cf-send);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, .35)
+        }
+
+        .cf-btn-send:hover {
+            filter: brightness(1.05)
+        }
+
+        #cf-send .ic-18 svg *[fill],
+        #cf-send .ic-18 svg *[stroke] {
+            fill: currentColor !important;
+            stroke: currentColor !important
+        }
+
+        #cf-send.is-recording {
+            background: #003A70;
+            animation: pulseShadow 1.2s infinite
+        }
+
+        @keyframes pulseShadow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 170, 255, .35), 0 8px 18px rgba(0, 0, 0, .35)
+            }
+
+            100% {
+                box-shadow: 0 0 0 12px rgba(0, 170, 255, 0), 0 8px 18px rgba(0, 0, 0, .35)
+            }
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .ic-18 {
+            width: 18px;
+            height: 18px;
+            display: inline-grid;
+            place-items: center;
+            flex: 0 0 18px
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .ic-18 svg {
+            width: 18px !important;
+            height: 18px !important;
+            display: block;
+            transform: translate(var(--cf-icon-nudge-x, 0), var(--cf-icon-nudge-y, 0));
+            shape-rendering: geometricPrecision
+        }
+
+        #cf-send[data-mode="voice"] .ic-18 svg {
+            --cf-icon-nudge-x: .25px
+        }
+
+        #cf-send .ic-arrow,
+        #cf-send .ic-voice,
+        #cf-send .ic-stop {
+            display: none
+        }
+
+        #cf-send[data-mode="send"] .ic-arrow {
+            display: inline-grid
+        }
+
+        #cf-send[data-mode="voice"] .ic-voice {
+            display: inline-grid
+        }
+
+        #cf-send[data-mode="stop"] .ic-stop {
+            display: inline-grid
+        }
+
+        /* ======================
+           [n08] MENU (PORTAL)
+        ====================== */
+        .cf-menu {
+            position: absolute;
+            left: 8px;
+            bottom: 54px;
+            z-index: 50
+        }
+
+        .cf-menu.hidden {
+            display: none
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu-panel {
+            display: inline-block;
+            inline-size: max-content;
+            min-inline-size: var(--cf-menu-min);
+            max-inline-size: var(--cf-menu-max);
+            background: #353535;
+            color: #fff;
+            border-radius: var(--cf-menu-radius);
+            box-shadow: rgba(0, 0, 0, .32) 0 8px 16px, rgba(255, 255, 255, .2) 0 0 1px inset, rgba(0, 0, 0, .62) 0 0 1px;
+            padding: var(--cf-panel-pad);
+            overflow: hidden;
+            border: 0;
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu ul {
+            padding: 0;
+            margin: 0
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, .06);
+            margin: var(--cf-panel-pad);
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li {
+            display: grid;
+            grid-template-columns: 22px 1fr;
+            align-items: center;
+            gap: var(--cf-item-gap);
+            padding: var(--cf-item-pad);
+            border-radius: var(--cf-menu-item-radius);
+            cursor: pointer;
+            transition: background-color .15s ease;
+            white-space: nowrap;
+            font-size: 14px;
+            line-height: 1.25;
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li+li {
+            margin-top: 6px
+        }
+
+        /* ✅ tool bị khoá (ví dụ chưa có văn bản thô để phân loại) */
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li[aria-disabled="true"] {
+            opacity: .45;
+            filter: grayscale(18%);
+            cursor: not-allowed;
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li>span:last-child {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li:hover {
+            background: #3b4756
+        }
+
+        :where(#chat-footer-shell, #cf-menu-portal) .cf-menu li[aria-checked="true"] {
+            background: #203447
+        }
+
+        #cf-menu-portal {
+            position: fixed;
+            inset: 0 auto auto 0;
+            z-index: 1000;
+            pointer-events: auto
+        }
+
+        #cf-menu-portal .cf-menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            pointer-events: auto;
+            z-index: 999
+        }
+
+        /* ======================
+           [n09] MODAL + DROPZONES
+        ====================== */
+        .cf-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            align-items: center;
+            justify-content: center
+        }
+
+        .cf-modal.is-open {
+            display: flex
+        }
+
+        .cf-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .55)
+        }
+
+        .cf-dialog {
+            position: relative;
+            width: min(980px, 94vw);
+            max-height: 86vh;
+            background: #1F1F1F;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .35);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
+        }
+
+        .cf-dh {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            padding: 12px 14px;
+            background: #232323;
+            border-bottom: 1px solid #2F2F2F
+        }
+
+        .cf-dh h3 {
+            width: 100%;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600
+        }
+
+        #cf-close {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+            padding: 0;
+            background: #2A2A2A;
+            border: 1px solid rgba(255, 255, 255, .14);
+            color: #E5E7EB;
+            transition: background .15s, border-color .15s, color .15s;
+        }
+
+        #cf-close:hover {
+            background: #363636;
+            border-color: rgba(255, 255, 255, .24);
+            color: #FF7070
+        }
+
+        #cf-close:active {
+            background: #3d3d3d
+        }
+
+        #cf-close .cf-x-normal,
+        #cf-close .cf-x-hover {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px
+        }
+
+        #cf-close .cf-x-hover {
+            display: none
+        }
+
+        #cf-close:hover .cf-x-normal,
+        #cf-close:focus .cf-x-normal {
+            display: none
+        }
+
+        #cf-close:hover .cf-x-hover,
+        #cf-close:focus .cf-x-hover {
+            display: flex
+        }
+
+        #cf-close .cf-x-normal svg,
+        #cf-close .cf-x-hover svg {
+            width: 10px !important;
+            height: 10px !important;
+            display: block;
+            margin: auto;
+            line-height: 0;
+            transform: none;
+        }
+
+        #cf-close .cf-x-normal svg *[fill],
+        #cf-close .cf-x-normal svg *[stroke],
+        #cf-close .cf-x-hover svg *[fill],
+        #cf-close .cf-x-hover svg *[stroke] {
+            fill: currentColor !important;
+            stroke: currentColor !important
+        }
+
+        .cf-dbody {
+            padding: 12px;
+            overflow: auto
+        }
+
+        .cf-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: stretch
+        }
+
+        /* Role=user → ẩn cột phải & set grid 1 cột */
+        [data-user-role="user"] .cf-grid {
+            grid-template-columns: 1fr;
+        }
+
+        [data-user-role="user"] .cf-pane[data-role-only="internal"] {
+            display: none;
+        }
+
+        .cf-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 0
+        }
+
+        .cf-title-sm {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D1D5DB;
+            margin-bottom: 6px
+        }
+
+        /* Nhãn theo role */
+        .role-user {
+            display: none;
+        }
+
+        [data-user-role="user"] .role-default {
+            display: none;
+        }
+
+        [data-user-role="user"] .role-user {
+            display: inline;
+        }
+
+        .cf-dropzone {
+            border: 1.5px dashed rgba(255, 255, 255, .18);
+            border-radius: .9rem;
+            background: #232323;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            color: #AAB2BE;
+            text-align: center;
+            padding: 14px;
+            flex: 1 1 auto;
+
+            /* clickable full block */
+            cursor: pointer;
+            transition: background .15s ease, border-color .15s ease, color .15s ease;
+            outline: 0;
+        }
+
+        .cf-dropzone:hover {
+            background: #252A34;
+            border-color: #3E4C6A;
+            color: #DCE7FF
+        }
+
+        .cf-dropzone:focus-visible {
+            box-shadow: 0 0 0 2px #4B6CA9 inset;
+        }
+
+        .cf-dropzone.is-over {
+            background: #263143;
+            border-color: #4B6CA9;
+            color: #DCE7FF
+        }
+
+        .cf-previews {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 10px
+        }
+
+        /* ======================
+           [n10] PREVIEW items
+        ====================== */
+        .cf-prev {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #1F1F1F;
+            border: 1px solid #2D2D2D;
+            border-radius: .75rem;
+            padding: 8px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .cf-prev figure {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            background: #2B2B2B;
+            color: #fff;
+        }
+
+        .cf-prev img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: inherit
+        }
+
+        .cf-prev figure svg {
+            width: 18px !important;
+            height: 18px !important;
+            display: block
+        }
+
+        .cf-prev figure svg *[fill],
+        .cf-prev figure svg *[stroke] {
+            fill: currentColor !important;
+            stroke: currentColor !important
+        }
+
+        .cf-prev .name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #E5E7EB;
+            font-size: 13px
+        }
+
+        .cf-prev .remove {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            background: #2A2A2A;
+            border: 1px solid rgba(255, 255, 255, .12);
+            color: #D1D5DB
+        }
+
+        .cf-prev .remove:hover {
+            background: #374151
+        }
+
+        /* ======================
+           [n11] GLOBAL DROP OVERLAY
+        ====================== */
+        .cf-global-drop {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .45)
+        }
+
+        .cf-global-drop.is-on {
+            display: flex
+        }
+
+        .cf-global-drop .ghost {
+            border: 2px dashed rgba(255, 255, 255, .35);
+            color: #EAF0FF;
+            background: rgba(28, 36, 54, .65);
+            backdrop-filter: blur(6px);
+            padding: 18px 22px;
+            border-radius: 14px;
+            font-weight: 600
+        }
+
+        .cf-left,
+        .cf-right,
+        #cf-pills {
+            pointer-events: auto
+        }
+
+        @media(max-width:820px) {
+            .cf-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        /* ======================
+           [n12] WARNINGS
+        ====================== */
+        .cf-note {
+            font-size: 12px;
+            color: #EAB308;
+            background: rgba(234, 179, 8, .08);
+            border: 1px solid rgba(234, 179, 8, .25);
+            padding: 8px 10px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .cf-note.is-on {
+            display: block;
+        }
+    </style>
+
+    <div class="cf-wrap">
+        <!-- [n13] CHIPS -->
+        <div id="cf-attbar" class="cf-attbar" aria-live="polite"></div>
+
+        <!-- [n14] INPUT -->
+        <div class="cf-input-wrap">
+            <textarea id="cf-input" class="cf-input" rows="1" aria-label="Hỏi bất cứ điều gì"
+                placeholder="Hôm nay tôi có thể giúp gì cho bạn?"
+                maxlength="100000" autocomplete="off" autocapitalize="sentences" spellcheck="true"></textarea>
+        </div>
+
+        <!-- [n15] CONTROLS -->
+        <div class="cf-controls">
+            <div class="cf-left">
+                <button id="cf-attach" type="button" class="cf-btn"
+                    aria-label="Tệp & công cụ" aria-haspopup="menu" aria-expanded="false" aria-controls="cf-menu"
+                    data-tooltip="Tệp & công cụ" data-tooltip-shortcut="/">
+                    <span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_paper_clip_white.svg" %}</span>
+                </button>
+            </div>
+
+            <div id="cf-sep" class="cf-sep" data-separator="true" aria-hidden="true" hidden></div>
+            <div id="cf-pills" class="cf-pills" aria-live="polite"></div>
+
+            <div class="cf-right ml-auto">
+                <button id="cf-send" type="button" class="cf-btn cf-btn-send"
+                    aria-label="Gửi" data-mode="voice" data-tooltip="Gửi bằng giọng nói">
+                    <span class="ic-18 ic-voice" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_footer_sound_send_white.svg" %}</span>
+                    <span class="ic-18 ic-arrow" aria-hidden="true">{% include "partials/icons/chat_footer/icon_footer_arrow_top_white.svg" %}</span>
+                    <span class="ic-18 ic-stop" aria-hidden="true">{% include "partials/icons/chat_base/icon_chat_stop_white.svg" %}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- [n16] MENU -->
+        <div id="cf-menu" class="cf-menu hidden" role="menu" aria-labelledby="cf-attach">
+            <div class="cf-menu-panel">
+                <ul id="cf-menu-static">
+                    <li role="menuitem" id="cf-act-file">
+                        <span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_footer_plus_white.svg" %}</span>
+                        <span>Tải lên tệp</span>
+                    </li>
+                </ul>
+                <div class="cf-divider"></div>
+                <ul id="cf-menu-tools"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- [n17] INPUTS ẨN (accept mở rộng khớp JS) -->
+    <input id="cf-pick-main" type="file" multiple
+        accept=".pdf,.doc,.docx,.docm,.dot,.dotx,.rtf,.odt,.txt,.png,.jpg,.jpeg,.gif,.bmp,.tif,.tiff,.webp,.svg,.xls,.xlsx,.xlsm,.xlsb,.xlt,.xltx,.csv,.ods,.ppt,.pptx,.pptm,.pot,.potx,.odp,.md,.html,.htm,.css,.scss,.sass,.less,.xml,.json,.yml,.yaml,.sql,.py,.rb,.php,.java,.kt,.kts,.c,.h,.cpp,.hpp,.cs,.go,.rs,.swift,.m,.mm,.ts,.tsx,.jsx,.sh,.bat,.ps1,.ini,.toml,.gradle,.lua,.r,.pl"
+        class="hidden" />
+    <input id="cf-pick-atts" type="file" multiple
+        accept=".pdf,.doc,.docx,.docm,.dot,.dotx,.rtf,.odt,.txt,.png,.jpg,.jpeg,.gif,.bmp,.tif,.tiff,.webp,.svg,.xls,.xlsx,.xlsm,.xlsb,.xlt,.xltx,.csv,.ods,.ppt,.pptx,.pptm,.pot,.potx,.odp,.md,.html,.htm,.css,.scss,.sass,.less,.xml,.json,.yml,.yaml,.sql,.py,.rb,.php,.java,.kt,.kts,.c,.h,.cpp,.hpp,.cs,.go,.rs,.swift,.m,.mm,.ts,.tsx,.jsx,.sh,.bat,.ps1,.ini,.toml,.gradle,.lua,.r,.pl"
+        class="hidden" />
+
+    <!-- [n18] MODAL -->
+    <div id="cf-modal" class="cf-modal" role="dialog" aria-modal="true" aria-labelledby="cf-modal-title" aria-hidden="true">
+        <div class="cf-backdrop"></div>
+        <div class="cf-dialog" tabindex="-1">
+            <div class="cf-dh">
+                <h3 id="cf-modal-title">Tệp & văn bản đính kèm</h3>
+                <button id="cf-close" type="button" class="cf-btn" aria-label="Đóng">
+                    <span class="cf-x-normal ic-18" aria-hidden="true">{% include "partials/icons/chat_header/icon_header_x_trang.svg" %}</span>
+                    <span class="cf-x-hover  ic-18" aria-hidden="true">{% include "partials/icons/chat_header/icon_header_x_trang.svg" %}</span>
+                </button>
+            </div>
+            <div class="cf-dbody">
+                <div class="cf-grid">
+                    <!-- LEFT PANE (MAIN / OCR) -->
+                    <div class="cf-pane">
+                        <div class="cf-title-sm">
+                            <span class="role-default">Văn bản cần chuyển</span>
+                            <span class="role-user">Tải lên tệp</span>
+                        </div>
+
+                        <!-- Clickable dropzone: data-pick trỏ tới input ẩn -->
+                        <div id="dz-main"
+                            class="cf-dropzone"
+                            role="button" aria-label="Khu vực kéo-thả (trái) – bấm để chọn tệp"
+                            tabindex="0"
+                            data-zone="main"
+                            data-pick="#cf-pick-main"
+                            aria-describedby="dz-main-note">
+                            <div>Kéo-thả tệp vào đây hoặc</div>
+                            <div><button id="btn-pick-main" type="button" class="cf-pick">Chọn tệp…</button></div>
+                            <small style="opacity:.8">Hỗ trợ: PDF, Word/Excel/PowerPoint, TXT, Ảnh (PNG/JPG/WEBP/SVG), & mã nguồn phổ biến</small>
+                            <div id="dz-main-previews" class="cf-previews" aria-live="polite"></div>
+                        </div>
+
+                        <!-- Cảnh báo nhiều file (JS sẽ toggle .is-on) -->
+                        <div id="dz-main-note" class="cf-note" aria-live="polite">
+                            Lưu ý: Hệ thống tối ưu khi mỗi lượt chỉ gửi <strong>1 tệp</strong>. Nếu bạn đã chọn nhiều tệp,
+                            hệ thống sẽ xử lý đầy đủ tệp đầu tiên; các tệp còn lại có thể <em>không hoạt động</em>.
+                        </div>
+                    </div>
+
+                    <!-- RIGHT PANE (ATTACHMENTS) – chỉ cho internal/admin -->
+                    <div class="cf-pane" data-role-only="internal">
+                        <div class="cf-title-sm">Văn bản đính kèm</div>
+                        <div id="dz-atts"
+                            class="cf-dropzone"
+                            role="button" aria-label="Khu vực kéo-thả (phải) – bấm để chọn tệp"
+                            tabindex="0"
+                            data-zone="atts"
+                            data-pick="#cf-pick-atts">
+                            <div>Kéo-thả tệp vào đây hoặc</div>
+                            <div><button id="btn-pick-atts" type="button" class="cf-pick">Chọn tệp…</button></div>
+                            <small style="opacity:.8">Hỗ trợ: PDF, Word/Excel/PowerPoint, TXT, Ảnh (PNG/JPG/WEBP/SVG), & mã nguồn phổ biến</small>
+                            <div id="dz-atts-previews" class="cf-previews" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div><!-- /.cf-grid -->
+            </div>
+        </div>
+    </div>
+
+    <!-- [n19] OVERLAY KÉO-THẢ TOÀN CỤC -->
+    <div id="cf-global-drop" class="cf-global-drop" aria-hidden="true">
+        <div class="ghost">Thả tệp vào để tải lên…</div>
+    </div>
+
+    <!-- [n20] ICON BANK -->
+    <div id="cf-icon-bank" style="display:none" aria-hidden="true">
+        <template id="tpl-ico-answer_mode"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_hoi_dap_white.svg" %}</span></template>
+        <template id="tpl-ico-web_search"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_footer_tim_kiem_mang_white.svg" %}</span></template>
+        <template id="tpl-ico-doc_email_update"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_email_update_white.svg" %}</span></template>
+        <template id="tpl-ico-deep_research"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_footer_nghien_cuu_sau.svg" %}</span></template>
+        <template id="tpl-ico-doc_email_routing"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_phan_luong_van_ban_white.svg" %}</span></template>
+
+        <!-- Office -->
+        <template id="tpl-ico-office-word"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_office_word.svg" %}</span></template>
+        <template id="tpl-ico-office-excel"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_office_excel.svg" %}</span></template>
+        <template id="tpl-ico-office-powerpoint"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_office_powerpoint.svg" %}</span></template>
+        <template id="tpl-ico-office-pdf"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_office_pdf.svg" %}</span></template>
+
+        <!-- fallback -->
+        <template id="tpl-ico-doc"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_doc_upload_white.svg" %}</span></template>
+        <template id="tpl-ico-code"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_code_icon_white.svg" %}</span></template>
+        <template id="tpl-ico-default"><span class="ic-18" aria-hidden="true">{% include "partials/icons/chat_footer/icon_chat_hoi_dap_white.svg" %}</span></template>
+    </div>
+</footer>

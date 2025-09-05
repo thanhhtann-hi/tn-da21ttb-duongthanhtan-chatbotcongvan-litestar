@@ -1,0 +1,151 @@
+<!-- 📁 src/modules/auth/templates/auth/verify/verify_fragment.html -->
+<!-- 🕒 Last updated: 2025-07-08 00:55 — Thêm CSRF input & hx-vals -->
+{% block form %}
+<title hx-swap-oob="true">TvuMoE - Xác minh email</title>
+
+{% if verified %}
+<section class="space-y-5 px-6 text-[90%]">
+    <!-- đã verify, chỉ hiển thị thông báo -->
+    <h2 class="text-2xl font-semibold text-green-700 text-center">
+        Bạn đã xác minh Email rồi!
+    </h2>
+    <p class="text-sm text-gray-600 text-center leading-relaxed">
+        Vui lòng quay lại trang đăng nhập để tiếp tục.
+    </p>
+    <div class="text-center text-sm space-y-1">
+        <a href="/auth/login" class="text-blue-600 hover:underline">Đăng nhập</a>
+    </div>
+</section>
+{% else %}
+<section class="space-y-6 px-6 text-center text-[90%]">
+
+    <h2 class="text-3xl font-semibold leading-snug">
+        Kiểm tra hộp thư<br>của bạn
+    </h2>
+
+    <p class="text-gray-600 max-w-xs mx-auto">
+        Vui lòng nhập mã&nbsp;6&nbsp;số chúng tôi vừa gửi đến
+        <b class="text-[#053484]">{{ email }}</b>
+    </p>
+
+    <!-- ▸ Form nhập mã -->
+    <form id="code-form" class="space-y-4 max-w-xs mx-auto" hx-post="/auth/verify" hx-target="#msg" hx-swap="none">
+        <!-- 🔐 CSRF token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <input type="hidden" name="uid" value="{{ uid }}" />
+        <input type="hidden" name="email" value="{{ email }}" />
+
+        <input name="code" maxlength="6" minlength="6" pattern="\d{6}" required placeholder="Mã 6 số"
+            class="w-full rounded-full border border-gray-300 px-5 py-3 text-center tracking-widest focus:border-[#053484] focus:outline-none" />
+        <button id="confirm-btn" class="w-full rounded-full bg-black py-3 text-white hover:opacity-90">
+            Xác nhận
+        </button>
+    </form>
+
+    <!-- ▸ Gửi lại mã -->
+    {% set disabled = wait|default(60)|int > 0 %}
+    <button id="resend-btn"
+        class="text-sm text-[#053484] hover:underline {% if disabled %}opacity-50 cursor-not-allowed{% endif %}" {% if
+        disabled %}disabled{% endif %} hx-post="/auth/resend-code"
+        hx-vals='{"uid":"{{ uid }}","email":"{{ email }}","csrf_token":"{{ csrf_token }}"}' hx-swap="none">
+        {% if disabled %}
+        Gửi lại mã&nbsp;(<span id="cd">{{ wait|default(60)|int }}</span>s)
+        {% else %}
+        Gửi lại mã
+        {% endif %}
+    </button>
+
+    <!-- ▸ Thông báo lỗi -->
+    <div id="msg" class="text-red-600 text-sm mt-1"></div>
+
+    <footer class="text-center text-xs text-gray-500 pt-4">
+        <a href="/legal/terms" class="hover:underline">Điều khoản sử dụng</a>
+        <span class="mx-2 select-none">|</span>
+        <a href="/legal/privacy" class="hover:underline">Chính sách riêng tư</a>
+    </footer>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ===== Đếm ngược ban đầu
+    (() => {
+        const btn = document.getElementById('resend-btn');
+        let s = +('{{ wait|default(60) }}');
+        if (!btn || s <= 0 || !btn.hasAttribute('disabled')) return;
+
+        const cd = document.getElementById('cd');
+        const tick = () => {
+            cd.textContent = s--;
+            if (s >= 0) return setTimeout(tick, 1000);
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.removeAttribute('disabled');
+            btn.textContent = 'Gửi lại mã';
+        };
+        tick();
+    })();
+
+    // ===== Xử lý phản hồi HTMX
+    document.body.addEventListener('htmx:afterRequest', (e) => {
+        const xhr = e.detail.xhr;
+
+        // ▸ Form nhập mã
+        if (e.detail.elt.id === 'code-form') {
+            const msgEl = document.getElementById('msg');
+            msgEl.textContent = xhr.responseText || '';
+            if (xhr.getResponseHeader('X-Locked') === 'true' ||
+                xhr.getResponseHeader('X-Expired') === 'true') {
+                disableConfirm();
+            }
+            return;
+        }
+
+        // ▸ Gửi lại mã thành công
+        if (e.detail.elt.id === 'resend-btn' && xhr.status === 202) {
+            enableConfirm();
+            document.getElementById('msg').textContent = '';
+
+            let wait = +xhr.getResponseHeader('X-Wait-Seconds') || 60;
+            const btn = document.getElementById('resend-btn');
+            btn.setAttribute('disabled', '');
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = `Gửi lại mã&nbsp;(<span id="cd">${wait}</span>s)`;
+
+            const cdSpan = btn.querySelector('#cd');
+            const tick = () => {
+                cdSpan.textContent = wait--;
+                if (wait >= 0) return setTimeout(tick, 1000);
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.removeAttribute('disabled');
+                btn.textContent = 'Gửi lại mã';
+            };
+            tick();
+        }
+    });
+
+    // ===== Helpers
+    function disableConfirm() {
+        const inp = document.querySelector('#code-form input[name="code"]');
+        const btn = document.getElementById('confirm-btn');
+        if (inp) inp.disabled = true;
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    function enableConfirm() {
+        const inp = document.querySelector('#code-form input[name="code"]');
+        const btn = document.getElementById('confirm-btn');
+        if (inp) {
+            inp.disabled = false;
+            inp.value = '';
+        }
+        if (btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    }
+</script>
+{% endblock %}

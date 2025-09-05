@@ -1,0 +1,392 @@
+<!-- file: src/modules/admin/templates/admin/notify/admin_notify_calender_modal.html -->
+<!-- updated: 2025-08-11 (v2.3) -->
+<!-- note: scoped SVG reset; Close X = 10×10; prev/next = 16×16; calendar icon = 21.5px; button ngày có cursor/hover; pseudo-range không chặn click -->
+
+{% set start_date = start_date %}
+{% set end_date = end_date %}
+
+<div id="admin-notify-calendar-modal-overlay" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-[2px]"
+    tabindex="-1" aria-hidden="false"></div>
+
+<div id="admin-notify-calendar-modal" class="fixed inset-0 z-[9999] flex items-center justify-center px-2" role="dialog"
+    aria-modal="true" tabindex="-1" data-start="{{ start_date.strftime('%Y-%m-%d') if start_date else '' }}"
+    data-end="{{ end_date.strftime('%Y-%m-%d') if end_date else '' }}">
+    <div
+        class="notify-modal-content w-full max-w-[98vw] sm:max-w-[480px] rounded-[32px] border border-gray-200 bg-white shadow-modal px-0 py-0 flex flex-col font-manrope">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-gray-900 text-center w-full">Lịch hiển thị</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center">Chọn thời gian hiển thị thông báo!</div>
+            </div>
+            <button id="admin-notify-calendar-modal-close" type="button" class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center w-10 h-10
+                     rounded-full ring-1 ring-gray-300 hover:ring-blue-900 transition-all bg-white cursor-pointer shadow
+                     group hover:bg-blue-50 focus:outline-none" aria-label="Đóng">
+                <span class="chip-search-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-search-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- HEADER RANGE -->
+        <div class="flex justify-between gap-4 px-7 pt-2 pb-1">
+            <div class="flex flex-col gap-1 items-start text-left">
+                <span class="text-xs font-semibold text-blue-900">Từ ngày</span>
+                <span id="calendar-start-date" class="font-medium text-[16px] text-neutral-900">
+                    {{ start_date.strftime('%d/%m/%Y') if start_date else 'Chưa chọn' }}
+                </span>
+            </div>
+            <div class="flex flex-col gap-1 items-end text-right">
+                <span class="text-xs font-semibold text-blue-900">Đến ngày</span>
+                <span id="calendar-end-date" class="font-medium text-[16px] text-neutral-900">
+                    {{ end_date.strftime('%d/%m/%Y') if end_date else 'Chưa chọn' }}
+                </span>
+            </div>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- MONTH TOOLBAR -->
+        <div class="flex items-center justify-between px-6 py-3 gap-3">
+            <span id="calendar-current-month"
+                class="calendar-current-month-small font-semibold text-[13.5px] text-white bg-blue-900 rounded-full px-3.5 py-1.5 flex items-center gap-2">
+                <span class="calendar-month-icon calendar-month-icon-small">
+                    {% include "partials/icons/admin/system/icons_admin_setting_calendar_trang.svg" %}
+                </span>
+                <span>{{ start_date.strftime('%m/%Y') if start_date else (now().strftime('%m/%Y')) }}</span>
+            </span>
+            <div class="flex gap-1 ml-3">
+                <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-50"
+                    id="calendar-month-prev" aria-label="Tháng trước">
+                    <svg class="text-blue-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-blue-50"
+                    id="calendar-month-next" aria-label="Tháng sau">
+                    <svg class="text-blue-900" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="calendar-grid-outer w-full px-7">
+            <div class="calendar-header-row grid grid-cols-7 gap-1 mb-2">
+                <span class="calendar-header-cell">Hai</span><span class="calendar-header-cell">Ba</span>
+                <span class="calendar-header-cell">Tư</span><span class="calendar-header-cell">Năm</span>
+                <span class="calendar-header-cell">Sáu</span><span class="calendar-header-cell">Bảy</span>
+                <span class="calendar-header-cell">CN</span>
+            </div>
+            <div id="calendar-table-days" class="flex flex-col overflow-y-auto calendar-grid-days-inner w-full"
+                role="grid" aria-label="Lịch chọn ngày"></div>
+        </div>
+
+        <!-- QUICK RANGE -->
+        <div class="flex justify-center gap-4 mt-3 px-7 mb-1">
+            <button
+                class="calendar-quick-btn w-[114px] rounded-full py-[9.5px] border border-blue-900 text-blue-900 font-semibold text-[13.3px] bg-white hover:bg-blue-50"
+                data-range="7">7 Ngày</button>
+            <button
+                class="calendar-quick-btn w-[114px] rounded-full py-[9.5px] border border-blue-900 text-blue-900 font-semibold text-[13.3px] bg-white hover:bg-blue-50"
+                data-range="15">15 Ngày</button>
+            <button
+                class="calendar-quick-btn w-[114px] rounded-full py-[9.5px] border border-blue-900 text-blue-900 font-semibold text-[13.3px] bg-white hover:bg-blue-50"
+                data-range="30">30 Ngày</button>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="flex justify-center gap-4 w-full pt-2 border-t border-gray-100 mt-0 px-7 pb-5">
+            <button type="button" onclick="closeNotifyCalendarModal()"
+                class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">Hủy</button>
+            <button id="calendar-submit-btn" type="button" disabled
+                class="w-[120px] rounded-full py-2.5 bg-blue-900 text-white font-medium hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 text-[14px]">Chọn
+                ngày</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ── SCOPED SVG reset ── */
+    #admin-notify-calendar-modal svg {
+        width: auto !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        display: block;
+    }
+
+    /* HARD CLAMP header icons – thắng reset ở trên */
+    #admin-notify-calendar-modal .calendar-month-icon {
+        width: 21.5px;
+        height: 21.5px;
+        line-height: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #admin-notify-calendar-modal .calendar-month-icon>svg {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+    }
+
+    /* Prev/Next arrows = 16px */
+    #admin-notify-calendar-modal #calendar-month-prev svg,
+    #admin-notify-calendar-modal #calendar-month-next svg {
+        width: 16px !important;
+        height: 16px !important;
+        display: block;
+    }
+
+    /* Close X = 10px (đã có, giữ lại – đảm bảo !important) */
+    #admin-notify-calendar-modal-close .chip-search-normal svg,
+    #admin-notify-calendar-modal-close .chip-search-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+    }
+
+
+    /* Layout vars */
+    .calendar-grid-outer {
+        --cal-base: 38px;
+        --cal-scale: .85;
+        --cal-d: calc(var(--cal-base)*var(--cal-scale));
+        --cal-gap: 10px;
+        --cal-row-gap: 8px;
+        --cal-row-extra: 4px;
+        overflow-x: auto;
+        padding-left: 1.75rem !important;
+        padding-right: 1.75rem !important;
+    }
+
+    .calendar-header-row,
+    .calendar-grid-days-inner {
+        width: 100% !important;
+    }
+
+    .calendar-header-row {
+        gap: 0 !important;
+        column-gap: var(--cal-gap) !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+        justify-content: stretch;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .calendar-header-cell {
+        display: grid;
+        place-items: center;
+        height: 36px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e3a8a;
+        background: #fff;
+        white-space: nowrap;
+    }
+
+    #calendar-table-days .grid {
+        gap: 0 !important;
+        column-gap: var(--cal-gap) !important;
+        row-gap: var(--cal-row-gap) !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+        justify-content: stretch;
+        align-items: center;
+        justify-items: center;
+        grid-auto-rows: calc(var(--cal-d) + var(--cal-row-extra));
+        overflow: visible;
+        transform: translateZ(0);
+    }
+
+    #calendar-table-days .calendar-day-wrap {
+        position: relative;
+        width: var(--cal-d);
+        height: var(--cal-d);
+        display: grid;
+        place-items: center;
+        justify-self: center;
+        align-self: center;
+    }
+
+    .calendar-day-cell,
+    .calendar-day-btn {
+        display: grid !important;
+        place-items: center !important;
+        width: var(--cal-d) !important;
+        height: var(--cal-d) !important;
+        border: none;
+        border-radius: 9999px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1 !important;
+        font-variant-numeric: tabular-nums;
+        -webkit-font-smoothing: antialiased;
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        pointer-events: auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .calendar-day-btn:hover {
+        background: #eaf1ff;
+    }
+
+    .calendar-day-btn:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .calendar-day-outside {
+        color: #cbd5e1 !important;
+        pointer-events: none !important;
+        opacity: .9;
+    }
+
+    .calendar-day-btn.ring-1 {
+        box-shadow: 0 0 0 1.5px #2563eb !important;
+    }
+
+    /* Pseudo range (không chặn click) */
+    .calendar-day-wrap .calendar-day-cell {
+        position: relative;
+        z-index: 2;
+    }
+
+    .calendar-range-mid::before,
+    .calendar-range-start::before,
+    .calendar-range-end::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: #eef3ff;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .calendar-range-mid::before {
+        left: calc(-.5*var(--cal-gap));
+        right: calc(-.5*var(--cal-gap));
+        border-radius: calc(var(--cal-d)/2);
+    }
+
+    .calendar-range-start::before {
+        left: 50%;
+        right: calc(-.5*var(--cal-gap));
+        border-radius: 0 9999px 9999px 0;
+    }
+
+    .calendar-range-end::before {
+        left: calc(-.5*var(--cal-gap));
+        right: 50%;
+        border-radius: 9999px 0 0 9999px;
+    }
+
+    /* Endpoint */
+    .calendar-endpoint {
+        background: #173e9a !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+
+    /* Hover swap cho Close X */
+    #admin-notify-calendar-modal-close .chip-search-hover {
+        display: none;
+    }
+
+    #admin-notify-calendar-modal-close:hover .chip-search-normal,
+    #admin-notify-calendar-modal-close:focus .chip-search-normal {
+        display: none;
+    }
+
+    #admin-notify-calendar-modal-close:hover .chip-search-hover,
+    #admin-notify-calendar-modal-close:focus .chip-search-hover {
+        display: flex;
+    }
+
+    #admin-notify-calendar-modal-close:active {
+        background: #e8f0fe;
+    }
+
+    /* Kích thước icon */
+    .calendar-month-icon svg {
+        width: 21.5px;
+        height: 21.5px;
+    }
+
+    /* biểu tượng tháng */
+    #calendar-month-prev svg,
+    #calendar-month-next svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* mũi tên điều hướng */
+
+    /* Ép Close X = 10×10 – đặt SAU reset để thắng mọi thứ */
+    #admin-notify-calendar-modal-close svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+    }
+
+    #calendar-submit-btn:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    @media (max-width:540px) {
+        #admin-notify-calendar-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important;
+            padding: 0 !important;
+        }
+
+        #admin-notify-calendar-modal>.notify-modal-content {
+            width: 100vw !important;
+            border-radius: 28px 28px 0 0 !important;
+            box-shadow: 0 -8px 40px 0 rgba(44, 46, 60, .13);
+            bottom: 0;
+            min-height: 40vh;
+            max-height: 98vh;
+            position: fixed !important;
+        }
+
+        .calendar-grid-days-inner {
+            max-height: 155px !important;
+            overflow-y: auto !important;
+            scrollbar-width: thin;
+            scrollbar-color: #1e3a8a #e7eefe;
+        }
+
+        .calendar-grid-days-inner::-webkit-scrollbar {
+            width: 7px;
+            background: #e7eefe;
+            border-radius: 8px;
+        }
+
+        .calendar-grid-days-inner::-webkit-scrollbar-thumb {
+            background: #1e3a8a;
+            border-radius: 8px;
+        }
+
+        .calendar-grid-days-inner::-webkit-scrollbar-thumb:hover {
+            background: #174298;
+        }
+
+        .calendar-grid-days-inner::-webkit-scrollbar-track {
+            background: #e7eefe;
+            border-radius: 8px;
+        }
+    }
+</style>

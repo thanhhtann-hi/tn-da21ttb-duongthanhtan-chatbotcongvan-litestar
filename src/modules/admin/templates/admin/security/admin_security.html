@@ -1,0 +1,16 @@
+<!-- 📄 src/modules/admin/templates/admin/security/admin_security.html -->
+<!-- 🕒 Last updated: 2025-07-08 01:55 — đồng bộ HTMX & CSRF -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Cấu hình hệ thống{% endblock %}
+{% block header %}Cấu hình hệ thống{% endblock %}
+
+{% block content %}
+<div id="security-form-container" class="max-w-2xl">
+
+    {# 👉 Fragment form (render lần đầu) #}
+    {% include "admin/security/admin_security_fragment.html" %}
+
+</div>
+{% endblock %}

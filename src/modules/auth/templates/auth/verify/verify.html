@@ -1,0 +1,10 @@
+<!-- 📁 src/modules/auth/templates/auth/verify/verify.html -->
+<!-- 🕒 Last updated: 2025-07-04 17:10 — include verified flag into fragment -->
+{% extends "partials/auth_base.html" %}
+
+{% block title %}TvuMoE - Xác minh email{% endblock %}
+
+{% block form %}
+{# truyền thêm biến verified #}
+{% include "auth/verify/verify_fragment.html" %}
+{% endblock %}

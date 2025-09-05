@@ -1,0 +1,10 @@
+/* 📄 src/modules/auth/static/css/auth_error.css */
+/* 🕒 Last updated: 2025-07-08 19:10 */
+/* Ghi đè kích thước icon SVG lỗi 404 */
+
+.auth-error-icon svg {
+    width: 88px;
+    height: 88px;
+    max-width: 100%;
+    display: inline-block;
+}

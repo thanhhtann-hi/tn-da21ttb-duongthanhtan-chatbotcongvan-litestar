@@ -1,0 +1,41 @@
+<!-- 📄 src/templates/partials/503_base.html -->
+<!-- 🕒 Last updated: 2025-07-08 23:20 -->
+<!-- 📌 Layout nền cho trang bảo trì
+     • Dùng font "Manrope" chuẩn toàn hệ thống
+     • Tailwind + CSS thuần riêng cho SVG icon
+     • Tối ưu hiển thị, responsive & hiệu suất
+-->
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- 🏷 Tiêu đề trang – child override -->
+    <title>{% block title %}Hệ thống bảo trì{% endblock %}</title>
+
+    <!-- ✅ Google Font: Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+
+    <!-- ✅ CSS chính từ Tailwind -->
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+
+    <!-- ✅ CSS riêng để điều chỉnh SVG icon -->
+    <link rel="stylesheet" href="/static/css/maintenance.css" />
+
+    <!-- ✅ Favicon -->
+    <link rel="icon" href="/static/images/favicon/favicon.ico" type="image/x-icon" />
+</head>
+
+<body class="min-h-screen flex flex-col justify-center items-center bg-gray-50 font-manrope text-gray-800">
+    {% block content %}{% endblock %}
+
+    <!-- JS polling kiểm tra maintenance status, giới hạn 2 reload -->
+    <script src="/static/js/maintenance.js" defer></script>
+</body>
+
+</html>

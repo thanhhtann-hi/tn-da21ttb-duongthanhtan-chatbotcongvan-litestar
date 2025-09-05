@@ -1,0 +1,293 @@
+/* file: src/modules/chat/static/css/chat_sidebar_left.css */
+/* updated: 2025-08-19 */
+/* note: Header/Footer cố định; chỉ NAV cuộn (#sidebar-scroll). Màu A của Chat. */
+
+:root{
+  --chat-sidebar-icon-box: 2.25rem; /* 36px */
+  --chat-sidebar-logo: 24px;
+  --chat-sidebar-icon: 18px;
+  --icon-nudge-y: 0px;
+
+  --sidebar-speed: 160ms;
+  --sidebar-ease: cubic-bezier(.22,.75,.18,1);
+  --ui-speed: 120ms;
+
+  --sidebar-padding-x: 12px; /* = px-3 */
+
+  /* Dropdown */
+  --row-menu-min-w: 168px;
+  --row-menu-gutter-x: -5px;
+
+  /* Tooltip gap (cho portal ngoài mép phải) */
+  --tt-gap-outside-x: 10px;
+
+  /* Màu & nền Chat (A) */
+  --sidebar-muted: #B1B1B1;
+  --sidebar-bg: #181818;          /* NỀN A – Chat */
+  --sidebar-scroll-thumb: #3A3A3A;/* màu thanh cuộn trong Chat */
+  --sidebar-scroll-track: #1F1F1F;
+
+  /* Kích thước header/footer (cố định) */
+  --sidebar-header-h: 60px;
+  --sidebar-footer-h: 64px;
+
+  /* Fades */
+  --sidebar-fade-h: 14px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  :root{ --sidebar-speed:0ms; --ui-speed:0ms; }
+}
+
+/* ============= KHUNG & TRẠNG THÁI ============= */
+.only-when-open { display: none; }
+
+#sidebar.sidebar-open .only-when-open,
+#sidebar-shell.sidebar-open .only-when-open { display: block; }
+
+#sidebar.sidebar-collapsed .only-when-open,
+#sidebar-shell.sidebar-collapsed .only-when-open { display: none; }
+
+.sidebar-collapsed .only-when-open{display:none!important}
+
+#sidebar{
+  position:relative; z-index:30;
+  display:flex; flex-direction:column; height:100%;
+  flex:0 0 256px;
+  transition-property:flex-basis,background-color;
+  transition-duration:var(--sidebar-speed),120ms;
+  transition-timing-function:var(--sidebar-ease),linear;
+  will-change:flex-basis;
+  overflow:hidden; /* vùng cuộn chuyển vào #sidebar-scroll */
+  background:var(--sidebar-bg); /* tô màu A cho vỏ ngoài */
+}
+#sidebar.sidebar-open{flex-basis:256px; background:var(--sidebar-bg)}
+#sidebar.sidebar-collapsed{flex-basis:60px; background:var(--sidebar-bg)}
+
+/* Shell giữ layout 3 lớp: header (fixed) / scroll (nav) / footer (fixed) */
+#sidebar-shell{
+  display:flex; flex-direction:column; height:100%;
+  overflow:visible; background:var(--sidebar-bg);
+}
+
+/* [SCROLL-AREA]: CHỈ nav cuộn */
+#sidebar-scroll{
+  flex:1 1 0; min-height:0;
+  overflow-y:auto; overflow-x:hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background:var(--sidebar-bg);
+}
+
+/* Scrollbar (Chat – màu A, KHÔNG lấy từ Admin) */
+#sidebar-scroll{
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-scroll-thumb) var(--sidebar-scroll-track);
+}
+#sidebar-scroll::-webkit-scrollbar{ width: 8px; }
+#sidebar-scroll::-webkit-scrollbar-track{ background: var(--sidebar-scroll-track); }
+#sidebar-scroll::-webkit-scrollbar-thumb{
+  background: var(--sidebar-scroll-thumb);
+  border-radius: 4px;
+}
+
+/* NAV không tự cuộn riêng nữa (đã cuộn ở #sidebar-scroll), chỉ spacing đáy nhẹ */
+#sidebar-nav{
+  flex:1 1 auto; min-height:0;
+  overflow:visible!important;
+  padding-bottom: 8px; /* item cuối không dính đáy */
+}
+
+/* ============= ITEM & ICONS ============= */
+.sidebar-link{
+  width:100%; min-height:var(--chat-sidebar-icon-box);
+  display:flex; align-items:center; position:relative; overflow:visible;
+}
+.sidebar-open .sidebar-link{
+  border-radius:.75rem; transition:background-color var(--ui-speed) ease;
+  padding-left:0; padding-right:var(--sidebar-padding-x);
+}
+.sidebar-open .sidebar-link:hover{ background:#374151 }
+
+/* (FIX) Chỉ chừa chỗ bên phải khi HÀNG có menu “…” */
+.sidebar-open .sidebar-link.has-row-actions:hover,
+.sidebar-open .sidebar-link.has-row-actions:focus-within{
+  padding-right: calc(var(--sidebar-padding-x) + var(--chat-sidebar-icon-box));
+}
+
+.sidebar-link .sidebar-icon{
+  width:var(--chat-sidebar-icon-box); height:var(--chat-sidebar-icon-box);
+  display:flex; align-items:center; justify-content:center;
+  border-radius:9999px; padding:6px;
+  transition:background-color var(--ui-speed) ease;
+}
+.sidebar-link .sidebar-icon svg{
+  width:var(--chat-sidebar-icon)!important; height:var(--chat-sidebar-icon)!important;
+  display:block; transform:translateY(var(--icon-nudge-y));
+}
+.sidebar-link:hover .sidebar-icon{ background:#374151 }
+
+.icon-btn svg{ width:18px!important; height:18px!important; transform:translateY(var(--icon-nudge-y)) }
+
+/* 3 chấm phải */
+.row-actions{ position:absolute; right:var(--sidebar-padding-x); top:0; bottom:0; display:flex; align-items:center }
+.row-more{
+  width:var(--chat-sidebar-icon-box); height:var(--chat-sidebar-icon-box);
+  border-radius:9999px; display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity var(--ui-speed) ease, background-color var(--ui-speed) ease;
+}
+.row-more svg{ width:18px!important; height:18px!important; display:block }
+.sidebar-open .sidebar-link:hover .row-more,
+.sidebar-open .sidebar-link:focus-within .row-more{ opacity:1; pointer-events:auto }
+.sidebar-link.is-view-more .row-actions{ display:none!important }
+
+/* Label & shortcut (ellipsis chuẩn) */
+.sidebar-link > .flex{ min-width:0; flex:1 1 auto; }
+.sidebar-label{
+  display:inline-flex; align-items:center; line-height:1.3; transition:opacity 90ms ease; opacity:1;
+  min-width:0; max-width:100%;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.shortcut{ font-size:.875rem; line-height:1; opacity:0; visibility:hidden; transition:opacity 90ms ease, visibility 90ms ease }
+.sidebar-open .sidebar-link:hover .shortcut{ opacity:1; visibility:visible }
+#sidebar.show-shortcuts .shortcut{ opacity:1!important; visibility:visible!important }
+.sidebar-collapsed .sidebar-label, .sidebar-collapsed .shortcut{ display:none!important }
+
+/* Tooltip (dùng riêng cho collapsed; OPEN sẽ dùng portal ngoài mép phải) */
+.sidebar-link .sidebar-tooltip{
+  position:absolute; left:100%; top:50%; transform:translateY(-50%) scale(.985); margin-left:.75rem;
+  white-space:nowrap; border-radius:.75rem; background:#111827; color:#f3f4f6;
+  padding:.125rem .5rem; font-size:10px; line-height:1;
+  opacity:0; visibility:hidden; pointer-events:none; z-index:60;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.28));
+  transition:opacity var(--ui-speed) ease, transform var(--ui-speed) ease, visibility var(--ui-speed) ease;
+}
+.sidebar-collapsed .sidebar-link:hover .sidebar-tooltip{ opacity:1; visibility:visible; transform:translateY(-50%) scale(1) }
+.sidebar-open .sidebar-link:hover .sidebar-tooltip{ opacity:0!important; visibility:hidden!important; pointer-events:none!important }
+
+/* Toggle buttons */
+.sidebar-open #btn-toggle-sidebar-open{ display:flex!important }
+.sidebar-collapsed #btn-toggle-sidebar-open, .sidebar-open #btn-toggle-sidebar-collapsed{ display:none!important }
+.sidebar-collapsed #btn-toggle-sidebar-collapsed{ display:none!important }
+#btn-toggle-sidebar-collapsed{
+  position:absolute; inset:0!important; margin:auto;
+  width:var(--chat-sidebar-icon-box)!important; height:var(--chat-sidebar-icon-box)!important;
+  align-items:center; justify-content:center;
+  transition:opacity var(--ui-speed) ease, transform var(--ui-speed) ease;
+}
+.sidebar-collapsed.toggle-ready:hover #btn-toggle-sidebar-collapsed{ display:flex!important }
+
+/* Logo slot */
+#sidebar-header-slot{ width:36px; height:36px; position:relative; display:flex; align-items:center; justify-content:center; line-height:0; contain:paint }
+#sidebar-logo{
+  display:block; width:var(--chat-sidebar-logo)!important; height:var(--chat-sidebar-logo)!important;
+  min-width:var(--chat-sidebar-logo)!important; min-height:var(--chat-sidebar-logo)!important; object-fit:contain;
+  image-rendering:-webkit-optimize-contrast; image-rendering:crisp-edges; will-change:opacity; backface-visibility:hidden;
+  transition:opacity var(--ui-speed) ease;
+}
+.sidebar-collapsed.toggle-ready:hover #sidebar-logo{ opacity:0!important; pointer-events:none }
+
+/* ============= HEADER/FOOTER CỐ ĐỊNH + SHADOW ============= */
+.sidebar-header,
+.sidebar-footer{
+  position:relative; z-index:60;
+  background:var(--sidebar-bg) !important;
+  transform:translateZ(0); backface-visibility:hidden;
+  flex:0 0 auto;
+}
+.sidebar-header{
+  height:var(--sidebar-header-h); min-height:var(--sidebar-header-h);
+  border-bottom:1px solid #374151;
+}
+.sidebar-footer{
+  height:auto; min-height:calc(var(--sidebar-footer-h) - 8px);
+  border-top:1px solid #374151;
+  display:flex; flex-direction:column; gap:.25rem; padding-top:.5rem; padding-bottom:.5rem;
+}
+
+/* Fades */
+.sidebar-header::after{
+  content:""; position:absolute; left:0; right:0; bottom:-1px;
+  height:var(--sidebar-fade-h); pointer-events:none;
+  background:linear-gradient(to bottom, var(--sidebar-bg) 0%, rgba(24,24,24,0) 100%);
+  opacity:0; transition:opacity var(--ui-speed) ease;
+}
+.sidebar-header.has-shadow-top{ box-shadow:0 10px 18px rgba(0,0,0,.28) }
+.sidebar-header.has-shadow-top::after{ opacity:1 }
+
+.sidebar-footer::before{
+  content:""; position:absolute; left:0; right:0; top:-1px;
+  height:var(--sidebar-fade-h); pointer-events:none;
+  background:linear-gradient(to top, var(--sidebar-bg) 0%, rgba(24,24,24,0) 100%);
+  opacity:0; transition:opacity var(--ui-speed) ease;
+}
+.sidebar-footer.has-shadow-bottom{ box-shadow:0 -10px 18px rgba(0,0,0,.28) }
+.sidebar-footer::before{ opacity:1 }
+
+/* Khác */
+#sidebar-user .sidebar-label{ align-items:flex-start }
+.sidebar-spacer{ height:calc(var(--chat-sidebar-icon-box) * .5) }
+.sidebar-link.is-static{ pointer-events:none; background:transparent!important }
+.sidebar-link.is-plain-left{ padding-left:var(--sidebar-padding-x)!important }
+.sidebar-link.is-muted .sidebar-label{ color:var(--sidebar-muted, #B1B1B1) }
+
+/* ============= PORTAL DROPDOWN ============= */
+.portal-row-menu{
+  position:fixed; left:-9999px; top:-9999px; z-index:2147483646;
+  background:#2A2A2A; color:#fff; border-radius:.75rem;
+  box-shadow:0 10px 20px rgba(0,0,0,.25);
+  padding:.25rem 0; min-width:var(--row-menu-min-w); overflow:auto;
+}
+.portal-row-menu ul{ padding:0 4px; display:block }
+.portal-row-menu li{
+  display:flex; align-items:center; gap:10px; height:var(--chat-sidebar-icon-box);
+  padding:0 12px; border-radius:.5rem; transition:background-color .2s ease;
+  font-size:14px; line-height:1; cursor:pointer;
+}
+.portal-row-menu li:hover{ background:#374151 }
+.portal-row-menu li .ic{ width:18px; height:18px; display:inline-flex }
+.portal-row-menu li.danger{ color:#F78C8C }
+.portal-row-menu li.danger:hover{ background:#422021 }
+
+/* ============= COLLAPSED ============= */
+.sidebar-collapsed .sidebar-header{ border-bottom:none!important }
+.sidebar-collapsed .sidebar-footer{ border-top:none!important }
+
+/* Phòng hờ mọi overflow-x trong cấu trúc */
+#sidebar, #sidebar-shell, #sidebar-scroll, #sidebar-nav, .sidebar-header, .sidebar-footer{ overflow-x:hidden; }
+
+/* --- Hide any accidental scrollbar on the fixed header only --- */
+.sidebar-header{
+  overflow: hidden !important;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.sidebar-header::-webkit-scrollbar{ width:0; height:0; display:none; }
+
+/* Chat text: nén trái nhẹ cho các row không có icon (plain-left) */
+:root{ --sidebar-plain-left-indent: 8px; }
+#sidebar-nav .sidebar-link.is-plain-left{ padding-left: var(--sidebar-plain-left-indent) !important; }
+
+/* Nén cụm đầu nav (chat mới / tìm / lưu trữ) lên trên */
+#sidebar-nav { padding-top: 8px !important; }
+
+/* Logo pin */
+:root{ --sidebar-logo-nudge-x: 1px; }
+#sidebar-header-slot{ flex:0 0 var(--chat-sidebar-icon-box); width:var(--chat-sidebar-icon-box)!important; height:var(--chat-sidebar-icon-box)!important; }
+.sidebar-open #sidebar-logo{ transform: translate(0, var(--icon-nudge-y)); }
+.sidebar-collapsed #sidebar-logo{ transform: translate(var(--sidebar-logo-nudge-x), var(--icon-nudge-y)); }
+#sidebar-header-slot{ width:var(--chat-sidebar-icon-box)!important; height:var(--chat-sidebar-icon-box)!important; display:flex; align-items:center; justify-content:center; }
+#sidebar-logo{ margin:0 auto; transform:translateX(0) translateY(var(--icon-nudge-y)) !important; }
+.sidebar-open #sidebar-logo, .sidebar-collapsed #sidebar-logo{ transform:translateX(0) translateY(var(--icon-nudge-y)) !important; }
+
+/* Pinned quick group */
+.sidebar-quick{
+  position: sticky; position:-webkit-sticky; top:0; z-index:59;
+  background: var(--sidebar-bg); padding-top:8px; padding-bottom:8px; border-bottom:1px solid #2A2A2A;
+}
+#sidebar-nav{ padding-top: 0 !important; }
+
+/* Spacing & title “Đoạn chat” */
+.only-when-open.sidebar-spacer{ height: calc(var(--chat-sidebar-icon-box) * .23) !important; }
+#sidebar-chat-title{ padding-top:2px !important; padding-bottom:0 !important; margin-top:2px !important; margin-bottom:4px !important; min-height:auto; }
+#sidebar-chat-title + a.sidebar-link{ margin-top:0 !important; }

@@ -1,0 +1,337 @@
+{#
+1. Đường dẫn file : src/modules/admin/templates/admin/notify/admin_notify_detail_modal.html
+2. Thời gian sửa : 2025-07-27 06:05
+3. Lý do sửa : Chi tiết thông báo - UX: Chữ "Không hiển thị" màu đỏ, đồng bộ UI/UX hệ thống.
+#}
+
+<!-- ╭─ OVERLAY (click là close modal) ────────────────────────────────╮ -->
+<div id="notify-detail-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ────────────────────────────────────────────────╮ -->
+<div id="notify-detail-modal" data-state="open" class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+    <div class="notify-modal-content duration-75
+                w-full max-w-[98vw] sm:max-w-[480px] min-h-[200px] max-h-[80vh]
+                rounded-[32px] border border-gray-200 bg-white shadow-modal
+                px-0 py-0 flex flex-col font-manrope
+                animate-in zoom-in-95">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-blue-main text-center w-full">
+                    Chi tiết thông báo
+                </h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Xem toàn bộ nội dung thông báo bên dưới!
+                </div>
+            </div>
+            <button id="notify-detail-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center w-10 h-10 rounded-full ring-1 ring-gray-300
+                       hover:ring-blue-900 transition-all bg-white cursor-pointer shadow ms-2 group hover:bg-blue-50 focus:outline-none" aria-label="Đóng">
+                <span class="chip-search-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-search-hover flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- BODY: Chi tiết -->
+        <div class="modal-scroll-area grow overflow-y-auto px-6 pb-6">
+            <div class="flex flex-col h-full w-full text-[14px] text-[#222]">
+                <!-- Nội dung thông báo -->
+                <div class="flex flex-col w-full mt-[5px]">
+                    <label class="block text-blue-main font-semibold mb-1 text-[14px]">Nội dung</label>
+                    <div class="textarea-outer mt-[4px]">
+                        <textarea readonly rows="5"
+                            class="w-full h-full resize-none transition-shadow text-[14px] text-[#222] bg-transparent outline-none border-none"
+                            style="background: transparent; color: #222; font-size: 14px; line-height: 1.5; padding: 14px; min-height:0; max-height:100%; box-shadow: none;">{{ notification.notify_content|e }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Các mục chi tiết -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Gửi cho nhóm</label>
+                        <p class="text-[14px] text-gray-900 m-0">{{ notification.notify_target_roles | join(', ') }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Trạng thái hiển thị</label>
+                        {% if notification.notify_visible %}
+                        <span class="text-[14px] text-green-600 font-medium">Hiển thị</span>
+                        {% else %}
+                        <span class="text-[14px] text-red-600 font-medium">Không hiển thị</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Ngày tạo</label>
+                        <p class="text-[14px] text-gray-900 m-0">
+                            {{ notification.notify_created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Người tạo</label>
+                        {% set creator = notification.created_by %}
+                        {% set display_name = creator.user_display_name or creator.user_name or creator.user_email or
+                        "Không rõ" if creator else "Không rõ" %}
+                        {% set enable_fade = display_name|length > 18 %}
+                        <p class="text-[14px] text-gray-900 m-0">
+                            <span
+                                class="inline-block align-middle max-w-[180px] {% if enable_fade %}display-name{% endif %}"
+                                {% if enable_fade %}title="{{ display_name }}" {% endif %}>
+                                {{ display_name }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="pt-6 flex justify-center">
+                    <button type="button" id="notify-detail-modal-close-btn" class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                               hover:bg-gray-300 transition-opacity duration-75 focus:outline-none
+                               focus:ring-2 focus:ring-gray-300 text-[14px]">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .mobile-drawer-handle {
+        display: none !important;
+    }
+
+    @media (max-width: 540px) {
+        #notify-detail-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important;
+            padding: 0 !important;
+        }
+
+        .notify-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            min-width: 0 !important;
+            border-radius: 28px 28px 0 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+            margin: 0 !important;
+            box-shadow: 0 -8px 40px 0 rgba(44, 46, 60, 0.13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: unset;
+            min-height: 40vh;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn 0.25s cubic-bezier(0.25, 0.8, 0.5, 1) both;
+            z-index: 10000;
+            will-change: transform;
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0;
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    #notify-detail-modal-close .chip-search-hover {
+        display: none;
+    }
+
+    #notify-detail-modal-close:hover .chip-search-normal,
+    #notify-detail-modal-close:focus .chip-search-normal {
+        display: none;
+    }
+
+    #notify-detail-modal-close:hover .chip-search-hover,
+    #notify-detail-modal-close:focus .chip-search-hover {
+        display: flex;
+    }
+
+    #notify-detail-modal-close .chip-search-normal svg,
+    #notify-detail-modal-close .chip-search-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+    }
+
+    #notify-detail-modal-close:active {
+        background: #e8f0fe;
+    }
+
+    #notify-detail-modal-close {
+        z-index: 10;
+    }
+
+    @media (max-width:540px) {
+        #notify-detail-modal>div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent;
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px;
+        transition: background 0.2s;
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px;
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin;
+    }
+
+    /* --- TEXTAREA OUTER + CUSTOM SCROLLBAR --- */
+    .textarea-outer {
+        border: 1.5px solid #9ca3af;
+        border-radius: 20px;
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-shadow: none;
+        padding: 0;
+        position: relative;
+        height: 120px;
+        min-height: 120px;
+        max-height: 120px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+    }
+
+    /* Viền xanh khi focus/hover, KHÔNG còn shadow xanh nhạt */
+    .textarea-outer:focus-within,
+    .textarea-outer:hover {
+        border-color: #1e3a8a !important;
+        box-shadow: none !important;
+    }
+
+    .textarea-outer textarea:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .textarea-outer textarea {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        width: 100%;
+        height: 100%;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 14px !important;
+        font-size: 14px;
+        color: #222;
+        line-height: 1.5;
+        box-shadow: none !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        transition: background 0.2s;
+        box-sizing: border-box;
+        resize: none;
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar {
+        width: 7px;
+        background: transparent;
+        border-radius: 8px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .textarea-outer textarea:hover::-webkit-scrollbar,
+    .textarea-outer textarea:focus::-webkit-scrollbar {
+        opacity: 1;
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 8px;
+        border: 2px solid #fff;
+        min-height: 32px;
+        opacity: 1;
+        transition: background 0.2s;
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar-thumb:hover {
+        background: #0a2250;
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 8px;
+    }
+
+    .textarea-outer textarea {
+        scrollbar-width: thin;
+        scrollbar-color: #1e3a8a #fff;
+    }
+
+    .textarea-outer textarea:not(:hover):not(:focus) {
+        scrollbar-width: none;
+    }
+
+    .textarea-outer textarea::placeholder {
+        color: #374151;
+        opacity: 1;
+        font-size: 14px;
+    }
+
+    /* --- MÀU XANH CHUẨN --- */
+    .text-blue-main {
+        color: #1e3a8a !important;
+    }
+
+    /* --- MÀU ĐỎ CHO "KHÔNG HIỂN THỊ" --- */
+    .text-red-600 {
+        color: #dc2626 !important;
+    }
+
+    /* -- CHỐNG TRÀN CHO TÊN NGƯỜI TẠO -- */
+    .display-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+</style>

@@ -1,0 +1,28 @@
+<!-- file: src/modules/chat/templates/partials/chat_sidebar_list_fragment.html -->
+<!-- updated: 2025-08-19 -->
+<div id="sidebar-chat-list" data-count="{{ chats|length }}">
+    {% if chats and chats|length %}
+    {% for c in chats %}
+    <a href="/chat/{{ c.chat_id }}" hx-get="/chat/{{ c.chat_id }}" hx-target="#chat-root" hx-select="#chat-root"
+        hx-swap="outerHTML" hx-push-url="true"
+        class="sidebar-link only-when-open is-plain-left has-row-actions group relative flex items-center justify-between w-full {% if c.chat_id == active_chat_id %} bg-[#27272a] border border-gray-700 {% endif %}"
+        aria-label="{{ c.chat_title or 'Đoạn chat' }}" data-chat-id="{{ c.chat_id }}">
+        <div class="flex items-center min-w-0">
+            <span class="sidebar-label truncate">
+                {{ c.chat_title or '(Chưa có tiêu đề)' }}
+            </span>
+        </div>
+        <div class="row-actions">
+            <button type="button" class="row-more icon-btn hover:bg-[#374151] transition" aria-label="Tùy chọn"
+                aria-haspopup="menu" aria-expanded="false" data-rowmenu="open">
+                <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                    {% include "partials/icons/chat_bars_left/icon_bars_left_more.svg" %}
+                </span>
+            </button>
+        </div>
+    </a>
+    {% endfor %}
+    {% else %}
+    <div class="only-when-open text-xs text-gray-400 px-2 py-2">Chưa có đoạn chat nào.</div>
+    {% endif %}
+</div>

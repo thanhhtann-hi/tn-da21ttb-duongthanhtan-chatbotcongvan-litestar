@@ -1,0 +1,19 @@
+<!-- 📄 src/modules/admin/templates/admin/admin_home.html -->
+<!-- 🕒 Last updated: 2025-07-08 01:30 -->
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block header %}Trang chủ{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <h2 class="text-xl font-semibold text-gray-800">Chào mừng đến trang quản trị</h2>
+    <p class="text-gray-600">Tại đây bạn có thể:</p>
+    <ul class="list-disc list-inside space-y-2 text-gray-700">
+        <li>Quản lý người dùng và phân quyền</li>
+        <li>Cấu hình hệ thống (bảo trì, domain, đăng ký)</li>
+        <li>Xem báo cáo, thống kê hoạt động</li>
+    </ul>
+    <!-- TODO: Thêm các widget thống kê nhanh -->
+</div>
+{% endblock %}

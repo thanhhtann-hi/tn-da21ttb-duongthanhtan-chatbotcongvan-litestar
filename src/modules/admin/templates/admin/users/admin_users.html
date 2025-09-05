@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/users/admin_users.html -->
+<!-- updated: 2025-08-24 -->
+<!-- note: full-page wrapper cho trang "Quản lý người dùng"; nhúng fragment để HTMX tự thay thế -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý người dùng{% endblock %}
+{% block header %}Quản lý người dùng{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-users-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/users/admin_users_fragment.html" %}
+    </div>
+</div>
+{% endblock %}

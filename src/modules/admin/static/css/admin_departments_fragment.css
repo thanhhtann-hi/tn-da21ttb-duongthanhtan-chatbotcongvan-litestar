@@ -1,0 +1,216 @@
+/* file: src/modules/admin/static/css/admin_departments_fragment.css
+   updated: 2025-08-25 (v1.2 – colgroup=100% support; hard ellipsis incl. children; url-ellipsis; no h-scroll) */
+
+/* ────────────────────────────────────────────────────────────────
+   [Toolbar]
+   ──────────────────────────────────────────────────────────────── */
+#departments-search-form{ max-width: 350px; }
+@media (max-width:1280px){ #departments-search-form{ max-width: 520px; } }
+@media (max-width:1100px){ #departments-search-form{ max-width: 480px; } }
+@media (max-width:980px){  #departments-search-form{ max-width: 420px; } }
+
+#btn-departments-export-csv .icon-csv-hover,
+#btn-departments-sort .icon-arrow-hover{ opacity:0; transition:opacity .15s; pointer-events:none; }
+#btn-departments-export-csv .icon-csv-default,
+#btn-departments-sort .icon-arrow-default{ opacity:1; transition:opacity .15s; }
+#btn-departments-export-csv:hover .icon-csv-hover,
+#btn-departments-export-csv:focus .icon-csv-hover{ opacity:1; }
+#btn-departments-export-csv:hover .icon-csv-default,
+#btn-departments-export-csv:focus .icon-csv-default{ opacity:0; }
+#btn-departments-sort:hover .icon-arrow-hover,
+#btn-departments-sort:focus .icon-arrow-hover{ opacity:1; }
+#btn-departments-sort:hover .icon-arrow-default,
+#btn-departments-sort:focus .icon-arrow-default{ opacity:0; }
+
+/* Dropdown (Sort) */
+#menu-departments-sort{
+  background:#fff; border:1px solid #E5E7EB; border-radius:12px;
+  box-shadow:0 12px 36px rgba(30,41,59,.14), 0 2px 8px rgba(30,41,59,.10);
+  overflow:hidden; min-width:360px;
+}
+#menu-departments-sort .menu-item{
+  appearance:none; width:100%; text-align:left; border:0; background:transparent; cursor:pointer;
+  padding:10px 12px; font-size:14px; line-height:1.2; color:#0f172a;
+  transition: background-color .12s, color .12s; border-radius:10px; white-space:nowrap;
+}
+#menu-departments-sort .menu-item:hover{ background:#DBEAFE; }
+#menu-departments-sort .menu-item:active{ background:#BFDBFE; }
+#btn-departments-sort ~ #menu-departments-sort{ top: calc(100% + 8px); right: 0; }
+
+/* Sort label compact on narrow screens (match .sort-prefix in HTML) */
+@media (max-width:920px){ .sort-prefix{ display:none; } }
+
+/* ────────────────────────────────────────────────────────────────
+   [Table & rows – hard ellipsis & no horizontal scroll]
+   ──────────────────────────────────────────────────────────────── */
+#admin-departments-container{ overflow: hidden; } /* chống scroll ngang toàn trang */
+
+#admin-departments-table{
+  table-layout:fixed; position:relative; z-index:0; width:100%; max-width:100%;
+}
+
+/* Mọi TH/TD đều ellipsis */
+#admin-departments-table thead th,
+#admin-departments-table tbody td{
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:top;
+}
+
+/* Cho phép phần tử con co lại → ellipsis hoạt động đúng */
+#admin-departments-table th *,
+#admin-departments-table td *{ min-width:0; }
+
+/* Anchor & dòng phụ đều bị ellipsis */
+#admin-departments-table a,
+#admin-departments-table .url-ellipsis,
+#admin-departments-table td > .text-xs{
+  display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+
+#admin-departments-table tbody tr{ transition:background-color .12s; }
+#admin-departments-table tbody tr:hover{ background:#EAF1FF; }
+
+/* Giữ icon/checkbox ở cột đầu/cuối không bị vỡ layout (kể cả khi thiếu colgroup class) */
+#admin-departments-table .col-select,
+#admin-departments-table .col-actions{ width:1%; white-space:nowrap; }
+
+/* Filler rows */
+#departments-filler{ pointer-events:none; }
+#departments-filler tr:hover{ background:#fff !important; }
+.departments-filler-row td{ height:100%; }
+
+/* Cell util */
+#admin-departments-table .text-ellipsis{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ────────────────────────────────────────────────────────────────
+   [Checkbox – scoped]
+   ──────────────────────────────────────────────────────────────── */
+#admin-departments-container .cb{ display:inline-flex; align-items:center; justify-content:center; position:relative; cursor:pointer; }
+#admin-departments-container .cb input{ appearance:none; -webkit-appearance:none; width:0; height:0; margin:0; padding:0; border:0; }
+#admin-departments-container .cb .cb-box{
+  width:22px; height:22px; border-radius:8px; background:#fff; border:1.5px solid #9DB7FF;
+  box-shadow:0 1px 2px rgba(30,58,138,.08) inset; display:inline-flex; align-items:center; justify-content:center;
+  transition:background-color .14s, border-color .14s, box-shadow .14s, transform .06s;
+}
+#admin-departments-container .cb:hover .cb-box{ border-color:#7AA2FF; box-shadow:0 0 0 3px rgba(59,130,246,.08); }
+#admin-departments-container .cb input:focus + .cb-box{ box-shadow:0 0 0 3px rgba(30,58,138,.18); border-color:#1E3A8A; }
+#admin-departments-container .cb input:checked + .cb-box{
+  background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06); color:#fff; position:relative;
+}
+#admin-departments-container .cb input:checked + .cb-box::after{
+  content:""; position:absolute; left:50%; top:46%;
+  width:6px; height:12px; transform:translate(-50%,-50%) rotate(45deg);
+  border:2px solid currentColor; border-top:0; border-left:0;
+}
+#admin-departments-container .cb input:indeterminate + .cb-box{ background:#1E3A8A; border-color:#1E3A8A; color:#fff; position:relative; }
+#admin-departments-container .cb input:indeterminate + .cb-box::after{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:12px; height:2px; background:#fff; border-radius:1px;
+}
+
+/* Header checkbox states (support multiple ids) */
+#admin-departments-container #sel-all-departments:indeterminate + .cb-box,
+#admin-departments-container #dept-sel-all:indeterminate + .cb-box,
+#admin-departments-container #sel-all:indeterminate + .cb-box,
+#admin-departments-container #sel-all-departments-wrap.is-indeterminate .cb-box,
+#admin-departments-container #dept-sel-all-wrap.is-indeterminate .cb-box,
+#admin-departments-container #sel-all-wrap.is-indeterminate .cb-box{
+  background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+}
+#admin-departments-container #sel-all-departments:indeterminate + .cb-box::after,
+#admin-departments-container #dept-sel-all:indeterminate + .cb-box::after,
+#admin-departments-container #sel-all:indeterminate + .cb-box::after,
+#admin-departments-container #sel-all-departments-wrap.is-indeterminate .cb-box::after,
+#admin-departments-container #dept-sel-all-wrap.is-indeterminate .cb-box::after,
+#admin-departments-container #sel-all-wrap.is-indeterminate .cb-box::after{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:12px; height:2px; background:#fff; border-radius:1px;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   [Row actions]
+   ──────────────────────────────────────────────────────────────── */
+#admin-departments-container .action-btn{
+  width:30px; height:30px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center;
+  background:transparent; border:none; box-shadow:none; transition:background-color .12s, box-shadow .12s, transform .05s;
+}
+#admin-departments-container .action-btn:hover{ background:#EAF1FF; box-shadow:0 0 0 1px #7AA2FF inset, 0 1px 2px rgba(0,0,0,.06); }
+#admin-departments-container .action-btn:active{ transform:scale(.98); }
+#admin-departments-container .action-btn svg{ width:18px; height:18px !important; display:block; }
+
+#admin-departments-container .action-btn[aria-disabled="true"]{ cursor:not-allowed; }
+#admin-departments-container .action-btn[aria-disabled="true"]:hover{ background:transparent; box-shadow:none; }
+
+/* Scoped SVG utilities */
+#admin-departments-container .w-5.h-5{ width:20px; height:20px; line-height:0; }
+#admin-departments-container .w-5.h-5 > svg,
+#admin-departments-container .w-5.h-5 svg{ width:100% !important; height:100% !important; }
+#admin-departments-container .w-\[18px\].h-\[18px\]{ width:18px; height:18px; line-height:0; }
+#admin-departments-container .w-\[18px\].h-\[18px\] > svg,
+#admin-departments-container .w-\[18px\].h-\[18px\] svg{ width:100% !important; height:100% !important; }
+
+/* ────────────────────────────────────────────────────────────────
+   [Pagination]
+   ──────────────────────────────────────────────────────────────── */
+.pager-input{
+  width:60px; height:45px; border-radius:12px; border:1px solid #E5E7EB; background:#fff;
+  text-align:center; font-weight:700; color:#0f172a;
+  transition:border-color .12s, box-shadow .12s;
+}
+.pager-input:focus{ outline:none; border-color:#7AA2FF; box-shadow:0 0 0 3px rgba(59,130,246,.14); }
+.pg-square{ width:45px; height:45px; border-radius:12px; }
+
+#admin-departments-container .w-\[14px\].h-\[14px\]{ width:14px; height:14px; line-height:0; display:inline-flex; align-items:center; justify-content:center; }
+#admin-departments-container .w-\[14px\].h-\[14px\] > svg,
+#admin-departments-container .w-\[14px\].h-\[14px\] svg{ width:100% !important; height:100% !important; display:block; }
+
+#departments-pagination .icon-first-hover{ opacity:0; transition:opacity .15s; }
+#departments-pagination .icon-first-default{ opacity:1; transition:opacity .15s; }
+#departments-pagination .group:hover .icon-first-hover,
+#departments-pagination .group:focus .icon-first-hover,
+#departments-pagination .group:focus-visible .icon-first-hover{ opacity:1; }
+#departments-pagination .group:hover .icon-first-default,
+#departments-pagination .group:focus .icon-first-default,
+#departments-pagination .group:focus-visible .icon-first-default{ opacity:0; }
+
+/* Khi mở bulk bar, ẩn nhóm nút giữa để tiết kiệm chỗ (tuỳ layout) */
+#admin-departments-container.bulk-open #departments-pagination > :nth-child(2){ display:none !important; }
+
+/* ────────────────────────────────────────────────────────────────
+   [Bulk bar]
+   ──────────────────────────────────────────────────────────────── */
+#departments-bulk-bar{
+  position:fixed; left:0; right:0; bottom:16px;
+  z-index:1200; opacity:0; pointer-events:none;
+  transform:translateY(16px);
+  transition:opacity .16s ease, transform .16s ease;
+}
+#departments-bulk-bar.is-active{ opacity:1; transform:translateY(0); }
+#departments-bulk-bar .bulk-inner{
+  width:100%; max-width:100%; margin:0 auto; padding-left:1rem; padding-right:1rem;
+  display:flex; justify-content:center;
+}
+#departments-bulk-bar .bulk-shell{
+  background:#fff; border:1px solid #dbe3ff; border-radius:9999px;
+  box-shadow:0 10px 25px rgba(30,58,138,.12), 0 1px 2px rgba(0,0,0,.04);
+  padding:8px; display:flex; gap:8px; align-items:center; pointer-events:auto;
+}
+#departments-bulk-bar .bulk-btn{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:9999px;
+  background:#F5F8FF; border:1px solid #cfe0ff; transition:background-color .12s, border-color .12s, transform .06s;
+}
+#departments-bulk-bar .bulk-btn:hover{ background:#EAF1FF; border-color:#7AA2FF; }
+#departments-bulk-bar .bulk-btn:active{ transform:scale(.98); }
+#departments-bulk-bar .bulk-btn .label{ color:#1E3A8A; font-weight:600; }
+#departments-bulk-bar .bulk-btn .icon svg{ width:18px; height:18px; display:block; }
+
+/* Disabled state cho bulk */
+#departments-bulk-bar .bulk-btn.is-disabled,
+#departments-bulk-bar .bulk-btn[disabled]{ opacity:.55; cursor:not-allowed; filter:saturate(.75); }
+#departments-bulk-bar .bulk-btn.is-disabled:hover{ background:#F5F8FF; border-color:#cfe0ff; }
+
+/* ────────────────────────────────────────────────────────────────
+   [Responsive tweaks]
+   ──────────────────────────────────────────────────────────────── */
+@media (max-width:640px){
+  #menu-departments-sort{ min-width: 280px; }
+}

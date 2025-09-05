@@ -1,0 +1,12 @@
+/* 📁 src/static/css/maintenance.css */
+/* 🕒 Last updated: 2025-07-08 20:50 */
+/* 📌 Scale icon và xử lý màu mặc định */
+.icon-maintenance svg {
+    width: 96px;
+    height: 96px;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+    color: #053484;
+    /* Blue đậm chuẩn hệ thống */
+}

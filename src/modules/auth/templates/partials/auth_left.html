@@ -1,0 +1,44 @@
+<!-- 📄 src/modules/auth/templates/partials/auth_left.html -->
+<!-- 🕒 Last updated: 2025-07-04 21:05 -->
+<!-- 📝
+     • Căn giữa tuyệt đối block text (X-Y)
+     • Sửa line-height block1-line1/block2-line1 → leading-tight (ổn định chiều cao)
+-->
+
+<div class="w-full h-screen bg-[#eaf2ff] font-manrope select-none relative">
+
+    <!-- ▸ Logo (desktop) --------------------------------------------------->
+    <div
+        class="absolute top-0 left-0 pl-[22px] pt-[12px] text-lg md:text-xl font-extrabold text-[#053484] tracking-wide">
+        TvuMoE
+    </div>
+
+    <!-- ▸ Dynamic text – perfectly centered ------------------------------->
+    <div class="absolute inset-0 flex items-center justify-center">
+        <div id="text-area" class="w-full max-w-[48rem]">
+
+            <!-- ▸ Block 1 --------------------------------------------------->
+            <div id="block1" class="flex flex-col text-left opacity-100 transition-opacity duration-700 ease-in-out">
+                <div id="block1-line1" class="text-3xl md:text-4xl font-semibold leading-tight text-[#053484] mb-2">
+                    Một câu lệnh, vạn thông tin
+                </div>
+                <div class="text-2xl md:text-3xl leading-[1.5] text-[#053484]/80 max-w-[100rem]">
+                    <span id="block1-line2"></span>
+                    <span id="dot1" class="dot"></span>
+                </div>
+            </div>
+
+            <!-- ▸ Block 2 (overlay) ----------------------------------------->
+            <div id="block2"
+                class="absolute top-0 left-0 flex flex-col text-left opacity-0 transition-opacity duration-700 ease-in-out">
+                <div id="block2-line1" class="text-3xl md:text-4xl font-semibold leading-tight text-[#053484] mb-2">
+                </div>
+                <div class="text-2xl md:text-3xl leading-[1.5] text-[#053484]/80 max-w-[100rem]">
+                    <span id="block2-line2"></span>
+                    <span id="dot2" class="dot"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

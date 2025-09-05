@@ -1,0 +1,36 @@
+<!-- 📄 src/modules/home/templates/partials/header.html -->
+<!-- 🕒 Last updated: 2025-07-09 09:50 -->
+<!-- 📝 (Chỉ thêm thuộc tính aria & class nhỏ để cải thiện a11y) -->
+<header role="banner" class="bg-[#053484] text-white py-4">
+    <!-- Skip link for screen readers -->
+    <a href="#main-content" class="sr-only focus:not-sr-only px-4 py-2 bg-white text-[#053484] rounded">
+        Bỏ qua menu
+    </a>
+
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 id="site-title" class="text-xl font-bold">DocAIx Chatbot Công Văn</h1>
+
+        <nav role="navigation" aria-label="Main navigation" class="flex items-center gap-4">
+            <a href="/" class="hover:underline" aria-current="{% if page == 'home' %}page{% endif %}">
+                Trang chủ
+            </a>
+
+            {% if user %}
+            <div class="flex items-center gap-2" aria-label="User menu">
+                {% set avatar_src = (
+                user.settings.setting_user_avatar_url
+                if user.settings and user.settings.setting_user_avatar_url
+                else '/static/images/img_user.webp'
+                ) %}
+                <img src="{{ avatar_src }}" alt="Ảnh đại diện của {{ user.user_email }}"
+                    class="w-8 h-8 rounded-full border border-white object-cover" role="img" />
+                <span class="text-sm">{{ user.user_email }}</span>
+            </div>
+            <a href="/auth/logout" class="hover:underline">Đăng xuất</a>
+            {% else %}
+            <a href="/auth/login" class="hover:underline">Đăng nhập</a>
+            <a href="/auth/register" class="hover:underline">Đăng ký</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>

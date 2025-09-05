@@ -1,0 +1,17 @@
+<!-- file: src/modules/chat/templates/partials/chat_notify_detail_modal.html --> <!-- updated: 2025-08-15 --> <!-- note: responsive modal co sát mobile; giảm độ đậm heading --> <!-- [1] Modal Root (HTMX swap) -->
+<div id="chat-modal-root" hx-swap-oob="true"> <!-- [2] Overlay -->
+    <div id="chat-modal-overlay" class="fixed inset-0 bg-black/70 z-[2147483646] backdrop-blur-[2px]" aria-hidden="false" tabindex="-1"> </div> <!-- [3] Wrapper -->
+    <div id="chat-modal" class="fixed inset-0 flex items-center justify-center z-[2147483647] isolation-auto focus:outline-none" role="dialog" aria-modal="true" aria-labelledby="chat-modal-title" tabindex="-1"> <!-- [4] Card -->
+        <div class="chat-modal-card w-full max-w-[94vw] sm:max-w-[520px] max-h-[80vh] rounded-[24px] sm:rounded-3xl border border-gray-700 bg-[#1F1F1F] shadow-modal flex flex-col overflow-hidden animate-in zoom-in-95 transition-all duration-100 ease-out"> <!-- [5] Header -->
+            <div class="flex items-center justify-center h-[56px] px-4 border-b border-gray-700">
+                <h2 id="chat-modal-title" class="text-lg font-medium text-white"> Thông báo </h2>
+            </div> <!-- [6] Body -->
+            <div class="px-5 py-[18px] flex flex-col gap-y-[10px] items-start content-start auto-rows-min max-h-[60vh] overflow-y-auto"> <!-- [6.1] Người gửi -->
+                <div class="text-[15px] leading-7 text-gray-200"> <span class="text-gray-400">Người gửi:</span> <span class="ml-1 inline-block bg-[#003A70] text-white text-xs font-normal px-2.5 py-[5px] rounded-full"> {{ sender_name }} </span> </div> <!-- [6.2] Nội dung -->
+                <div class="text-[15px] leading-7 text-gray-200 text-justify" lang="vi"> {% if paragraphs %} {% for p in paragraphs %} <p class="mb-[10px] last:mb-0 break-words hyphens-auto text-wrap"> {{ p | replace('\n', ' ') }} </p> {% endfor %} {% else %} <p class="mb-0 break-words hyphens-auto text-wrap"> {{ (normalized_content or notification.notify_content) | replace('\n', ' ') }} </p> {% endif %} </div> <!-- [6.3] Thời gian -->
+                <div class="text-[15px] leading-7 text-gray-200"> <span class="text-gray-400">Thời gian:</span> <span class="ml-1 text-gray-300"> {{ notification.notify_created_at.strftime('%d/%m/%Y %H:%M') }} </span> </div>
+            </div> <!-- [7] Footer / Đóng -->
+            <div class="flex items-center justify-end gap-2 p-3 border-t border-gray-700"> <button id="chat-modal-close-btn" type="button" class="btn-primary text-[15px] px-4 py-[8px] rounded-full"> Đóng </button> </div>
+        </div>
+    </div>
+</div>

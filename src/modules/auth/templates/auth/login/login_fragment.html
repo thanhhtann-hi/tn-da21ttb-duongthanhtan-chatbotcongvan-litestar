@@ -1,0 +1,102 @@
+<!-- 📄 src/modules/auth/templates/auth/login/login_fragment.html -->
+<!-- 🕒 Last updated: 2025-07-09 06:30 – Chuẩn hoá hiển thị theo system_login + domain + register -->
+
+<title hx-swap-oob="true">TvuMoE - Đăng nhập</title>
+
+<section class="space-y-5 px-6 text-[90%]">
+
+    <!-- ▸ Tiêu đề -->
+    <header class="text-center space-y-1">
+        <h2 class="text-2xl font-semibold">Đăng nhập</h2>
+        {% if show_register_link %}
+        <p class="text-sm">
+            Chưa có tài khoản?
+            <a hx-get="/auth/register" hx-target="#form-container" hx-push-url="true"
+                class="text-blue-600 hover:underline">
+                Đăng ký miễn phí
+            </a>
+        </p>
+        {% endif %}
+    </header>
+
+    <!-- ▸ Form Email / Password -->
+    {% if show_password_form %}
+    <form autocomplete="off" class="space-y-4" hx-post="/auth/login" hx-target="#msg" hx-swap="innerHTML">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+        <!-- EMAIL -->
+        <div class="relative">
+            <input id="email" name="email" type="email" placeholder=" " required autocomplete="off" class="peer w-full rounded-full border border-gray-300 px-5 py-2.5
+                          placeholder-transparent focus:outline-none focus:border-[#053484]" />
+            <label for="email" class="absolute left-5 -top-3 bg-white px-[4px] text-xs text-gray-500 transition-all
+                          peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400
+                          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#053484]">
+                Địa chỉ email
+            </label>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="relative">
+            <input id="password" name="password" type="password" placeholder=" " required autocomplete="off" class="peer w-full rounded-full border border-gray-300 px-5 py-2.5
+                          placeholder-transparent focus:outline-none focus:border-[#053484]" />
+            <label for="password" class="absolute left-5 -top-3 bg-white px-[4px] text-xs text-gray-500 transition-all
+                          peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400
+                          peer-focus:-top-2 peer-focus:text-xs peer-focus:text-[#053484]">
+                Mật khẩu
+            </label>
+        </div>
+
+        <!-- Quên mật khẩu -->
+        <p class="text-right text-sm">
+            <a href="/auth/forgot-password" class="text-blue-600 hover:underline">
+                Quên mật khẩu?
+            </a>
+        </p>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="w-full rounded-full bg-black py-2.5 text-white font-medium hover:opacity-90">
+            Đăng nhập
+        </button>
+    </form>
+
+    <div id="msg" class="text-center text-red-600 text-sm"></div>
+    {% endif %}
+
+    {% if show_password_form %}
+    <div class="flex items-center gap-3 text-xs text-gray-500 select-none">
+        <hr class="flex-grow border-t border-gray-300" />
+        <span>HOẶC</span>
+        <hr class="flex-grow border-t border-gray-300" />
+    </div>
+    {% endif %}
+
+    <!-- ▸ OAuth buttons luôn hiển thị -->
+    <div class="space-y-3">
+        <!-- Google -->
+        <a href="/auth/oauth/google" class="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-full border border-gray-300
+                  py-2.5 px-4 hover:bg-gray-50">
+            <img src="/static/images/icon_google.webp" class="w-[17px] h-[17px]" alt="Google" />
+            <span class="justify-self-center font-medium text-gray-700">
+                Đăng nhập với Google
+            </span>
+            <span class="w-[16px] h-[16px]"></span>
+        </a>
+
+        <!-- Microsoft -->
+        <a href="/auth/oauth/microsoft" class="grid grid-cols-[auto_1fr_auto] items-center gap-3 w-full rounded-full border border-gray-300
+                  py-2.5 px-4 hover:bg-gray-50">
+            <img src="/static/images/icon_microsoft.webp" class="w-[17px] h-[17px]" alt="Microsoft" />
+            <span class="justify-self-center font-medium text-gray-700">
+                Đăng nhập với Microsoft
+            </span>
+            <span class="w-[16px] h-[16px]"></span>
+        </a>
+    </div>
+
+    <!-- ▸ Điều khoản -->
+    <footer class="text-center text-xs text-gray-500">
+        <a href="/legal/terms" class="hover:underline">Điều khoản sử dụng</a>
+        <span class="mx-2 select-none">|</span>
+        <a href="/legal/privacy" class="hover:underline">Chính sách riêng tư</a>
+    </footer>
+</section>

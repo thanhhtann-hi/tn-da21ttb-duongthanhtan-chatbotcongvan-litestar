@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/departments/admin_departments.html -->
+<!-- updated: 2025-08-25 -->
+<!-- note: full-page wrapper cho trang "Quản lý phòng ban"; nhúng fragment để HTMX tự thay thế -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý phòng ban{% endblock %}
+{% block header %}Quản lý phòng ban{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-departments-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/departments/admin_departments_fragment.html" %}
+    </div>
+</div>
+{% endblock %}

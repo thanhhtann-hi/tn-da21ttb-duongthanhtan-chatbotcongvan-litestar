@@ -1,0 +1,336 @@
+<!-- file: src/modules/admin/templates/admin/documents/admin_documents_detail_modal.html -->
+<!-- updated: 2025-08-25 (v1.0.0 – read-only; copy nhanh; giữ phong cách UI hiện tại) -->
+<!-- note: Modal xem chi tiết văn bản (read-only). Không submit, chỉ đóng. -->
+
+{% set D = row or doc or document or item or d %}
+{% if not D %}{% set D = {} %}{% endif %}
+
+<!-- ╭─ OVERLAY (click = close) ───────────────────────────────────────╮ -->
+<div id="docs-detail-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ─────────────────────────────────────────────────╮ -->
+<div id="docs-detail-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="docs-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[760px] max-h-[88vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-blue-main text-center w-full">Chi tiết văn bản</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    <span class="font-semibold">{{ D.doc_title or '(Không tiêu đề)' }}</span>
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="docs-detail-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-x-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-x-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- BODY (scroll) -->
+        <div class="modal-scroll-area grow overflow-y-auto px-6 pb-5 pt-3 min-h-0 text-[14px] text-[#222]">
+
+            <!-- Hàng 1: ID + Trạng thái -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start gap-2">
+                    <div class="min-w-0">
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Doc ID</label>
+                        <code id="doc-id-text" class="text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded break-all">{{ D.doc_id or '—' }}</code>
+                    </div>
+                    {% if D.doc_id %}
+                    <button type="button" class="btn-ghost-xs copy-btn" data-copy="{{ D.doc_id }}">Sao chép</button>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Trạng thái</label>
+                    <span class="status-pill
+            {% if D.doc_status=='reviewed' %}status-pill--green
+            {% elif D.doc_status=='routed' %}status-pill--indigo
+            {% elif D.doc_status=='new' %}status-pill--yellow
+            {% else %}status-pill--gray{% endif %}">
+                        {{ D.doc_status or 'new' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Hàng 2: Chat -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="flex items-start gap-2 min-w-0">
+                    <div class="min-w-0">
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Phiên chat</label>
+                        {% if D.chat %}
+                        <div class="font-medium text-gray-900 leading-tight line-clamp-2 break-words">{{ D.chat.chat_title or '—' }}</div>
+                        <div class="text-xs text-gray-500 break-all">{{ D.doc_chat_id }}</div>
+                        {% elif D.doc_chat_id %}
+                        <div class="text-gray-900">—</div>
+                        <div class="text-xs text-gray-500 break-all">{{ D.doc_chat_id }}</div>
+                        {% else %}
+                        <div class="text-gray-500">—</div>
+                        {% endif %}
+                    </div>
+                    {% if D.doc_chat_id %}
+                    <button type="button" class="btn-ghost-xs copy-btn" data-copy="{{ D.doc_chat_id }}">Sao chép</button>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Tiêu đề</label>
+                    <p class="text-gray-900 m-0 font-medium break-words">{{ D.doc_title or '(Không tiêu đề)' }}</p>
+                </div>
+            </div>
+
+            <!-- Hàng 3: Đường dẫn file -->
+            <div class="grid grid-cols-1 gap-3 mt-4">
+                <div class="flex items-start gap-2 min-w-0">
+                    <div class="min-w-0">
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Đường dẫn tệp</label>
+                        <div class="text-gray-900 break-all">{{ D.doc_file_path or '—' }}</div>
+                    </div>
+                    {% if D.doc_file_path %}
+                    <button type="button" class="btn-ghost-xs copy-btn" data-copy="{{ D.doc_file_path }}">Sao chép</button>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-start gap-2 min-w-0">
+                    <div class="min-w-0">
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Đường dẫn OCR</label>
+                        <div class="text-gray-900 break-all">{{ D.doc_ocr_text_path or '—' }}</div>
+                    </div>
+                    {% if D.doc_ocr_text_path %}
+                    <button type="button" class="btn-ghost-xs copy-btn" data-copy="{{ D.doc_ocr_text_path }}">Sao chép</button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hàng 4: Thời gian -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Tạo lúc</label>
+                    <p class="text-gray-900 m-0">
+                        {{ (D.doc_created_at).astimezone().strftime('%d/%m/%Y %H:%M') if D.doc_created_at else '—' }}
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Cập nhật</label>
+                    <p class="text-gray-900 m-0">
+                        {{ (D.doc_updated_at or D.doc_created_at).astimezone().strftime('%d/%m/%Y %H:%M') if (D.doc_updated_at or D.doc_created_at) else '—' }}
+                    </p>
+                </div>
+            </div>
+
+            {% if D.doc_note %}
+            <div class="flex flex-col w-full mt-4">
+                <label class="block text-blue-main font-semibold mb-1 text-[14px]">Ghi chú</label>
+                <div class="textarea-outer mt-[4px]">
+                    <textarea readonly rows="4"
+                        class="w-full h-full resize-none transition-shadow text-[14px] text-[#222] bg-transparent outline-none border-none"
+                        style="background:transparent;color:#222;font-size:14px;line-height:1.5;padding:14px;min-height:0;max-height:100%;box-shadow:none;">{{ D.doc_note }}</textarea>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- FOOTER -->
+        <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+            <div class="flex justify-center">
+                <button type="button" id="docs-detail-modal-close-btn"
+                    class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                       hover:bg-gray-300 transition-opacity duration-75 focus:outline-none
+                       focus:ring-2 focus:ring-gray-300 text-[14px]">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-blue-main {
+        color: #1e3a8a !important
+    }
+
+    /* Close icon hover swap */
+    #docs-detail-modal-close .chip-x-hover {
+        display: none
+    }
+
+    #docs-detail-modal-close:hover .chip-x-normal,
+    #docs-detail-modal-close:focus .chip-x-normal {
+        display: none
+    }
+
+    #docs-detail-modal-close:hover .chip-x-hover,
+    #docs-detail-modal-close:focus .chip-x-hover {
+        display: flex
+    }
+
+    #docs-detail-modal-close .chip-x-normal svg,
+    #docs-detail-modal-close .chip-x-hover svg {
+        width: 10px;
+        height: 10px;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    /* Scrollbars */
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    /* Ghost tiny button */
+    .btn-ghost-xs {
+        height: 26px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 600;
+        background: #fff;
+        color: #1e3a8a;
+        border: 1px solid #c7d2fe;
+    }
+
+    .btn-ghost-xs:hover {
+        border-color: #1e3a8a;
+        background: #eff6ff
+    }
+
+    /* Read-only textarea */
+    .textarea-outer {
+        border: 1.5px solid #9ca3af;
+        border-radius: 20px;
+        background: #fff;
+        transition: border-color .2s, box-shadow .2s;
+        height: 120px;
+        min-height: 120px;
+        max-height: 160px;
+        overflow: hidden;
+        display: flex;
+    }
+
+    .textarea-outer:focus-within,
+    .textarea-outer:hover {
+        border-color: #1e3a8a !important
+    }
+
+    /* Status pills (reuse same palette như list) */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        border: 1px solid transparent
+    }
+
+    .status-pill--green {
+        background: #ecfdf5;
+        color: #065f46;
+        border-color: #a7f3d0
+    }
+
+    .status-pill--indigo {
+        background: #e0e7ff;
+        color: #3730a3;
+        border-color: #c7d2fe
+    }
+
+    .status-pill--yellow {
+        background: #fef9c3;
+        color: #7c2d12;
+        border-color: #fde68a
+    }
+
+    .status-pill--gray {
+        background: #f3f4f6;
+        color: #374151;
+        border-color: #e5e7eb
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #docs-detail-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important
+        }
+
+        .docs-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            will-change: transform;
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>

@@ -1,0 +1,398 @@
+/* file: src/modules/admin/static/css/admin_notify_fragment.css */
+/* updated: 2025-09-03 (v5.10.2)
+   - Mobile: A/D = 50/50, A ellipsis; D tabular-nums + left align
+   - Pagination 45px, pager trong card: padding đều, không tạo scroll
+   - Toolbar spacing đồng bộ
+   - Filler rows: vô hiệu tương tác & cao bằng data row (py-2, line-height 1.25)
+   - “Về trang 1”: icon đen/xanh switch khi hover/focus
+   - Ẩn Prev/Next (pg-center-area) khi bulk bar mở
+   - Dọn trùng rule
+   - FIX: bật pointer-events khi bulk bar mở (.bulk-bar.is-active) để click hoạt động
+   - NEW: Guard bổ sung .bulk-bar.is-active .bulk-inner { pointer-events:auto }
+*/
+
+/* ────────────────────────────────────────────────────────────────
+   [1] Colgroup (desktop)
+   ──────────────────────────────────────────────────────────────── */
+#admin-notify-table .col-select  { width:6%;  min-width:50px; }
+#admin-notify-table .col-content { width:38%; }
+#admin-notify-table .col-roles   { width:22%; min-width:180px; }
+#admin-notify-table .col-status  { width:12%; min-width:120px; }
+#admin-notify-table .col-date    { width:16%; min-width:160px; }
+#admin-notify-table .col-actions { width:6%;  min-width:50px; }
+
+@media (min-width:1536px){
+  #admin-notify-table .col-content { width:36%; }
+  #admin-notify-table .col-date    { width:18%; }
+}
+
+/* [2] Nội dung A – span không đẩy cột khác */
+.admin-notify-table{ table-layout:fixed; position:relative; z-index:0; }
+.td-content{ cursor:pointer; overflow:hidden; max-width:1px; }
+.td-content .content-text{
+  display:block; width:100%; min-width:0;
+  max-width:97%;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@media (min-width:1536px){
+  .td-content .content-text{ max-width:97%; }
+}
+
+/* [3] Checkbox */
+.cb{ display:inline-flex; align-items:center; justify-content:center; position:relative; cursor:pointer; }
+.cb input{ appearance:none; -webkit-appearance:none; width:0; height:0; margin:0; padding:0; border:0; }
+.cb .cb-box{
+  width:22px; height:22px; border-radius:8px; background:#fff; border:1.5px solid #9DB7FF;
+  box-shadow:0 1px 2px rgba(30,58,138,.08) inset; display:inline-flex; align-items:center; justify-content:center;
+  transition:background-color .14s, border-color .14s, box-shadow .14s, transform .06s;
+}
+.cb:hover .cb-box{ border-color:#7AA2FF; box-shadow:0 0 0 3px rgba(59,130,246,.08); }
+.cb input:focus + .cb-box{ box-shadow:0 0 0 3px rgba(30,58,138,.18); border-color:#1E3A8A; }
+.cb input:checked + .cb-box{ background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06); }
+.cb input:checked + .cb-box::after{
+  content:""; width:11px; height:7px; border:2px solid #fff; border-top:0; border-left:0; transform:rotate(45deg);
+}
+.cb input:indeterminate + .cb-box{ background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06); }
+.cb input:indeterminate + .cb-box::after{ content:""; width:10px; height:2px; background:#fff; border-radius:1px; }
+
+/* [4] Status pill */
+.status-pill{
+  display:inline-flex; align-items:center; justify-content:center; border-radius:9999px;
+  padding:6px 12px; font-size:13px; font-weight:600; line-height:1; white-space:nowrap; user-select:none;
+}
+@media (min-width:768px){ .status-pill{ padding:7px 13px; font-size:13.5px; } }
+.status-pill--green{ background:#E8F7EE; color:#166534; }
+.status-pill--red{   background:#FEECEC; color:#9F1239; }
+
+/* [5] Row hover */
+.notify-row{ transition:background-color .12s; }
+.notify-row:hover{ background:#EAF1FF; }
+
+/* [6] Filler rows (non-interactive, cao bằng data row) */
+#admin-notify-container .notify-row--filler{ pointer-events:none; background:transparent; }
+#admin-notify-container .notify-row--filler:hover{ background:transparent; }
+#admin-notify-container .notify-row--filler td{
+  padding-top:.5rem !important;          /* = py-2 */
+  padding-bottom:.5rem !important;
+  line-height:1.25;                      /* khớp text-sm của table */
+}
+
+/* [7] Actions & tooltip token */
+.actions-cell{ overflow:visible !important; position:relative; z-index:1; }
+.row-actions{ opacity:0; transition:opacity .12s; }
+.notify-row:hover .row-actions{ opacity:1; }
+.action-btn{
+  width:30px; height:30px; border-radius:9999px; display:inline-flex; align-items:center; justify-content:center;
+  background:transparent; border:none; box-shadow:none; transition:background-color .12s, box-shadow .12s, transform .05s;
+}
+.action-btn:hover{ background:#EAF1FF; box-shadow:0 0 0 1px #7AA2FF inset, 0 1px 2px rgba(0,0,0,.06); }
+.action-btn:active{ transform:scale(.98); }
+.action-btn svg{ width:18px; height:18px !important; display:block; }
+.role-cell{ overflow:visible !important; position:relative; z-index:2; }
+.tt{ position:static; }
+.role-token{
+  display:inline-block; padding:0 1px; border-bottom:1px dotted #93c5fd; cursor:help; border-radius:2px;
+  transition:color .12s, background-color .12s, border-color .12s;
+}
+.role-token:hover{ color:#1E3A8A; background:rgba(59,130,246,.06); border-bottom-color:#60a5fa; }
+
+/* [8] SVG sizing (scoped) */
+#admin-notify-container .w-5.h-5{ width:20px; height:20px; line-height:0; }
+#admin-notify-container .w-5.h-5 > svg,
+#admin-notify-container .w-5.h-5 svg{ width:100% !important; height:100% !important; }
+#admin-notify-container .w-\[18px\].h-\[18px\]{ width:18px; height:18px; line-height:0; }
+#admin-notify-container .w-\[18px\].h-\[18px\] > svg,
+#admin-notify-container .w-\[18px\].h-\[18px\] svg{ width:100% !important; height:100% !important; }
+#btn-export-csv svg, #btn-notify-calendar svg{ width:100% !important; height:100% !important; }
+.search-wrap > span{ line-height:0; }
+
+/* [9] Icon hover-switch (CSV/Calendar/Search/Filter/Sort đã có) */
+#btn-export-csv .icon-csv-hover,
+#btn-notify-calendar .icon-calendar-hover{ opacity:0; transition:opacity .15s; }
+#btn-export-csv:hover .icon-csv-hover, #btn-export-csv:focus .icon-csv-hover,
+#btn-notify-calendar:hover .icon-calendar-hover, #btn-notify-calendar:focus .icon-calendar-hover{ opacity:1; }
+#btn-export-csv .icon-csv-default, #btn-notify-calendar .icon-calendar-default{ opacity:1; transition:opacity .15s; }
+#btn-export-csv:hover .icon-csv-default, #btn-export-csv:focus .icon-csv-default,
+#btn-notify-calendar:hover .icon-calendar-default, #btn-notify-calendar:focus .icon-calendar-default{ opacity:0; }
+.search-wrap .icon-search-hover{ opacity:0; transition:opacity .15s; pointer-events:none; }
+.search-wrap:hover .icon-search-hover,
+.search-wrap:focus-within .icon-search-hover{ opacity:1; }
+.search-wrap .icon-search-default{ opacity:1; transition:opacity .15s; }
+.search-wrap:hover .icon-search-default,
+.search-wrap:focus-within .icon-search-default{ opacity:0; }
+#btn-notify-filter .icon-filter-hover{ opacity:0; transition:opacity .15s; pointer-events:none; }
+#btn-notify-filter:hover .icon-filter-hover, #btn-notify-filter:focus .icon-filter-hover{ opacity:1; }
+#btn-notify-filter .icon-filter-default{ opacity:1; transition:opacity .15s; }
+#btn-notify-filter:hover .icon-filter-default, #btn-notify-filter:focus .icon-filter-default{ opacity:0; }
+#btn-notify-sort .icon-arrow-hover{ opacity:0; transition:opacity .15s; pointer-events:none; }
+#btn-notify-sort:hover .icon-arrow-hover, #btn-notify-sort:focus .icon-arrow-hover{ opacity:1; }
+#btn-notify-sort .icon-arrow-default{ opacity:1; transition:opacity .15s; }
+#btn-notify-sort:hover .icon-arrow-default, #btn-notify-sort:focus .icon-arrow-default{ opacity:0; }
+
+/* [9.a] First-page icon hover switch */
+#notify-pagination .pg-first-area .icon-first-hover{ opacity:0; transition:opacity .15s; }
+#notify-pagination .pg-first-area .icon-first-default{ opacity:1; transition:opacity .15s; }
+#notify-pagination .pg-first-area .group:hover .icon-first-hover,
+#notify-pagination .pg-first-area .group:focus .icon-first-hover,
+#notify-pagination .pg-first-area .group:focus-visible .icon-first-hover{ opacity:1; }
+#notify-pagination .pg-first-area .group:hover .icon-first-default,
+#notify-pagination .pg-first-area .group:focus .icon-first-default,
+#notify-pagination .pg-first-area .group:focus-visible .icon-first-default{ opacity:0; }
+
+/* [10] Calendar label */
+#btn-notify-calendar-label{ white-space:nowrap; }
+
+/* [11] Ẩn chữ “Đặt lại” & tiền tố “Sắp xếp:” khi hẹp */
+@media (max-width:920px){
+  #admin-notify-container #btn-notify-reset .reset-label{ display:none; }
+  #admin-notify-container #btn-notify-reset .mr-1{ margin-right:0; }
+  #admin-notify-container .sort-prefix{ display:none; }
+}
+
+/* [12] Dropdown menu */
+.btn-ghost{
+  background:transparent; border:none; box-shadow:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:color .12s, background-color .12s, transform .05s;
+}
+.btn-ghost:hover{ background:transparent; }
+.btn-ghost:active{ transform:scale(.98); }
+.btn-ghost:focus{ outline:none; }
+.btn-ghost:focus-visible{ outline:2px solid #1E3A8A; outline-offset:2px; border-radius:9999px; }
+
+.notify-menu{
+  background:#fff; border:1px solid #E5E7EB; border-radius:12px;
+  box-shadow:0 12px 36px rgba(30,41,59,.14), 0 2px 8px rgba(30,41,59,.10);
+  overflow:hidden; min-width:220px;
+  opacity:1; transform-origin: top center;
+}
+.notify-menu.is-opening{ animation: nmFadeIn .14s ease-out; }
+@keyframes nmFadeIn{
+  from{ opacity:.001; transform: translateY(-4px) scale(.98); }
+  to{ opacity:1; transform: translateY(0) scale(1); }
+}
+.notify-menu .menu-item{
+  appearance:none; width:100%; text-align:left; border:0; background:transparent; cursor:pointer;
+  padding:10px 12px; font-size:14px; line-height:1.2; color:#0f172a;
+  transition: background-color .12s, color .12s;
+}
+.notify-menu .menu-item:hover{ background:#DBEAFE; }
+.notify-menu .menu-item:active{ background:#BFDBFE; }
+.notify-menu .menu-item:focus{ outline:none; }
+.notify-menu .menu-item:focus-visible{ outline:2px solid #1E3A8A; outline-offset:-2px; }
+.notify-menu .menu-item.is-active{ background:#EAF1FF; font-weight:600; color:#1E3A8A; }
+
+/* [12.b] Sort dropdown 2 cột – giống Models: rộng 360px; nổi trên bulk bar */
+.notify-menu{ z-index:1300; }
+.notify-menu .menu-item{ border-radius:10px; white-space:nowrap; }
+.notify-menu--sort{ min-width:360px; }
+.notify-menu--sort .menu-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:4px; padding:4px; }
+
+/* [13] Bulk actions bar */
+.bulk-bar{
+  position:fixed; left:0; right:0; bottom:16px;
+  z-index:1200; opacity:0; pointer-events:none;
+  transform:translateY(16px);
+  transition:opacity .16s ease, transform .16s ease;
+}
+.bulk-bar.is-active{
+  opacity:1; transform:translateY(0);
+  pointer-events:auto;
+}
+/* Guard thêm cho theme cũ từng set .bulk-inner {pointer-events:none} */
+.bulk-bar.is-active .bulk-inner{ pointer-events:auto; }
+
+.bulk-bar .bulk-inner{
+  width:100%; max-width:100%;
+  margin:0 auto; padding-left:1rem; padding-right:1rem;
+  display:flex; justify-content:center;
+}
+.bulk-bar .bulk-shell{
+  background:#fff; border:1px solid #dbe3ff; border-radius:9999px;
+  box-shadow:0 10px 25px rgba(30,58,138,.12), 0 1px 2px rgba(0,0,0,.04);
+  padding:8px; display:flex; gap:8px; align-items:center;
+}
+.bulk-btn{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:9999px;
+  background:#F5F8FF; border:1px solid #cfe0ff; transition:background-color .12s, border-color .12s, transform .06s;
+}
+.bulk-btn:hover{ background:#EAF1FF; border-color:#7AA2FF; }
+.bulk-btn:active{ transform:scale(.98); }
+.bulk-btn .label{ color:#1E3A8A; font-weight:600; }
+.bulk-btn .icon svg{ width:18px; height:18px; display:block; }
+
+/* [14] FIX center icon search 20px trong input 45px */
+.search-wrap > span{
+  position:absolute; left:16px; top:calc(50% - 10px) !important;
+  transform:none !important; width:20px; height:20px; line-height:0;
+}
+.search-wrap > span svg{ width:100% !important; height:100% !important; display:block; }
+
+/* [15] BULK-CLAMP icon */
+#admin-notify-container #notify-bulk-bar .icon{
+  width:18px; height:18px; line-height:0; display:inline-flex; align-items:center; justify-content:center;
+}
+#admin-notify-container #notify-bulk-bar .icon > svg{
+  width:100% !important; height:100% !important; display:block;
+}
+
+/* [16] FIX tick cho checkbox (scoped) */
+#admin-notify-container .cb .cb-box{ position:relative; }
+#admin-notify-container .cb input:checked + .cb-box{ color:#fff; }
+#admin-notify-container .cb input:checked + .cb-box::after{
+  content:""; position:absolute; left:50%; top:46%;
+  width:6px; height:12px; transform:translate(-50%,-50%) rotate(45deg);
+  border-style:solid; border-color:currentColor; border-width:0 2px 2px 0;
+}
+#admin-notify-container .cb input:indeterminate + .cb-box::after{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+}
+
+/* [17] Responsive cột – ẩn bớt & ẩn COL để không giữ chỗ */
+@media (max-width:1280px){
+  #admin-notify-container .th-roles,
+  #admin-notify-container .td-roles,
+  #admin-notify-container .th-status,
+  #admin-notify-container .td-status{ display:none !important; }
+  #admin-notify-table col.col-roles,
+  #admin-notify-table col.col-status{ display:none !important; width:0 !important; }
+}
+@media (max-width:920px){
+  #admin-notify-container .th-select,
+  #admin-notify-container .td-select,
+  #admin-notify-container .th-actions,
+  #admin-notify-container .td-actions{ display:none !important; }
+  #admin-notify-table col.col-select,
+  #admin-notify-table col.col-actions{ display:none !important; width:0 !important; }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   [18] Pagination – layout & attach trong card
+   ──────────────────────────────────────────────────────────────── */
+#admin-notify-container{ --pg-py: 14px; --pg-px: 16px; }
+.notify-pagination:not(.is-attached){
+  display:flex; align-items:center; justify-content:center;
+  padding:12px 8px; margin-top:8px;
+}
+#notify-pagination{ display:flex; align-items:center; gap:12px; }
+#notify-pagination .pg-first-area{ margin-right:auto; display:flex; align-items:center; justify-content:flex-start; }
+#notify-pagination .pg-center-area{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+#notify-pagination .pg-tools-area{ margin-left:auto; display:flex; align-items:center; justify-content:flex-end; }
+
+#notify-pagination.is-attached{
+  padding:var(--pg-py) var(--pg-px);
+  margin-top:0; border-top:0; border-radius:0 0 16px 16px; background:#fff;
+}
+#notify-pagination .pg-first-area > button{ padding-left:0 !important; }
+
+@media (max-width:920px){
+  #notify-pagination .pg-first-area,
+  #notify-pagination .pg-tools-area{ display:none; }
+  #notify-pagination .pg-center-area{ margin-left:auto; margin-right:auto; }
+}
+
+.pager-btn, .pager-page{
+  appearance:none; display:inline-flex; align-items:center; justify-content:center;
+  min-width:45px; height:45px; padding:0 12px;
+  border-radius:9999px; border:1px solid #E5E7EB; background:#fff; color:#0f172a;
+  font-weight:600; font-size:14px; line-height:1;
+  transition:background-color .12s, color .12s, border-color .12s, box-shadow .12s, transform .05s;
+}
+.pager-btn:hover, .pager-page:hover{ background:#F3F8FF; border-color:#7AA2FF; color:#1E3A8A; }
+.pager-btn:active, .pager-page:active{ transform:scale(.98); }
+.pager-btn:focus-visible, .pager-page:focus-visible{ outline:2px solid #1E3A8A; outline-offset:2px; }
+
+.pager-page.is-active{
+  background:#1E3A8A; color:#fff; border-color:#1E3A8A;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+}
+.pager-btn.is-disabled{
+  opacity:.45; cursor:not-allowed; pointer-events:none;
+  background:#fff; color:#64748b;
+}
+.pager-ellipsis{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:28px; height:45px; padding:0 6px; color:#94a3b8; font-weight:700;
+}
+.pager-btn .icon{ width:18px; height:18px; line-height:0; display:inline-flex; align-items:center; justify-content:center; }
+.pager-btn .icon svg{ width:100% !important; height:100% !important; display:block; }
+.pager-meta{ margin-right:10px; color:#475569; font-size:13px; font-weight:500; }
+@media (max-width:480px){ .pager-meta{ display:none; } }
+
+.pager-input{
+  width:60px; height:45px; border-radius:12px; border:1px solid #E5E7EB; background:#fff;
+  text-align:center; font-weight:700; color:#0f172a;
+  transition:border-color .12s, box-shadow .12s;
+}
+.pager-input:focus{ outline:none; border-color:#7AA2FF; box-shadow:0 0 0 3px rgba(59,130,246,.14); }
+
+.pg-square{ width:45px; height:45px; border-radius:12px; }
+
+#admin-notify-container .w-\[14px\].h-\[14px\]{
+  width:14px; height:14px; line-height:0; display:inline-flex; align-items:center; justify-content:center;
+}
+#admin-notify-container .w-\[14px\].h-\[14px\] > svg,
+#admin-notify-container .w-\[14px\].h-\[14px\] svg{ width:100% !important; height:100% !important; display:block; }
+
+#notify-pagination .h-\[44px\]{ height:45px !important; }
+
+/* [21] MOBILE: A/D = 50/50 + triệt text-left thead */
+@media (max-width:920px){
+  #admin-notify-table thead.text-left{ text-align:inherit !important; }
+  #admin-notify-table thead.text-left th{ text-align:inherit !important; }
+
+  #admin-notify-table col.col-content,
+  #admin-notify-table col.col-date{ width:50% !important; min-width:0 !important; }
+
+  #admin-notify-container .th-content,
+  #admin-notify-container .td-content,
+  #admin-notify-container .th-date,
+  #admin-notify-container .td-date{ width:50% !important; }
+
+  #admin-notify-container .td-content{ max-width:0; overflow:hidden; }
+  #admin-notify-container .td-content .content-text{
+    min-width:0; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  #admin-notify-container .td-date{ text-align:left !important; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  #admin-notify-container .th-date{ text-align:left !important; white-space:nowrap; }
+}
+
+/* [22] Toolbar gộp – spacing đồng nhất */
+#notify-toolbar.notify-toolbar{
+  --tb-gap: 12px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--tb-gap);
+  margin:0 0 16px 0;
+}
+.notify-toolbar__spacer{ flex:1 1 auto; min-width:8px; }
+#notify-toolbar.notify-toolbar > *{ display:flex; align-items:center; gap:var(--tb-gap); }
+@media (max-width:920px){
+  #notify-toolbar.notify-toolbar{ --tb-gap: 10px; }
+}
+
+/* [23] Bảng liền pager (bỏ viền đáy) */
+#admin-notify-table{ border-bottom:0 !important; }
+
+/* [24] Bulk mở → ẩn Prev/Next (cụm giữa) */
+#admin-notify-container:has(#notify-bulk-bar.is-active) #notify-pagination .pg-center-area{ display:none !important; }
+#admin-notify-container.bulk-open #notify-pagination .pg-center-area{ display:none !important; }
+
+/* Indeterminate dấu gạch giữa */
+#admin-notify-container #sel-all:indeterminate + .cb-box{
+  background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+}
+#admin-notify-container #sel-all:indeterminate + .cb-box::after{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:12px; height:2px; background:#fff; border-radius:1px;
+}
+
+/* Fallback theo class */
+#admin-notify-container #sel-all-wrap.is-indeterminate .cb-box{
+  background:#1E3A8A; border-color:#1E3A8A; box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+}
+#admin-notify-container #sel-all-wrap.is-indeterminate .cb-box::after{
+  content:""; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:12px; height:2px; background:#fff; border-radius:1px;
+}
+
+.bulk-bar.is-active .bulk-shell { pointer-events: auto; }

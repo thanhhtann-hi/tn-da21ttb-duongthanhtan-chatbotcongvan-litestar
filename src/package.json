@@ -1,0 +1,20 @@
+{
+  "name": "docaix-app",
+  "version": "1.0.0",
+  "description": "DocAIx Chatbot web application",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i static/css/input.css -o static/css/tailwind.css --minify && tailwindcss -i static/css/input.css -o static/css/tailwind.output.css --minify",
+    "watch:css": "tailwindcss -i static/css/input.css -o static/css/tailwind.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DocAIx Team",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "postcss-import": "^16.1.1",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

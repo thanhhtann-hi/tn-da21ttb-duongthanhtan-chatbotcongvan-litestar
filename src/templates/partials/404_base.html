@@ -1,0 +1,34 @@
+<!-- 📄 src/templates/partials/404_base.html -->
+<!-- 🕒 Last updated: 2025-07-08 23:00 -->
+<!-- 📌 Base layout độc lập cho trang 404: chỉ load font và CSS cần thiết, tối ưu hiển thị -->
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- 🏷 Tiêu đề trang – child override -->
+    <title>{% block title %}404 – Trang không tìm thấy{% endblock %}</title>
+
+    <!-- ✅ Google Font: Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+
+    <!-- ✅ CSS chính từ Tailwind -->
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+
+    <!-- ✅ CSS riêng cho trang lỗi 404 -->
+    <link rel="stylesheet" href="/static/css/error.css" />
+
+    <!-- ✅ Favicon -->
+    <link rel="icon" href="/static/images/favicon/favicon.ico" type="image/x-icon" />
+</head>
+
+<body class="min-h-screen flex flex-col justify-center items-center bg-gray-50 font-manrope text-gray-800">
+    {% block content %}{% endblock %}
+</body>
+
+</html>

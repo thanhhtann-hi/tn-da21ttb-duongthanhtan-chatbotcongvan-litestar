@@ -1,0 +1,84 @@
+/* =============================================== */
+/* 📄 static/css/auth_left.css                     */
+/* 🕒 Last updated: 2025-07-04 21:10               */
+/* ----------------------------------------------- */
+/*  • Fix line-height cho tiêu đề (leading-tight)  */
+/*  • Đồng bộ với template căn giữa tuyệt đối      */
+/*  • Giữ hiệu ứng dot & fade block                */
+/* =============================================== */
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+}
+
+/* ▸ Dot (chấm tròn) -------------------------------------------------------------- */
+.dot {
+    display: inline-block;
+    vertical-align: middle;
+    width: 0.8em;
+    height: 0.8em;
+    border-radius: 9999px;
+    background-color: #053484;
+    position: relative;
+    top: -0.1rem;
+    transition: opacity 0.5s;
+}
+
+.dot-blink {
+    animation: blink 2.4s infinite ease-in-out;
+}
+
+/* ▸ Wrapper (grid dự phòng) ----------------------------------------------------- */
+.auth-left-wrapper {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    background-color: #eaf2ff;
+    font-family: 'Manrope', sans-serif;
+    user-select: none;
+}
+
+/* ▸ Nội dung căn giữa (không padding) ------------------------------------------- */
+/*   Hiện không dùng sau refactor nhưng giữ để dự phòng.                           */
+.auth-left-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    height: 100%;
+}
+
+/* ▸ Text-area -------------------------------------------------------------------- */
+#text-area {
+    position: relative;
+    width: 100%;
+    max-width: 48rem;
+}
+
+/* ▸ Line-spacing & màu ----------------------------------------------------------- */
+#block1-line1,
+#block2-line1 {
+    line-height: 1.25;
+    /* leading-tight để cân khối */
+}
+
+#block1-line2,
+#block2-line2 {
+    line-height: 1.5;
+    max-width: 44rem;
+    color: rgba(5, 52, 132, 0.8);
+}
+
+/* ▸ Fade-in/out smoother --------------------------------------------------------- */
+#block1,
+#block2 {
+    transition: opacity 0.7s ease-in-out;
+}

@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/tools/admin_tools.html -->
+<!-- updated: 2025-08-23 -->
+<!-- note: full-page wrapper cho trang "Tiện ích hệ thống"; nhúng fragment để HTMX tự thay thế -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý tiện ích hệ thống{% endblock %}
+{% block header %}Quản lý tiện ích hệ thống{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-tools-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/tools/admin_tools_fragment.html" %}
+    </div>
+</div>
+{% endblock %}

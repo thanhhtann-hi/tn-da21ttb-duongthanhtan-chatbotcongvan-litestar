@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/models/admin_models.html -->
+<!-- updated: 2025-08-22 -->
+<!-- note: full-page wrapper cho trang "Mô hình AI"; nạp fragment HTMX giống notify -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý mô hình AI{% endblock %}
+{% block header %}Quản lý mô hình AI{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-models-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/models/admin_models_fragment.html" %}
+    </div>
+</div>
+{% endblock %}

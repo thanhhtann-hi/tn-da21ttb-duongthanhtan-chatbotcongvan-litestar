@@ -1,0 +1,272 @@
+<!-- file: src/modules/admin/templates/partials/admin_left.html -->
+<!-- updated: 2025-08-25 (v2.1 – add Documents link under “Dữ liệu” + route/frame; refine accordion data) -->
+<!-- note:
+     - Thêm “Văn bản” (/admin/documents) trong accordion “Dữ liệu”.
+     - Các item có .admin-left-nav-link + data-route sẽ được admin_left.js xử lý active/route.
+     - data-frame để nạp fragment vào #admin-frame (JS tự map /admin/<mod> → /admin/<mod>/fragment).
+-->
+
+<aside id="admin-sidebar" class="flex flex-col h-full border-r border-gray-200 sidebar-desktop min-h-0" style="transition:none">
+
+    <!-- ===== SCROLL-AREA (nav + footer) ===== -->
+    <div class="scroll-area flex-1 overflow-y-auto flex flex-col sidebar-scrollbar min-h-0">
+
+        <!-- ===== HEADER (sticky top) ===== -->
+        <header class="sticky top-0 z-10 flex items-center justify-between
+                   min-h-[60px] px-[var(--sidebar-nav-ps)] py-[var(--sidebar-nav-pt)]
+                   bg-[var(--sidebar-scroll-bg)] border-b border-gray-200">
+            <div id="admin-sidebar-header-slot" class="relative w-[36px] h-[36px] flex items-center justify-center">
+                <img id="admin-sidebar-logo" src="/static/images/icon_bars_lef_tvu.webp" alt="logo"
+                    class="w-[26px] h-[26px] object-contain transition-opacity duration-150" />
+
+                <!-- Nút mở rộng khi collapsed -->
+                <button id="btn-admin-toggle-sidebar-collapsed" aria-label="Mở thanh bên"
+                    class="icon-btn sidebar-toggle absolute inset-0 m-auto hidden
+                       h-[var(--sidebar-icon-box)] w-[var(--sidebar-icon-box)]">
+                    <span class="w-[18px] h-[18px] flex items-center justify-center">
+                        {% include "partials/icons/admin_left/icon_admin_left_sliderbars.svg" %}
+                    </span>
+                    <div class="sidebar-tooltip">Mở thanh bên</div>
+                </button>
+            </div>
+
+            <!-- Nút thu gọn khi đang mở -->
+            <button id="btn-admin-toggle-sidebar-open" aria-label="Thu gọn"
+                class="icon-btn sidebar-toggle hidden h-[var(--sidebar-icon-box)] w-[var(--sidebar-icon-box)]">
+                <span class="w-[18px] h-[18px] flex items-center justify-center">
+                    {% include "partials/icons/admin_left/icon_admin_left_sliderbars.svg" %}
+                </span>
+                <div class="sidebar-tooltip">Thu gọn</div>
+            </button>
+        </header>
+        <!-- /HEADER -->
+
+        <!-- ===== NAV ===== -->
+        <nav id="admin-sidebar-nav" class="flex-1 pt-[var(--sidebar-nav-pt)] text-sm space-y-2 select-none min-h-0">
+
+            <!-- Trang chủ -->
+            <a href="/admin" data-frame="/admin/home-fragment"
+                class="admin-left-nav-link sidebar-link group flex items-center justify-between" data-route="home">
+                <div class="flex items-center gap-0">
+                    <span class="sidebar-icon shrink-0">
+                        <span class="icon-den">
+                            {% include "partials/icons/admin/home/icons_admin_home_den.svg" %}
+                        </span>
+                        <span class="icon-xanh">
+                            {% include "partials/icons/admin/home/icons_admin_home_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span class="sidebar-label truncate">Trang chủ</span>
+                </div>
+                <div class="sidebar-tooltip">Trang chủ</div>
+            </a>
+
+            <!-- ==== Accordion: Thống kê / Hội thoại / Dữ liệu / Công cụ ==== -->
+            {% set accordions = [
+            {
+            "id":"thongke",
+            "icon":"partials/icons/admin/analytics/icons_admin_thongke_den.svg",
+            "label":"Thống kê",
+            "subs":[
+            {"label":"Dự án"},
+            {"label":"Câu trả lời"},
+            {"label":"Token đã sử dụng"},
+            {"label":"Từ ngữ phổ biến"},
+            {"label":"Mô hình sử dụng"},
+            {"label":"Công cụ sử dụng"},
+            {"label":"Phòng ban nhận Email"}
+            ]
+            },
+            {
+            "id":"chat",
+            "icon":"partials/icons/admin/conversations/icons_admin_chat_den.svg",
+            "label":"Hội thoại",
+            "subs":[
+            {"label":"Lịch sử trò chuyện"},
+            {"label":"Phản hồi"},
+            {"label":"Dự án liên quan"},
+            {"label":"Lịch gửi email"}
+            ]
+            },
+            {
+            "id":"data",
+            "icon":"partials/icons/admin/data/icons_admin_data_den.svg",
+            "label":"Dữ liệu",
+            "subs":[
+            {"label":"Văn bản","href":"/admin/documents","frame":"/admin/documents","route":"documents"},
+            {"label":"Bộ dữ liệu","href":"/admin/datasets","frame":"/admin/datasets","route":"datasets"}
+            ]
+            },
+            {
+            "id":"tools",
+            "icon":"partials/icons/admin/tools/icons_admin_tools_den.svg",
+            "label":"Công cụ",
+            "subs":[
+            {"label":"Tiện ích hệ thống","href":"/admin/tools","frame":"/admin/tools","route":"tools"},
+            {"label":"Mô hình AI","href":"/admin/models","frame":"/admin/models","route":"models"}
+            ]
+            }
+            ] %}
+
+            {% for acc in accordions %}
+            <div class="sidebar-accordion" data-accordion="{{ acc.id }}">
+                <!-- Nút accordion -->
+                <button type="button"
+                    class="admin-left-nav-link sidebar-link group flex items-center justify-between"
+                    data-toggle="{{ acc.id }}" data-subs='{{ acc.subs | tojson | safe }}'>
+                    <div class="flex items-center gap-0">
+                        <span class="sidebar-icon shrink-0">
+                            <span class="icon-den">{% include acc.icon %}</span>
+                            <span class="icon-xanh">{% include acc.icon | replace('_den.svg','_xanh.svg') %}</span>
+                        </span>
+                        <span class="sidebar-label truncate">{{ acc.label }}</span>
+                    </div>
+                    <span class="arrow-icon">
+                        <span class="icon-den">
+                            {% include "partials/icons/admin_left/icon_admin_left_arrow_down.svg" %}
+                        </span>
+                        <span class="icon-xanh">
+                            {% include "partials/icons/admin_left/icon_admin_left_arrow_down_xanh.svg" %}
+                        </span>
+                    </span>
+                    <div class="sidebar-tooltip">{{ acc.label }}</div>
+                </button>
+
+                <!-- Submenu -->
+                <div class="accordion-content hidden" data-content="{{ acc.id }}">
+                    {% for sub in acc.subs %}
+                    <a href="{{ sub.href or '#' }}"
+                        {% if sub.frame %}data-frame="{{ sub.frame }}" {% endif %}
+                        {% if sub.route %}data-route="{{ sub.route }}" {% endif %}
+                        class="admin-left-nav-link sidebar-link group flex items-center justify-between">
+                        <span class="sidebar-label truncate">{{ sub.label }}</span>
+                        <span class="right-indicator">
+                            <span class="icon-den">
+                                {% include "partials/icons/admin_left/icon_admin_left_arrow_right.svg" %}
+                            </span>
+                            <span class="icon-xanh">
+                                {% include "partials/icons/admin_left/icon_admin_left_arrow_right_xanh.svg" %}
+                            </span>
+                        </span>
+                        <div class="sidebar-tooltip">{{ sub.label }}</div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- ==== Accordion: Quản trị hệ thống ==== -->
+            {% set sysSubs = [
+            {"label":"Cài đặt","href":"/admin/security","frame":"/admin/security/fragment","route":"security"},
+            {"label":"Người dùng","href":"/admin/users","frame":"/admin/users","route":"users"},
+            {"label":"Phòng ban","href":"/admin/departments","frame":"/admin/departments","route":"departments"},
+            {"label":"Thông báo","href":"/admin/notify","frame":"/admin/notify","route":"notify"},
+            {"label":"Lịch sử hoạt động"}
+            ] %}
+
+            <div class="sidebar-accordion" data-accordion="system">
+                <button type="button"
+                    class="admin-left-nav-link sidebar-link group flex items-center justify-between"
+                    data-toggle="system" data-subs='{{ sysSubs | tojson | safe }}'>
+                    <div class="flex items-center gap-0">
+                        <span class="sidebar-icon shrink-0">
+                            <span class="icon-den">
+                                {% include "partials/icons/admin/system/icons_admin_setting_den.svg" %}
+                            </span>
+                            <span class="icon-xanh">
+                                {% include "partials/icons/admin/system/icons_admin_setting_xanh.svg" %}
+                            </span>
+                        </span>
+                        <span class="sidebar-label truncate">Quản trị hệ thống</span>
+                    </div>
+                    <span class="arrow-icon">
+                        <span class="icon-den">
+                            {% include "partials/icons/admin_left/icon_admin_left_arrow_down.svg" %}
+                        </span>
+                        <span class="icon-xanh">
+                            {% include "partials/icons/admin_left/icon_admin_left_arrow_down_xanh.svg" %}
+                        </span>
+                    </span>
+                    <div class="sidebar-tooltip">Quản trị hệ thống</div>
+                </button>
+
+                <div class="accordion-content hidden" data-content="system">
+                    {% for sub in sysSubs %}
+                    <a href="{{ sub.href or '#' }}"
+                        {% if sub.frame %}data-frame="{{ sub.frame }}" {% endif %}
+                        {% if sub.route %}data-route="{{ sub.route }}" {% endif %}
+                        class="admin-left-nav-link sidebar-link group flex items-center justify-between">
+                        <span class="sidebar-label truncate">{{ sub.label }}</span>
+                        <span class="right-indicator">
+                            <span class="icon-den">
+                                {% include "partials/icons/admin_left/icon_admin_left_arrow_right.svg" %}
+                            </span>
+                            <span class="icon-xanh">
+                                {% include "partials/icons/admin_left/icon_admin_left_arrow_right_xanh.svg" %}
+                            </span>
+                        </span>
+                        <div class="sidebar-tooltip">{{ sub.label }}</div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </nav>
+        <!-- /NAV -->
+
+        <!-- ===== FOOTER (sticky bottom trong scroll-area) ===== -->
+        <div class="sidebar-footer sticky bottom-0 z-20
+                border-t border-gray-200 bg-[var(--sidebar-scroll-bg)]
+                flex flex-col gap-1 py-[var(--sidebar-nav-pt)] min-h-0">
+
+            <!-- Trợ giúp -->
+            <a href="/admin/help" class="admin-left-nav-link sidebar-link group flex items-center justify-between" data-route="help">
+                <div class="flex items-center gap-0">
+                    <span class="sidebar-icon shrink-0">
+                        <span class="icon-den">
+                            {% include "partials/icons/admin_left/icon_admin_left_help.svg" %}
+                        </span>
+                        <span class="icon-xanh">
+                            {% include "partials/icons/admin_left/icon_admin_left_help_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span class="sidebar-label truncate">Trợ giúp</span>
+                </div>
+                <div class="sidebar-tooltip">Trợ giúp</div>
+            </a>
+
+            <!-- Đăng xuất -->
+            <a href="/auth/logout" class="admin-left-nav-link sidebar-link group flex items-center justify-between">
+                <div class="flex items-center gap-0">
+                    <span class="sidebar-icon shrink-0">
+                        <span class="icon-den">
+                            {% include "partials/icons/admin_left/icon_admin_left_log_out.svg" %}
+                        </span>
+                        <span class="icon-xanh">
+                            {% include "partials/icons/admin_left/icon_admin_left_log_out_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span class="sidebar-label truncate">Đăng xuất</span>
+                </div>
+                <div class="sidebar-tooltip">Đăng xuất</div>
+            </a>
+        </div>
+        <!-- /FOOTER -->
+    </div>
+    <!-- /scroll-area -->
+
+    <!-- Popup dropdown khi collapsed -->
+    <div id="admin-collapsed-dropdown"
+        class="hidden fixed z-[100] bg-white rounded-lg shadow-lg p-2 w-48 border border-gray-200"></div>
+</aside>
+
+<script>
+    (function () {
+        try {
+            var isOpen = localStorage.getItem('adminSidebarOpen') !== 'false';
+            var el = document.getElementById('admin-sidebar');
+            if (el) { el.classList.add(isOpen ? 'sidebar-open' : 'sidebar-collapsed'); }
+        } catch (e) { /* noop */ }
+    })();
+</script>
+
+{% include "partials/admin_left_modal_logout.html" %}

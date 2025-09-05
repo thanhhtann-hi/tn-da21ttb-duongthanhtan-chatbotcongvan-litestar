@@ -1,0 +1,149 @@
+<!-- file: src/modules/admin/templates/admin/tools/admin_tools_bulk_export_modal.html -->
+<!-- updated: 2025-08-23 (v1.0 – sync ctx: selected_ids/selected_count; no-htmx download) -->
+<!-- note:
+     - Không dùng HTMX cho export; JS sẽ mở URL kèm filter hiện tại.
+     - Hai lựa chọn: “Xuất mục đã chọn” (ids CSV) hoặc “Xuất theo bộ lọc”.
+     - Giữ nhất quán filter: enabled/scope/q/sort/page/per_page.
+-->
+
+<!-- Overlay -->
+<div id="tools-bulk-export-modal-overlay" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-[2px]"></div>
+
+<!-- Modal -->
+<div id="tools-bulk-export-modal" class="fixed inset-0 z-[9999] flex items-center justify-center" role="dialog"
+    aria-modal="true" aria-labelledby="tools-bulk-export-title" tabindex="-1">
+    <div class="tools-modal-content w-full max-w-[98vw] sm:max-w-[460px] rounded-[28px]
+              border border-gray-200 bg-white shadow px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95">
+
+        <!-- Header -->
+        <div class="relative flex items-center justify-center min-h-[56px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 id="tools-bulk-export-title" class="text-lg font-semibold text-gray-900 text-center w-full">
+                    Xuất CSV
+                </h2>
+                <div class="mt-1 text-sm text-gray-600 text-center">
+                    Chọn phạm vi dữ liệu cần xuất.
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="tools-bulk-export-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-scroll-area grow overflow-y-auto px-6 pb-6">
+            <div class="rounded-xl border border-gray-200 bg-gray-100 p-4 text-sm">
+                <div>
+                    <span class="font-semibold">Đã chọn:</span>
+                    <span id="tools-bulk-export-selected-count">{{ selected_count or 0 }}</span> mục.
+                </div>
+                <div class="text-gray-700 mt-1">
+                    <span class="font-medium">Xuất mục đã chọn</span>: chỉ xuất các tiện ích bạn đang chọn.<br>
+                    <span class="font-medium">Xuất theo bộ lọc</span>:
+                    <span class="underline underline-offset-2">bỏ qua danh sách đã chọn</span>, xuất theo điều kiện lọc hiện tại.
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 mt-5">
+                <button id="tools-bulk-export-selected" type="button"
+                    class="w-[180px] rounded-full py-2.5 bg-blue-900 text-white font-medium
+                       hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 text-[14px]"
+                    {% if not selected_count or selected_count==0 %}disabled{% endif %}>
+                    Xuất mục đã chọn
+                </button>
+
+                <button id="tools-bulk-export-filter" type="button"
+                    class="w-[180px] rounded-full py-2.5 bg-white text-blue-900 ring-1 ring-blue-900 font-medium
+                       hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 text-[14px]">
+                    Xuất theo bộ lọc
+                </button>
+            </div>
+
+            <!-- JS sẽ đọc để build URL export -->
+            <input type="hidden" id="tools-bulk-export-ids" value="{{ selected_ids or '' }}">
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ── SCOPED SVG: chỉ trong modal này ── */
+    #tools-bulk-export-modal svg {
+        width: auto !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        display: block
+    }
+
+    .tools-modal-content {
+        box-shadow: 0 10px 32px rgba(0, 0, 0, .13);
+        border: 1.5px solid #e5e7eb;
+        background: #fff
+    }
+
+    @keyframes zoom-in-95 {
+        from {
+            transform: scale(.95);
+            opacity: .7
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1
+        }
+    }
+
+    /* Hover swap icon (đen → xanh) */
+    #tools-bulk-export-modal-close .chip-hover {
+        display: none
+    }
+
+    #tools-bulk-export-modal-close:hover .chip-normal,
+    #tools-bulk-export-modal-close:focus .chip-normal {
+        display: none
+    }
+
+    #tools-bulk-export-modal-close:hover .chip-hover,
+    #tools-bulk-export-modal-close:focus .chip-hover {
+        display: flex
+    }
+
+    /* Ép X = 10×10 */
+    #tools-bulk-export-modal-close .chip-normal svg,
+    #tools-bulk-export-modal-close .chip-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #tools-bulk-export-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important;
+            padding: 0 !important
+        }
+
+        .tools-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 22px 22px 0 0 !important;
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0
+        }
+    }
+</style>

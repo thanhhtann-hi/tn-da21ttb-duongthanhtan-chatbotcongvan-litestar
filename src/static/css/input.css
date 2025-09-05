@@ -1,0 +1,9 @@
+/* 📁 File: static/css/input.css
+   🕒 Last updated: 2025-07-01 15:40
+   • Dùng làm entry point để build Tailwind CSS
+   • Đã loại bỏ các @import CSS module (chat, sidebar…) để giữ input.css thuần Tailwind
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

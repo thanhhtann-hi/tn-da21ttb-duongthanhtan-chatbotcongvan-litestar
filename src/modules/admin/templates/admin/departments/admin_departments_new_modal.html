@@ -1,0 +1,234 @@
+<!-- file: src/modules/admin/templates/admin/departments/admin_departments_new_modal.html -->
+<!-- updated: 2025-08-25 (v1.0) -->
+<!-- note: POST -> swap #departments-list-region; giữ toàn bộ filter hiện tại qua JS -->
+
+<!-- ╭─ OVERLAY ────────────────────────────────────────────────────────────────╮ -->
+<div id="departments-new-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ──────────────────────────────────────────────────────────╮ -->
+<div id="departments-new-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="departments-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[700px] max-h-[88vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-gray-900 text-center w-full">Tạo phòng ban mới</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Điền thông tin bên dưới, các trường có dấu * là bắt buộc.
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="departments-new-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-x-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-x-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- FORM -->
+        <form id="admin-departments-create-form"
+            hx-post="/admin/departments"
+            hx-target="#departments-list-region"
+            hx-select="#departments-list-region"
+            hx-swap="outerHTML"
+            hx-disabled-elt="#departments-submit-btn"
+            autocomplete="off"
+            class="flex flex-col grow min-h-0">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+            <!-- Hidden filter (JS sẽ set trước khi submit) -->
+            <input type="hidden" name="q" value="">
+            <input type="hidden" name="sort" value="">
+            <input type="hidden" name="page" value="">
+            <input type="hidden" name="per_page" value="">
+
+            <!-- BODY -->
+            <div class="modal-scroll-area grow overflow-y-auto px-6 pb-4 pt-2 min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- Tên phòng ban -->
+                    <div class="flex flex-col md:col-span-2">
+                        <label for="dept_name" class="block text-gray-900 font-semibold mb-1 text-[14px]">Tên phòng ban *</label>
+                        <input id="dept_name" name="dept_name" type="text" required maxlength="255"
+                            placeholder="vd: Phòng Công nghệ Thông tin"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div id="dept-name-hint" class="text-xs text-red-600 mt-1 hidden">Vui lòng nhập tên phòng ban.</div>
+                    </div>
+
+                    <!-- Bí danh -->
+                    <div class="flex flex-col">
+                        <label for="dept_alias" class="block text-gray-900 font-semibold mb-1 text-[14px]">Bí danh</label>
+                        <input id="dept_alias" name="dept_alias" type="text" maxlength="255"
+                            placeholder="vd: IT, CNTT"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div class="text-xs text-gray-500 mt-1">Tuỳ chọn · giúp tìm kiếm nhanh.</div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="flex flex-col">
+                        <label for="dept_email" class="block text-gray-900 font-semibold mb-1 text-[14px]">Email</label>
+                        <input id="dept_email" name="dept_email" type="email" maxlength="255"
+                            placeholder="vd: it@tvu.edu.vn"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div id="dept-email-hint" class="text-xs text-red-600 mt-1 hidden">Email không hợp lệ.</div>
+                    </div>
+
+                    <!-- Điện thoại -->
+                    <div class="flex flex-col">
+                        <label for="dept_phone" class="block text-gray-900 font-semibold mb-1 text-[14px]">Điện thoại</label>
+                        <input id="dept_phone" name="dept_phone" type="text" maxlength="20"
+                            placeholder="vd: 0274 3 888 999"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div class="text-xs text-gray-500 mt-1">Tuỳ chọn · có thể gồm số, dấu cách, +, -.</div>
+                    </div>
+
+                    <!-- Website -->
+                    <div class="flex flex-col md:col-span-2">
+                        <label for="dept_website" class="block text-gray-900 font-semibold mb-1 text-[14px]">Website</label>
+                        <input id="dept_website" name="dept_website" type="text" maxlength="255"
+                            placeholder="vd: https://it.tvu.edu.vn"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div id="dept-website-hint" class="text-xs text-amber-700 mt-1 hidden">URL nên bắt đầu bằng http:// hoặc https://</div>
+                    </div>
+
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="text-[12.5px] text-gray-500 mt-4">
+                    • Chỉ <b>Tên phòng ban</b> là bắt buộc. Email/Điện thoại/Website là tuỳ chọn.<br />
+                    • Hệ thống có ràng buộc <b>dept_name</b> là duy nhất.
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+                <div class="flex justify-center gap-4 w-full">
+                    <button type="button" id="departments-cancel-btn"
+                        class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                         hover:bg-gray-300 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">
+                        Hủy
+                    </button>
+                    <button id="departments-submit-btn" type="submit" disabled
+                        class="w-[160px] rounded-full py-2.5 bg-blue-900 text-white font-medium
+                         hover:bg-blue-800 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300
+                         disabled:opacity-50 disabled:cursor-not-allowed text-[14px]">
+                        Tạo phòng ban
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Close icon hover swap */
+    #departments-new-modal-close .chip-x-hover {
+        display: none
+    }
+
+    #departments-new-modal-close:hover .chip-x-normal,
+    #departments-new-modal-close:focus .chip-x-normal {
+        display: none
+    }
+
+    #departments-new-modal-close:hover .chip-x-hover,
+    #departments-new-modal-close:focus .chip-x-hover {
+        display: flex
+    }
+
+    #departments-new-modal-close .chip-x-normal svg,
+    #departments-new-modal-close .chip-x-hover svg {
+        width: 10px;
+        height: 10px;
+        margin: auto;
+        display: block;
+        line-height: 0;
+    }
+
+    /* Scrollbars */
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #departments-new-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important
+        }
+
+        .departments-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            will-change: transform;
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>

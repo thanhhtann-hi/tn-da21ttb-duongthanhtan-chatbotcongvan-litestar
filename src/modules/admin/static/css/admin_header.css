@@ -1,0 +1,126 @@
+/********************************************************************
+ * file: src/modules/admin/static/css/admin_header.css
+ * updated: 2025-08-03
+ * note: loại bỏ logic nút toggle mobile, giữ nguyên style header
+ ********************************************************************/
+
+/* ───────────── HEADER BẤT BIẾN: chống co kéo, luôn đúng height ───────────── */
+.admin-header-anti-flex,
+header.admin-header-anti-flex {
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 90 !important;
+    background: #fff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    /* Tailwind border-gray-200 */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   CHIP AVATAR: chỉ đổi màu chữ & viền khi hover
+────────────────────────────────────────────────────────────── */
+.header-chip {
+    position: relative;
+    overflow: visible;
+    transition: border-color 0.18s cubic-bezier(.7, .3, .3, 1);
+}
+
+.header-chip:hover .display-name {
+    color: #1d4ed8 !important;
+    /* blue-900 */
+}
+
+.header-chip:hover .role-label {
+    color: #1e40af !important;
+    /* blue-700 */
+}
+
+/* ──────────────────────────────────────────────────────────────
+   DISPLAY NAME: 13 ký tự rõ + 3 ký tự fade, còn lại ẩn
+────────────────────────────────────────────────────────────── */
+.display-name {
+    max-width: 16ch;
+    /* 13 ký tự rõ + 3 ký tự fade */
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+}
+
+.display-name::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3ch;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.5) 65%,
+            rgba(255, 255, 255, 1) 100%);
+    transition: background 180ms cubic-bezier(.7, .3, .3, 1);
+    display: block;
+}
+
+.header-chip:hover .display-name::after {
+    background: linear-gradient(to right,
+            rgba(239, 246, 255, 0) 0%,
+            rgba(239, 246, 255, 0.5) 65%,
+            rgba(239, 246, 255, 1) 100%);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   CHIP TÌM KIẾM: Chỉ đổi icon khi hover button, KHÔNG ép màu SVG
+────────────────────────────────────────────────────────────── */
+.header-chip-search {
+    position: relative;
+    overflow: visible;
+    background: #fff;
+    transition: box-shadow 0.16s, border-color 0.16s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chip-search-normal,
+.chip-search-hover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.chip-search-hover {
+    display: none;
+}
+
+.header-chip-search:hover .chip-search-normal {
+    display: none;
+}
+
+.header-chip-search:hover .chip-search-hover {
+    display: flex;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   FIX SVG ICON: bóp SVG tìm kiếm đúng kích thước, căn giữa tuyệt đối
+────────────────────────────────────────────────────────────── */
+.chip-search-normal svg,
+.chip-search-hover svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block;
+    margin: auto;
+    /* Không ép fill/stroke màu SVG */
+}

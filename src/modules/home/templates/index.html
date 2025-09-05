@@ -1,0 +1,65 @@
+<!-- 📄 modules/home/templates/index.html -->
+<!-- 🕒 Last updated: 2025-07-08 02:10 (add admin navigation button visible to admin role) -->
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TvuMoE</title>
+
+    {% if csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% endif %}
+
+    <!-- 👉 Tailwind build -->
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <!-- ▸ HEADER -->
+    {% include "partials/header.html" %}
+
+    <!-- ▸ MAIN CONTENT -->
+    <main class="flex-grow container mx-auto py-20 text-center">
+        <h2 class="text-3xl font-semibold mb-8">
+            Chào mừng!
+            {% if user %}
+            Bạn có quyền <span class="underline">{{ user.user_role }}</span>
+            {% endif %}
+        </h2>
+
+        <div class="space-x-6">
+            {% if user %}
+            <!-- ✅ Nút Chatbot -->
+            <a href="/chat" class="px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700">
+                Chatbot
+            </a>
+
+            {% if user.user_role == 'admin' %}
+            <!-- 🔧 Nút Admin (chỉ hiển thị cho admin) -->
+            <a href="/admin" class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900">
+                Admin Dashboard
+            </a>
+            {% endif %}
+
+            <a href="/auth/logout" class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700">
+                Đăng xuất
+            </a>
+            {% else %}
+            <a href="/auth/login" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Đăng nhập
+            </a>
+            <a href="/auth/register" class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700">
+                Đăng ký
+            </a>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- ▸ FOOTER -->
+    {% include "partials/footer.html" %}
+</body>
+
+</html>

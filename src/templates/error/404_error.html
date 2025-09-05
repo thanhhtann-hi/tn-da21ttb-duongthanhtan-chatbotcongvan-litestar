@@ -1,0 +1,32 @@
+<!-- 📄 src/templates/error/404_error.html -->
+<!-- 🕒 Last updated: 2025-07-08 23:10 -->
+{% extends "partials/404_base.html" %}
+
+{% block title %}404 – Trang không tìm thấy{% endblock %}
+
+{% block content %}
+<section class="flex flex-col items-center text-center px-6 space-y-6">
+    <div class="error-icon mb-6">
+        {% include "partials/icons/auth/icons_auth_404.svg" %}
+    </div>
+
+    <h1 class="text-4xl sm:text-5xl font-semibold text-gray-900">
+        404 – Không tìm thấy trang
+    </h1>
+
+    <p class="max-w-md text-base text-gray-600 leading-relaxed">
+        Trang bạn yêu cầu không tồn tại hoặc đã được di chuyển.
+    </p>
+
+    <a href="/" class="mt-4 inline-block px-6 py-2 rounded-full bg-blue-600 text-white text-sm font-medium
+               hover:opacity-90 transition">
+        Về trang chủ
+    </a>
+
+    <footer class="text-center text-xs text-gray-500 pt-6">
+        <a href="/legal/terms" class="hover:underline">Điều khoản sử dụng</a>
+        <span class="mx-2 select-none">|</span>
+        <a href="/legal/privacy" class="hover:underline">Chính sách riêng tư</a>
+    </footer>
+</section>
+{% endblock %}

@@ -1,0 +1,143 @@
+/* file: src/modules/chat/static/css/chat_header.css */
+/* updated: 2025-09-03 */
+
+.icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:9999px;transition:background-color .2s ease;}
+.icon-btn:hover{background:#374151;}
+.icon-btn svg{width:18px!important;height:18px!important;display:block;}
+
+.icon-text-btn{display:flex;align-items:center;gap:.25rem;padding:6px 6px 6px 10px;border-radius:9999px;transition:background-color .2s ease;background:transparent;}
+.icon-text-btn:hover{background:#374151;}
+#btn-moe-toggle svg{width:7px!important;height:7px!important;transform:translateY(-1px);}
+
+/* Header label */
+#moe-selected{display:flex;align-items:baseline;gap:6px;font-size:0!important;}
+#moe-selected .moe-label,#moe-selected .moe-variant{line-height:1.2!important;font-size:16px!important;}
+#moe-selected .moe-label{font-weight:700!important;letter-spacing:.2px;}
+#moe-selected .moe-variant{color:#d1d5db;}
+
+/* Dropdown shells */
+#moe-dropdown,#options-dropdown,#notification-dropdown{border-radius:.75rem;box-shadow:0 10px 20px rgba(0,0,0,.25);background:#2A2A2A;overflow:hidden;padding:.5rem 0;}
+/* KHÔNG thêm padding cho notification-ul để không lệch lề */
+#moe-dropdown ul,#options-dropdown ul{padding:0 8px;}
+#moe-dropdown li,#options-dropdown li,#notification-dropdown li{border-radius:.75rem;transition:background-color .2s ease,border-radius .2s ease;padding:10px 16px;}
+#moe-dropdown li:hover,#notification-dropdown li:hover{background:#374151;}
+#moe-dropdown .text-xs,#options-dropdown .text-xs{font-size:12px;color:#B1B1B1;}
+#moe-dropdown .text-xs svg{width:10px;height:10px;display:block;transform:translateY(2.5px);}
+
+/* MoE list */
+#moe-list{list-style:none;margin:0;}
+#moe-list .moe-item{display:flex;align-items:center!important;justify-content:space-between;gap:12px;padding:10px 16px;border-radius:.5rem;cursor:pointer;user-select:none;}
+#moe-list .moe-item:hover{background:#374151;}
+#moe-list .moe-item:focus-visible{outline:2px solid #4B5563;outline-offset:2px;background:#374151;}
+#moe-list .moe-main{display:flex;flex-direction:column;gap:2px;min-width:0;}
+#moe-list .moe-name{color:#E5E7EB;font-weight:500;line-height:1.2;}
+#moe-list .moe-hint{font-size:12px;color:#B1B1B1;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36ch;}
+#moe-list .moe-empty{color:#9CA3AF;}
+
+/* Tick icon – centered */
+.tick-icon{display:flex;align-items:center;justify-content:center;width:20px;height:20px;line-height:0;}
+.tick-icon svg{width:16px;height:16px;display:block;}
+#moe-list .tick-icon{display:none;}
+#moe-list .moe-item.is-active .tick-icon{display:flex!important;}
+
+/* Options dropdown tweaks */
+#options-dropdown svg{width:auto!important;height:auto!important;}
+#options-dropdown .inline-flex svg{width:100%!important;height:100%!important;display:block;}
+#options-dropdown li:first-child:hover{background:#374151;}
+#options-dropdown li:last-child:hover{background:#422021;}
+
+/* Notifications */
+#btn-notification .bg-red-600{top:7px!important;right:7px!important;width:10px!important;height:10px!important;}
+#notification-dropdown svg{width:30px!important;height:30px!important;display:block;}
+#notification-dropdown #mark-all-read{font-size:12px;color:#B1B1B1;transition:color .2s ease;cursor:pointer;}
+#notification-dropdown #mark-all-read:hover{color:#fff;text-decoration:underline;}
+#notification-dropdown .notify-text{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#notification-dropdown li[role="button"]:focus-visible{outline:none;background:#374151;}
+
+/* Misc */
+header{overflow:visible;}
+#notification-anchor{position:relative;}
+#notification-anchor > #notification-dropdown{right:0;left:auto;}
+#chat-root,#chat-scroll{overscroll-behavior-x:none;}
+
+/* Header height clamp */
+#chat-header{height:var(--header-height)!important;min-height:var(--header-height)!important;}
+
+/* giữ màu/độ đậm tên item */
+#moe-list .moe-name{color:#E5E7EB;font-weight:400;}
+
+/* Notifications dropdown items (đồng bộ khoảng cách với header px-3) */
+#notification-dropdown li{
+  border-radius:.5rem;
+  padding:6px 12px;
+  transition:background-color .2s ease;
+}
+
+/* Notification list: bỏ padding ngang để không cộng dồn với header */
+#notification-list{padding-left:0;padding-right:0;}
+
+/* Notification items */
+#notification-list li{
+  border-radius:.5rem;
+  padding:6px 12px;
+  line-height:1.35;
+  transition:background-color .2s ease;
+}
+
+/* ================= Hover pill: đặt dưới nội dung (không che chữ) ================= */
+#notification-dropdown{
+  --notif-hover-inset-y: 3px;  /* top/bottom */
+  --notif-hover-inset-x: 8px;  /* left/right */
+}
+
+/* Không dùng màu nền trực tiếp lên <li> khi hover để tránh full-bleed */
+#notification-dropdown li:hover{ background: transparent; }
+
+#notification-list li{ position:relative; z-index:0; }
+
+/* Vẽ nền hover bằng ::before và đặt dưới text */
+#notification-list li::before{
+  content:"";
+  position:absolute;
+  inset: var(--notif-hover-inset-y) var(--notif-hover-inset-x);
+  border-radius:.5rem;
+  background: transparent;
+  transition: background-color .2s ease;
+  z-index:-1;                 /* dưới nội dung => chữ không bị mờ/mất */
+  pointer-events:none;
+}
+
+#notification-list li:hover::before{ background:#374151; }
+
+/* Focus bằng bàn phím: vẫn giữ inset + vòng hiển thị */
+#notification-list li[role="button"]:focus-visible{
+  outline:none;
+}
+#notification-list li[role="button"]:focus-visible::before{
+  background:#374151;
+  box-shadow:0 0 0 2px #4B5563 inset;
+}
+
+/* ===== Read state – stronger (đảm bảo mờ ở mọi item, kể cả dòng đầu) ===== */
+#notification-list li.is-read .notify-title,
+#notification-list .notify-item.is-read .notify-title,
+#notification-list [role="button"].is-read .notify-title{
+  color:#D1D5DB !important;
+  font-weight:400 !important;
+}
+
+#notification-list li.is-read .notify-text,
+#notification-list .notify-item.is-read .notify-text,
+#notification-list [role="button"].is-read .notify-text{
+  color:#B1B1B1 !important;
+  font-weight:400 !important;
+}
+
+/* nhẹ tay toàn block (không làm mờ hover-pill) */
+#notification-list li.is-read{ opacity:.96; }
+#notification-list li.is-read::before{ background:transparent; }
+
+/* ẩn chấm chưa đọc nếu còn render */
+#notification-list li.is-read [data-unread-dot],
+#notification-list .notify-item.is-read [data-unread-dot],
+#notification-list [role="button"].is-read [data-unread-dot]{ display:none !important; }

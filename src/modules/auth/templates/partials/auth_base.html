@@ -1,0 +1,66 @@
+<!-- 📁 src/modules/auth/templates/partials/auth_base.html -->
+<!-- 🕒 Last updated: 2025-07-09 09:30 -->
+<!-- =============================================================================
+     Layout Auth
+     • Desktop (≥ 1280 px):
+         ├─ Aside trái:   xl:w-3/5  (60 %)
+         └─ Cột phải:     xl:w-2/5  (40 %)
+     • Mọi thiết bị khác (mobile, tablet, iPad, etc): aside ẩn, form full-width, logo mini luôn hiện.
+============================================================================= -->
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Auth{% endblock %}</title>
+
+    {% if csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% endif %}
+
+    <link rel="icon" href="/static/images/favicon/favicon.ico" type="image/x-icon" />
+
+    <!-- Font & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+    <link rel="stylesheet" href="/static/css/auth_base.css" />
+    <link rel="stylesheet" href="/static/css/auth_error.css" />
+    <link rel="stylesheet" href="/static/css/auth_left.css" />
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/head-support.js"></script>
+</head>
+
+<body class="min-h-screen flex relative">
+
+    <!-- Logo mini (mobile/tablet/iPad) -->
+    <a href="/"
+        class="xl:hidden absolute top-4 left-4 text-lg font-extrabold font-manrope text-[#053484] tracking-wide select-none">
+        TvuMoE
+    </a>
+
+    <!-- Aside trái: 60 % trên desktop lớn (≥1280px) -->
+    <aside class="hidden xl:flex xl:w-3/5 items-center justify-center font-manrope">
+        {% include "partials/auth_left.html" %}
+    </aside>
+
+    <!-- Cột phải: 40 % trên desktop lớn (≥1280px) -->
+    <main class="flex-1 xl:w-2/5 flex items-center justify-center">
+        <!-- Form giữ max-w-sm -->
+        <div id="form-container" class="w-full max-w-sm">
+            {% block form %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- JS -->
+    <script src="/static/js/auth_left.js"></script>
+    <script src="/static/js/auth_base.js"></script>
+    <!-- Maintenance auto-reload -->
+    <script src="/static/js/maintenance.js"></script>
+</body>
+
+</html>

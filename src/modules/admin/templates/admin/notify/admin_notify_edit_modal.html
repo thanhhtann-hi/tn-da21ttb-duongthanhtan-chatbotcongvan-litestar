@@ -1,0 +1,390 @@
+<!--
+  file : src/modules/admin/templates/admin/notify/admin_notify_edit_modal.html
+  updated: 2025-08-11 (v2.4)
+  note : PUT chỉ swap #notify-list-region (hx-select); KHÔNG dùng hx-vals.
+         Trước submit JS sẽ bơm v/sort/q/start_date/end_date vào body
+         và merge filter vào URL hx-put. Nút submit auto-disable bằng hx-disabled-elt.
+-->
+
+<!-- ╭─ OVERLAY (click là close modal) ────────────────────────────────╮ -->
+<div id="notify-edit-modal-overlay" data-state="open"
+  class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+  tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ────────────────────────────────────────────────╮ -->
+<div id="notify-edit-modal" data-state="open" class="fixed inset-0 z-[9999] flex items-center justify-center"
+  role="dialog" aria-modal="true" tabindex="-1">
+  <div
+    class="notify-modal-content duration-75 w-full max-w-[98vw] sm:max-w-[480px] min-h-[200px] max-h-[80vh] rounded-[32px] border border-gray-200 bg-white shadow-modal px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95">
+    <!-- HEADER -->
+    <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+      <div class="flex-1 flex flex-col items-center">
+        <h2 class="text-lg font-semibold text-gray-900 text-center w-full">
+          Chỉnh sửa thông báo
+        </h2>
+        <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+          Cập nhật nội dung và thông tin gửi thông báo!
+        </div>
+      </div>
+      <button id="notify-edit-modal-close" type="button"
+        class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center w-10 h-10 rounded-full ring-1 ring-gray-300 hover:ring-blue-900 transition-all bg-white cursor-pointer shadow ms-2 group hover:bg-blue-50 focus:outline-none"
+        aria-label="Đóng">
+        <span class="chip-search-normal flex items-center justify-center w-4 h-4">
+          {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+        </span>
+        <span class="chip-search-hover flex items-center justify-center w-4 h-4">
+          {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+        </span>
+      </button>
+    </div>
+    <hr class="border-t border-gray-200 m-0" />
+
+    <!-- BODY: Form -->
+    <div class="modal-scroll-area grow overflow-y-auto px-6 pb-6">
+      <!-- ⚠️ chỉ swap vùng list để giữ caret/toolbar state -->
+      <form id="admin-notify-edit-form" hx-put="/admin/notify/{{ notification.notify_id }}"
+        hx-target="#notify-list-region" hx-select="#notify-list-region" hx-swap="outerHTML"
+        hx-disabled-elt="#notify-edit-submit-btn" autocomplete="off" class="flex flex-col h-full w-full">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+        <!-- Hidden filter state (được JS set trước submit) -->
+        <input type="hidden" name="v" value="" />
+        <input type="hidden" name="sort" value="" />
+        <input type="hidden" name="q" value="" />
+        <input type="hidden" name="start_date" value="" />
+        <input type="hidden" name="end_date" value="" />
+
+        <!-- Nội dung thông báo -->
+        <div class="flex flex-col w-full mt-[5px]">
+          <label for="notify_content" class="block text-gray-900 font-semibold mb-1 text-[14px]">
+            Nội dung
+          </label>
+          <div class="textarea-outer mt-[4px]">
+            <!-- bỏ autofocus; JS sẽ tự focus -->
+            <textarea id="notify_content" name="notify_content" rows="5" maxlength="1000" required
+              placeholder="Nhập nội dung thông báo..."
+              class="w-full resize-none transition-shadow placeholder:text-gray-700 text-[14px]">
+{{ notification.notify_content|e }}</textarea>
+          </div>
+        </div>
+
+        <!-- Đối tượng nhận -->
+        <div class="flex flex-col w-full mt-4">
+          <label class="block font-medium mb-1 text-[14px]">Gửi cho</label>
+          <div class="flex gap-4 mt-[4px]">
+            <label class="inline-flex items-center text-[14px]">
+              <input type="checkbox" name="notify_target_roles" value="user" class="form-checkbox rounded-full" {%
+                if 'user' in notification.notify_target_roles %}checked{% endif %} />
+              <span class="ml-2">Người dùng</span>
+            </label>
+            <label class="inline-flex items-center text-[14px]">
+              <input type="checkbox" name="notify_target_roles" value="internal" class="form-checkbox rounded-full" {%
+                if 'internal' in notification.notify_target_roles %}checked{% endif %} />
+              <span class="ml-2">Nội bộ</span>
+            </label>
+            <label class="inline-flex items-center text-[14px]">
+              <input type="checkbox" name="notify_target_roles" value="admin" class="form-checkbox rounded-full" {%
+                if 'admin' in notification.notify_target_roles %}checked{% endif %} />
+              <span class="ml-2">Quản trị viên</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Tuỳ chọn hiển thị -->
+        <div class="flex flex-col w-full mt-[12px]">
+          <label class="inline-flex items-center text-[14px] w-fit">
+            <input type="checkbox" name="notify_visible" value="1" class="form-checkbox rounded-full" {% if
+              notification.notify_visible %}checked{% endif %} />
+            <span class="ml-2">Hiển thị cho người nhận</span>
+          </label>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="flex justify-center gap-4 w-full pt-2 border-t border-gray-100 mt-[60px]">
+          <button type="button" onclick="closeNotifyEditModal()"
+            class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">
+            Hủy
+          </button>
+          <button id="notify-edit-submit-btn" type="submit"
+            class="w-[120px] rounded-full py-2.5 bg-blue-900 text-white font-medium hover:bg-blue-800 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed text-[14px]">
+            Cập nhật
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mobile-drawer-handle {
+    display: none !important;
+  }
+
+  @media (max-width: 540px) {
+    #notify-edit-modal {
+      align-items: flex-end !important;
+      justify-content: flex-end !important;
+      padding: 0 !important;
+    }
+
+    .notify-modal-content {
+      width: 100vw !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      border-radius: 28px 28px 0 0 !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+      margin: 0 !important;
+      box-shadow: 0 -8px 40px 0 rgba(44, 46, 60, 0.13);
+      position: fixed !important;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: unset;
+      min-height: 40vh;
+      max-height: 92vh;
+      overflow: hidden;
+      animation: drawerIn 0.25s cubic-bezier(0.25, 0.8, 0.5, 1) both;
+      z-index: 10000;
+      will-change: transform;
+    }
+
+    .modal-scroll-area {
+      max-height: calc(92vh - 70px);
+      overflow-y: auto;
+      padding-bottom: 16px;
+      padding-top: 0;
+    }
+  }
+
+  @keyframes drawerIn {
+    from {
+      transform: translateY(60px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  #notify-edit-modal-close .chip-search-hover {
+    display: none;
+  }
+
+  #notify-edit-modal-close:hover .chip-search-normal,
+  #notify-edit-modal-close:focus .chip-search-normal {
+    display: none;
+  }
+
+  #notify-edit-modal-close:hover .chip-search-hover,
+  #notify-edit-modal-close:focus .chip-search-hover {
+    display: flex;
+  }
+
+  #notify-edit-modal-close .chip-search-normal svg,
+  #notify-edit-modal-close .chip-search-hover svg {
+    width: 10px !important;
+    height: 10px !important;
+    margin: auto;
+    display: block;
+  }
+
+  #notify-edit-modal-close:active {
+    background: #e8f0fe;
+  }
+
+  #notify-edit-modal-close {
+    z-index: 10;
+  }
+
+  @media (max-width: 540px) {
+    #notify-edit-modal>div {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  .modal-scroll-area::-webkit-scrollbar {
+    width: 10px;
+    background: transparent;
+  }
+
+  .modal-scroll-area::-webkit-scrollbar-thumb {
+    background: #b5bbc6;
+    border-radius: 14px;
+    border: 3px solid #f3f4f6;
+    min-height: 48px;
+    transition: background 0.2s;
+  }
+
+  .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+  }
+
+  .modal-scroll-area::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 14px;
+  }
+
+  .modal-scroll-area {
+    scrollbar-color: #b5bbc6 #f3f4f6;
+    scrollbar-width: thin;
+  }
+
+  .textarea-outer {
+    border: 1.5px solid #9ca3af;
+    border-radius: 20px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: none;
+    padding: 0;
+    position: relative;
+    height: 120px;
+    min-height: 120px;
+    max-height: 120px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .textarea-outer:focus-within,
+  .textarea-outer:hover {
+    border-color: #1e3a8a !important;
+    box-shadow: none !important;
+  }
+
+  .textarea-outer textarea:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .textarea-outer textarea {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    width: 100%;
+    height: 100%;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    font-size: 14px;
+    color: #222;
+    line-height: 1.5;
+    box-shadow: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    transition: background 0.2s;
+    box-sizing: border-box;
+    resize: none;
+  }
+
+  .textarea-outer textarea::-webkit-scrollbar {
+    width: 7px;
+    background: transparent;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .textarea-outer textarea:hover::-webkit-scrollbar,
+  .textarea-outer textarea:focus::-webkit-scrollbar {
+    opacity: 1;
+  }
+
+  .textarea-outer textarea::-webkit-scrollbar-thumb {
+    background: #1e3a8a;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    min-height: 32px;
+    opacity: 1;
+    transition: background 0.2s;
+  }
+
+  .textarea-outer textarea::-webkit-scrollbar-thumb:hover {
+    background: #0a2250;
+  }
+
+  .textarea-outer textarea::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 8px;
+  }
+
+  .textarea-outer textarea {
+    scrollbar-width: thin;
+    scrollbar-color: #1e3a8a #fff;
+  }
+
+  .textarea-outer textarea:not(:hover):not(:focus) {
+    scrollbar-width: none;
+  }
+
+  .textarea-outer textarea::placeholder {
+    color: #374151;
+    opacity: 1;
+    font-size: 14px;
+  }
+
+  #admin-notify-edit-form input[type="text"],
+  #admin-notify-edit-form textarea {
+    border: none !important;
+    border-radius: 0 !important;
+    background: none !important;
+    font-size: 14px;
+  }
+
+  #admin-notify-edit-form input[type="text"]:focus,
+  #admin-notify-edit-form textarea:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  #admin-notify-edit-form input[type="checkbox"].form-checkbox {
+    accent-color: #1e3a8a !important;
+    border-radius: 50% !important;
+    appearance: none !important;
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid #d1d5db;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  #admin-notify-edit-form input[type="checkbox"].form-checkbox:checked {
+    background-color: #1e3a8a;
+    border-color: #1e3a8a;
+  }
+
+  #admin-notify-edit-form input[type="checkbox"].form-checkbox:checked:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 4px;
+    left: 7px;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    border-radius: 1.5px;
+    transform: rotate(45deg);
+  }
+
+  #admin-notify-edit-form input[type="checkbox"].form-checkbox:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px #c7d6f7 !important;
+  }
+
+  #admin-notify-edit-form .w-fit {
+    width: fit-content !important;
+    max-width: 100%;
+  }
+</style>

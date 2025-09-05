@@ -1,0 +1,159 @@
+<!-- file: src/modules/chat/templates/partials/chat_header.html -->
+<!-- updated: 2025-09-03 (MoE tier-only, dual data sources) -->
+
+{% set _moe_models_json = (moe_models|default([]))|tojson %}
+{% set _allowed_json = allowed_models_json|default("[]") %}
+
+{% if is_notify_all|default(false) %}
+<header id="chat-header"
+    data-is-home="{{ 1 if is_home else 0 }}"
+    data-moe-models='{{ _moe_models_json|safe }}'
+    data-allowed-models='{{ _allowed_json|safe }}'
+    class="h-[60px] flex items-center justify-start px-4 text-base relative overflow-visible bg-transparent border-0 rounded-none shadow-none backdrop-blur-0">
+    <div class="flex items-center gap-[2px]">
+        <div class="relative">
+            <div class="flex items-center gap-2 pl-0 pr-0 py-1 text-white select-none cursor-default">
+                <span id="moe-selected" class="flex items-center gap-1 ml-[4px]">
+                    <span class="moe-label text-lg font-semibold">Thông báo</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+{% else %}
+<header id="chat-header"
+    data-is-home="{{ 1 if is_home else 0 }}"
+    data-moe-models='{{ _moe_models_json|safe }}'
+    data-allowed-models='{{ _allowed_json|safe }}'
+    class="h-[60px] flex items-center justify-between px-4 rounded-tr-xl bg-transparent border-0 backdrop-blur-0 text-base relative overflow-visible">
+
+    <!-- MoE selector -->
+    <div class="flex items-center gap-[2px] relative">
+        <div class="relative">
+            <button id="btn-moe-toggle" type="button"
+                class="group icon-text-btn relative flex items-center gap-2 rounded-full pl-3 pr-2 py-1 text-white hover:bg-[#374151] transition-colors"
+                aria-label="Chọn mô hình" aria-haspopup="menu" aria-expanded="false" aria-controls="moe-dropdown">
+                <span id="moe-selected" class="flex items-center gap-1 ml-[4px]">
+                    <span class="moe-label text-lg flex items-baseline gap-1">
+                        <span class="moe-primary font-semibold">{{ moe_default_label|default('MoE') }}</span>
+                        <span class="moe-secondary font-normal text-[#d1d5db]"></span>
+                    </span>
+                    <span class="moe-variant hidden"></span>
+                </span>
+                <span class="w-3 h-3 flex items-center mt-1 ml-[3px]">
+                    {% include "partials/icons/chat_header/icon_header_arrow_down.svg" %}
+                </span>
+                <span id="moe-tooltip" aria-hidden="true"
+                    class="absolute top-full left-1/2 mt-1 -translate-x-1/2 whitespace-nowrap rounded-xl bg-[#111827] px-2 py-0.5 text-[10px] text-[#f3f4f6] opacity-0 pointer-events-none transition-opacity z-50
+                 group-hover:opacity-100 group-focus-within:opacity-100">Chọn mô hình</span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="moe-dropdown" role="menu" aria-labelledby="btn-moe-toggle"
+                class="absolute z-10 hidden top-full mt-2 left-0 min-w-[270px] rounded-xl bg-[#2e2e2e] text-white shadow-xl text-sm py-2">
+                <div class="flex items-center gap-1 px-4 pb-2 text-[#B1B1B1] text-xs">
+                    <span>Mô hình</span>
+                    <span class="w-[14px] h-[14px]">
+                        {% include "partials/icons/chat_header/icon_header_info.svg" %}
+                    </span>
+                </div>
+
+                <!-- tick template -->
+                <template id="moe-tick-icon">
+                    {% include "partials/icons/chat_header/icon_header_ticks_model.svg" %}
+                </template>
+
+                <ul id="moe-list" class="space-y-1 px-2">
+                    <li class="px-4 py-2 text-[13px] text-[#B1B1B1]">Đang tải mô hình…</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- right cluster -->
+    <div class="flex items-center gap-2 relative">
+        {% if not is_home %}
+        <button id="btn-options" type="button"
+            class="group icon-btn relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#374151] transition-colors"
+            aria-label="Tuỳ chọn" aria-haspopup="menu" aria-expanded="false" aria-controls="options-dropdown">
+            {% include "partials/icons/chat_header/icon_header_more.svg" %}
+            <span id="options-tooltip" aria-hidden="true"
+                class="absolute top-full left-1/2 mt-1 -translate-x-1/2 whitespace-nowrap rounded-xl bg-[#111827] px-2 py-0.5 text-[10px] text-[#f3f4f6] opacity-0 pointer-events-none transition-opacity z-50
+               group-hover:opacity-100 group-focus-within:opacity-100">Tuỳ chọn</span>
+        </button>
+
+        <div id="options-dropdown" role="menu" aria-labelledby="btn-options"
+            class="absolute z-10 hidden top-full mt-2 right-[80px] min-w-[210px] rounded-xl bg-[#2e2e2e] text-white shadow-xl text-sm py-2">
+            <ul class="space-y-1 px-1.5">
+                <li role="menuitem" tabindex="0"
+                    class="flex items-center justify-between gap-2 cursor-pointer rounded-md px-3 py-2 hover:bg-[#374151] transition-colors whitespace-nowrap">
+                    <span class="flex items-center gap-2">
+                        <span class="inline-flex items-center justify-center w-4 h-4">
+                            {% include "partials/icons/chat_header/icon_header_folder_plus.svg" %}
+                        </span>
+                        Thêm vào dự án
+                    </span>
+                    <span class="inline-flex items-center justify-center w-2 h-2">
+                        {% include "partials/icons/chat_header/icon_header_arrow_right.svg" %}
+                    </span>
+                </li>
+                <li role="menuitem" tabindex="0"
+                    class="flex items-center gap-2 cursor-pointer rounded-modal px-3 py-2 text-[#F78C8C] hover:bg-[#422021] transition-colors">
+                    <span class="inline-flex items-center justify-center w-4 h-4">
+                        {% include "partials/icons/chat_header/icon_header_trash.svg" %}
+                    </span>
+                    Xoá đoạn chat
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Bell -->
+        <div id="notification-anchor" class="relative">
+            <button id="btn-notification" type="button"
+                class="group icon-btn relative w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#374151] transition-colors"
+                aria-label="Thông báo" aria-haspopup="dialog" aria-expanded="false" aria-controls="notification-dropdown">
+                {% include "partials/icons/chat_bars_left/icon_bars_left_notification.svg" %}
+                <span id="notification-badge"
+                    class="absolute top-[5px] right-[5px] w-[10px] h-[10px] rounded-full bg-red-600 border border-[#1F1F1F] hidden"></span>
+                <span id="notification-tooltip" aria-hidden="true"
+                    class="absolute top-full left-1/2 mt-1 -translate-x-1/2 whitespace-nowrap rounded-xl bg-[#111827] px-2 py-0.5 text-[10px] text-[#f3f4f6] opacity-0 pointer-events-none transition-opacity z-50
+               group-hover:opacity-100 group-focus-within:opacity-100">Thông báo</span>
+            </button>
+
+            <!-- Dropdown -->
+            <div id="notification-dropdown" role="dialog" aria-labelledby="btn-notification"
+                class="absolute z-10 hidden top-full mt-2 right-0 w-[360px] rounded-xl bg-[#2A2A2A] text-white shadow-xl text-sm overflow-hidden">
+
+                <!-- header -->
+                <div class="flex items-center justify-between px-3 pt-1 pb-2 border-b border-gray-700">
+                    <strong class="flex items-center text-white text-[13px] leading-tight">Thông báo</strong>
+                    <div class="flex items-center gap-1">
+                        <button id="mark-all-read" type="button"
+                            class="group icon-btn w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#374151] transition"
+                            aria-label="Đọc tất cả" hx-post="/chat/notify/read_all" hx-swap="none" hx-trigger="click">
+                            <span class="inline-flex w-[16px] h-[16px] items-center justify-center">
+                                {% include "partials/icons/chat_header/icon_header_thong_bao_tick_all.svg" %}
+                            </span>
+                        </button>
+                        <a id="view-all" href="/chat/notify/all" hx-get="/chat/notify/all" hx-target="#chat-root"
+                            hx-select="#chat-root" hx-swap="outerHTML" hx-push-url="true" hx-boost="false"
+                            class="group icon-btn w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#374151] transition"
+                            aria-label="Xem tất cả"
+                            onclick="document.getElementById('notification-dropdown')?.classList.add('hidden');document.getElementById('btn-notification')?.setAttribute('aria-expanded','false');">
+                            <span class="inline-flex w-[16px] h-[16px] items-center justify-center">
+                                {% include "partials/icons/chat_header/icon_header_thong_bao_view_all.svg" %}
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- list -->
+                <ul id="notification-list"
+                    class="max-h-[320px] overflow-y-auto py-1 px-0 space-y-1"
+                    aria-live="polite" aria-relevant="additions text" aria-label="Danh sách thông báo mới"></ul>
+            </div>
+        </div>
+    </div>
+</header>
+{% endif %}

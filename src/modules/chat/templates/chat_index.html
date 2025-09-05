@@ -1,0 +1,136 @@
+{# file: src/modules/chat/templates/chat_index.html #}
+{# updated: 2025-08-30 (MoE-safe, model-id data, safe markdown) #}
+{% extends "partials/chat_base.html" %}
+{% block page_title %}TvuMoE{% endblock %}
+
+{% block chat_messages %}
+{% if messages and messages|length %}
+<div id="chat-msg-list" class="w-full flex flex-col items-center gap-4 px-4 sm:px-0">
+    {% for m in messages %}
+    {# =========================
+    USER (right)
+    ========================= #}
+    {% set ver_current = m.version_index|default(1, true) %}
+    {% set ver_total = m.version_total|default(1, true) %}
+
+    <div
+        class="relative group message-group message-row w-full items-end rtl:items-start"
+        data-role="user"
+        data-message-id="{{ m.message_id }}"
+        data-model-id="{{ m.message_model_id }}"
+        data-versions-current="{{ ver_current }}"
+        data-versions-total="{{ ver_total }}"
+        data-edit-url="/chat/api/message/{{ m.message_id }}/edit"
+        data-redo-url="/chat/api/message/{{ m.message_id }}/regenerate"
+        data-poll-url="/chat/api/message/{{ m.message_id }}">
+        <div id="msg-{{ m.message_id }}-q" dir="auto" class="user-message-bubble-color">
+            <div class="whitespace-pre-wrap">{{ m.message_question|e }}</div>
+        </div>
+
+        <div class="message-actions print:hidden">
+            <div class="action-buttons">
+                {# Version controls #}
+                {% if ver_total|int > 1 %}
+                <button type="button" aria-label="Phiên bản trước"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="ver-prev" data-mid="{{ m.message_id }}"
+                    {% if ver_current|int <=1 %}disabled{% endif %}>
+                    <img src="/static/icons/chat_base/icon_chat_arrow_trai_white.svg" alt="Prev" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+
+                <span class="version-indicator mx-1 text-[12px] leading-4 opacity-85 select-none">
+                    {{ ver_current }}/{{ ver_total }}
+                </span>
+
+                <button type="button" aria-label="Phiên bản sau"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="ver-next" data-mid="{{ m.message_id }}"
+                    {% if ver_current|int>= ver_total|int %}disabled{% endif %}>
+                    <img src="/static/icons/chat_base/icon_chat_arrow_phai_white.svg" alt="Next" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+                {% endif %}
+
+                <button type="button" aria-label="Chỉnh sửa"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="edit" data-mid="{{ m.message_id }}"
+                    data-editor="#editor-{{ m.message_id }}">
+                    <img src="/static/icons/chat_base/icon_chat_edit_pen_white.svg" alt="Edit" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+
+                <button type="button" aria-label="Sao chép"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="copy" data-mid="{{ m.message_id }}"
+                    data-copy-target="#msg-{{ m.message_id }}-q .whitespace-pre-wrap">
+                    <img src="/static/icons/chat_base/icon_chat_coppy_white.svg" alt="Copy" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+            </div>
+        </div>
+
+        {# Editor ẩn (khớp CSS/JS) #}
+        <div id="editor-{{ m.message_id }}"
+            class="message-editor bg-token-main-surface-tertiary rounded-3xl px-3 py-3 hidden"
+            data-mid="{{ m.message_id }}"
+            aria-label="Chỉnh sửa tin nhắn">
+            <div class="grid">
+                <textarea class="js-msg-editor-text" spellcheck="true">{{ m.message_question|e }}</textarea>
+            </div>
+            <div class="editor-actions flex items-center gap-2 mt-2">
+                <button type="button" class="btn btn-secondary js-editor-cancel">Hủy</button>
+                <button type="button" class="btn btn-primary js-editor-save">Gửi</button>
+            </div>
+        </div>
+    </div>
+
+    {# =========================
+    AI (left)
+    ========================= #}
+    {% set _ans = (m.message_ai_response or '')|trim %}
+    {% set _is_pending = (not _ans) or (_ans == '(queued)') %}
+    <div
+        class="relative group message-group message-row w-full items-start rtl:items-end"
+        data-role="ai"
+        data-message-id="{{ m.message_id }}"
+        data-model-id="{{ m.message_model_id }}"
+        data-poll-url="/chat/api/message/{{ m.message_id }}">
+        <div
+            id="msg-{{ m.message_id }}-ai"
+            dir="auto"
+            class="message-bubble ai{{ '' if (not _is_pending) else ' italic opacity-70' }}"
+            data-state="{{ 'pending' if _is_pending else 'ready' }}"
+            aria-live="polite">
+            {# Để client-side Markdown render an toàn, escape trước: #}
+            <div class="markdown" data-md="1">{{ (_ans if _ans else '(queued)')|e }}</div>
+        </div>
+
+        <div class="message-actions print:hidden">
+            <div class="action-buttons">
+                <button type="button" aria-label="Sao chép"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="copy" data-mid="{{ m.message_id }}"
+                    data-copy-target="#msg-{{ m.message_id }}-ai .markdown">
+                    <img src="/static/icons/chat_base/icon_chat_coppy_white.svg" alt="Copy" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+
+                <button type="button" aria-label="Đọc to câu trả lời (TTS)"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="tts" data-mid="{{ m.message_id }}">
+                    <img src="/static/icons/chat_base/icon_chat_loa_doc_cau_tra_loi_AI_white.svg" alt="TTS" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+
+                <button type="button" aria-label="Tạo lại câu trả lời"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-8 w-8 rounded-full"
+                    data-action="redo" data-mid="{{ m.message_id }}"
+                    data-redo-url="/chat/api/message/{{ m.message_id }}/regenerate">
+                    <img src="/static/icons/chat_base/icon_chat_reload_cau_tra_loi_AI_white.svg" alt="Regenerate" width="18" height="18" loading="lazy" decoding="async">
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div id="chat-greeting" class="text-center space-y-4 text-gray-300">
+    <p class="text-lg">Hi there! How can I help you today? <span>😊</span></p>
+</div>
+{% endif %}
+{% endblock %}

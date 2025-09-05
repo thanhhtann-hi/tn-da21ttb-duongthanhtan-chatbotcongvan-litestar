@@ -1,0 +1,52 @@
+<!-- file: src/modules/admin/templates/partials/admin_header.html -->
+<!-- updated: 2025-08-03 -->
+<!-- note: loại bỏ nút toggle sidebar mobile, làm gọn header -->
+
+<header id="admin-header"
+    class="admin-header-anti-flex flex items-center justify-between bg-white px-4 border-b border-gray-200">
+    <!-- Khối trái: Tiêu đề động -->
+    <h1 id="admin-header-text" class="text-lg font-semibold text-gray-800 truncate">
+        {% block header %}Trang chủ{% endblock %}
+    </h1>
+
+    <div class="flex items-center gap-2">
+        <!-- CHIP Tìm kiếm -->
+        <button id="admin-header-btn-search" type="button" aria-label="Tìm kiếm" tabindex="0" class="header-chip-search flex items-center justify-center w-10 h-10 rounded-full
+                 ring-1 ring-gray-300 hover:ring-blue-700 transition-all bg-white shadow cursor-pointer">
+            <span class="chip-search-normal flex items-center justify-center w-5 h-5">
+                {% include "partials/icons/admin_header/admin_header_tim_kiem.svg" %}
+            </span>
+            <span class="chip-search-hover flex items-center justify-center w-5 h-5">
+                {% include "partials/icons/admin_header/admin_header_tim_kiem_xanh.svg" %}
+            </span>
+        </button>
+
+        <!-- CHIP Avatar + Info -->
+        {% if user %}
+        {% set avatar_src = (
+        user.settings.setting_user_avatar_url
+        if user.settings and user.settings.setting_user_avatar_url
+        else '/static/images/img_user.webp'
+        ) %}
+        {% set display_name = user.user_display_name or user.user_name %}
+        {% set enable_fade = display_name|length > 15 %}
+        <div class="header-chip group flex items-center gap-2 p-1 pr-3 rounded-full cursor-pointer
+                 ring-1 ring-gray-300 hover:ring-blue-700 transition-colors
+                 max-w-[240px] bg-transparent">
+            <img src="{{ avatar_src }}" alt="avatar" class="w-8 h-8 rounded-full object-cover shrink-0" />
+            <div class="flex flex-col gap-y-[4px] leading-tight overflow-hidden">
+                <span class="{% if enable_fade %}display-name{% endif %}
+                         text-[13px] font-medium text-gray-900 transition-colors
+                         group-hover:text-blue-900">
+                    {{ display_name }}
+                </span>
+                <span class="role-label text-[10px] text-gray-500 transition-colors group-hover:text-blue-700">
+                    {{ 'Quản trị viên' if user.user_role == 'admin' else 'Bạn bị cấm!' }}
+                </span>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</header>
+
+{% include "partials/admin_header_modal_search.html" %}

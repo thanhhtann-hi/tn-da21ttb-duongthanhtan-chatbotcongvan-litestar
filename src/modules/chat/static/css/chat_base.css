@@ -1,0 +1,496 @@
+/* file: src/modules/chat/static/css/chat_base.css
+   updated: 2025-09-01 — UX15.1
+*/
+
+/* ============ Tokens ============ */
+:root{
+  --chat-max-width: 800px;
+  --content-max-width: var(--chat-max-width);
+  --cf-max-w: var(--chat-max-width);
+
+  --header-height: 60px;
+  --app-top-offset: 0px;
+
+  --user-chat-width: 70%;
+  --user-img-size: 150px;
+  --user-img-gap-v: .2rem;
+
+  --user-bubble-lh: 1.5;
+  --user-bubble-pad: .75rem;
+  --user-bubble-radius: 18px;
+
+  --filebadge-pdf:#FF5588; --filebadge-word:#1E4ED8; --filebadge-excel:#16A34A;
+  --filebadge-ppt:#F97316; --filebadge-code:#7C3AED; --filebadge-generic:#334155;
+
+  --fg-primary:#fcfcfc; --fg-secondary:rgba(252,252,252,.72); --btn-ghost-hover:rgba(255,255,255,.06);
+
+  --token-surface-tertiary:#232323; --token-surface-tertiary-border:rgba(255,255,255,.06);
+
+  /* ★ cho JS scroll-to-anchor (mặc định “sát” vừa đẹp; có thể tinh chỉnh) */
+  --chat-scroll-head-gap: 4px;     /* thêm chút đệm dưới header khi kẹp */
+  --chat-scroll-snap-bias: -6px;   /* bias âm kéo gần header hơn chút */
+}
+
+/* ============ Layout basics ============ */
+html,body{height:100%}
+body{overflow:hidden}
+#chat-root{display:flex;flex-direction:column;min-width:0;min-height:0}
+main#chat-scroll{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;max-width:100%;box-sizing:border-box;
+  padding-top:var(--header-height);
+  scrollbar-gutter: stable both-edges;
+}
+aside#sidebar{position:relative}
+aside#sidebar .sidebar-link{overflow:visible}
+aside#sidebar .sidebar-tooltip{position:absolute;z-index:60;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25));pointer-events:none}
+#sidebar-nav{overflow-x:hidden}
+#chat-root>footer{flex-shrink:0}
+#chat-root,#chat-scroll{overscroll-behavior-x:none;max-width:100%}
+
+/* Footer width */
+#chat-footer-shell .cf-inner,
+#chat-footer-shell .cf-wrap,
+#chat-footer-shell .cf-input-container,
+#chat-footer-shell .input-wrapper{max-width:var(--cf-max-w);margin-left:auto;margin-right:auto}
+#chat-footer-shell .cf-wrap{overflow:visible}
+#chat-footer-shell textarea#cf-input{min-height:44px;max-height:180px;resize:none;overflow:hidden;caret-color:#fff}
+#chat-footer-shell #cf-send:not(.is-recording){background:#0169CC;color:#fff}
+#chat-footer-shell #cf-send.is-recording{background:#003A70;color:#fff}
+#chat-footer-shell #cf-send:hover{filter:brightness(1.05)}
+#chat-footer-shell #cf-attach[aria-expanded="true"]{background:rgba(255,255,255,.05)}
+#cf-attach svg,#cf-send svg,#cf-mic svg,#cf-plus svg{width:18px!important;height:18px!important;display:block}
+
+/* Header */
+header#chat-header,.chat-header{position:sticky;top:var(--app-top-offset,0px);z-index:1200;background:transparent;border-bottom:1px solid rgba(255,255,255,.05);backdrop-filter:none}
+.header-shell{min-height:var(--header-height)}
+#chat-header,.chat-header{height:var(--header-height)!important;min-height:var(--header-height)!important}
+#chat-header .header-shell,.chat-header .header-shell{height:100%;min-height:var(--header-height);display:flex;align-items:center}
+
+/* ============ Bubbles ============ */
+.message-row{width:100%;max-width:var(--content-max-width);padding-bottom:.125rem}
+.message-group{display:flex;flex-direction:column;gap:.25rem;align-items:flex-end}
+.message-group.items-end{align-items:flex-end}
+.message-group.items-start{align-items:flex-start}
+html[dir="rtl"] .message-group.items-end{align-items:flex-start}
+html[dir="rtl"] .message-group.items-start{align-items:flex-end}
+
+/* Base bubble (user & legacy) */
+.message-bubble{
+  max-width:100%;
+  min-width:0;
+  overflow-wrap:anywhere; word-break:break-word;
+  white-space:pre-wrap; /* sẽ override riêng cho AI */
+  border-radius:1.5rem;
+  min-height:1.75rem;
+  padding:.625rem 1rem;
+  border:1px solid var(--bubble-border,rgba(255,255,255,0.08));
+}
+
+/* USER bubble */
+.message-bubble.user{
+  background:#003F7A;color:#fff;border:0!important;max-width:var(--user-chat-width,70%);
+  min-width:0;line-height:var(--user-bubble-lh);padding:var(--user-bubble-pad);min-height:auto;border-radius:var(--user-bubble-radius)
+}
+.user-message-bubble-color{position:relative;max-width:var(--user-chat-width,70%);min-width:0;background:#003F7A;color:#fff;border:0;line-height:var(--user-bubble-lh);padding:var(--user-bubble-pad);border-radius:var(--user-bubble-radius);border-start-end-radius:.5rem;border-top-right-radius:.5rem}
+.user-message-bubble-color .whitespace-pre-wrap{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.message-bubble.user[data-multiline="true"],.user-message-bubble-color[data-multiline="true"]{padding:calc(var(--user-bubble-pad) + .25rem)}
+
+/* Khi edit: ẩn bubble/ảnh/badges */
+.message-group.is-editing > .message-bubble.user,
+.message-group.is-editing > .user-message-bubble-color,
+.message-group.is-editing .user-images,
+.message-group.is-editing .user-file-badges{display:none!important}
+
+/* ============ User paste & file cards (rút gọn) ============ */
+.user-images{width:var(--user-chat-width);display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-bottom:calc(var(--user-img-gap-v)*1.1)}
+.user-paste-img{display:block;width:var(--user-img-size);height:var(--user-img-size);overflow:hidden;border-radius:.6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.user-paste-img img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:opacity .3s ease;opacity:1}
+.user-paste-img:hover img{opacity:.95}
+
+.user-file-badges{width:var(--user-chat-width);display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.25rem;margin-bottom:calc(var(--user-img-gap-v)*1.1)}
+.ufc-card{display:block;width:min(20rem,100%);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:.9rem;overflow:hidden;color:#fff;text-decoration:none}
+.ufc-card:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.ufc-card .inner{display:flex;align-items:center;gap:.5rem;padding:.5rem .625rem;min-height:56px}
+.ufc-ic{width:40px;height:40px;flex:0 0 40px;border-radius:.6rem;display:grid;place-items:center;overflow:hidden;background:var(--filebadge-generic);color:#fff}
+.ufc-ic .ic-18{width:22px;height:22px;display:grid;place-items:center}
+.ufc-ic .ic-18 svg{width:20px!important;height:20px!important;display:block}
+.ufc-ic svg{width:24px;height:24px;display:block}
+.ufc-ic img{width:22px;height:22px;display:block}
+.ufc-meta{min-width:0}
+.ufc-meta .name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ufc-meta .type{font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ufc-card[data-ext="pdf"] .ufc-ic{background:var(--filebadge-pdf)}
+.ufc-card[data-ext="doc"] .ufc-ic{background:var(--filebadge-word)}
+.ufc-card[data-ext="xlsx"] .ufc-ic{background:var(--filebadge-excel)}
+.ufc-card[data-ext="ppt"] .ufc-ic{background:var(--filebadge-ppt)}
+.ufc-card[data-ext="code"] .ufc-ic{background:var(--filebadge-code)}
+
+.message-bubble.user.msg-user-files{border:0!important;border-radius:var(--user-bubble-radius);padding:var(--user-bubble-pad);line-height:var(--user-bubble-lh);background:#003F7A;color:#fff}
+.msg-user-files .thumbs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.25rem}
+.msg-user-files figure{width:4rem;height:4rem;border-radius:.5rem;overflow:hidden;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;opacity:.9;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+
+/* ============ Markdown ============ */
+.markdown{color:#e5e7eb;max-width:var(--chat-max-width);overflow-x:auto}
+.markdown p,.markdown ul,.markdown ol,.markdown blockquote{margin:.5rem 0}
+.markdown ul{list-style:disc;padding-left:1.1rem}
+.markdown ol{list-style:decimal;padding-left:1.1rem}
+.markdown pre{background:#0f0f0f;border:1px solid #262626;padding:.75rem;border-radius:.5rem;overflow:auto}
+.markdown code{background:#111;padding:.15rem .35rem;border-radius:.35rem;border:1px solid #262626}
+.markdown a{color:#93c5fd;text-decoration:underline;text-underline-offset:2px}
+.markdown a:hover{color:#bfdbfe}
+
+/* Tables */
+.markdown table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #262626;border-radius:.5rem;background:#121212}
+.markdown thead th{background:#0f0f0f;color:#fafafa;position:sticky;top:0;z-index:1;border-bottom:1px solid #262626}
+.markdown th,.markdown td{padding:.5rem .75rem;text-align:left;vertical-align:top;border-right:1px solid #262626;border-bottom:1px solid #262626}
+.markdown th:last-child,.markdown td:last-child{border-right:0}
+.markdown tbody tr:nth-child(odd){background:#151515}
+.markdown tbody tr:hover{background:#1b1b1b}
+.markdown td>code,.markdown th>code{background:#111;border-color:#2a2a2a}
+
+/* .ai-block (compat) */
+.ai-block{background:transparent;border:0;border-radius:0;color:#e5e7eb;line-height:1.65;max-width:var(--chat-max-width)}
+.ai-block :is(p,ul,ol,blockquote){margin:.5rem 0}
+.ai-block ul{list-style:disc;padding-left:1.1rem}
+.ai-block ol{list-style:decimal;padding-left:1.1rem}
+.ai-block pre{background:#0f0f0f;border:1px solid #262626;padding:.75rem;border-radius:.5rem;overflow:auto}
+.ai-block code{background:#111;padding:.15rem .35rem;border-radius:.35rem;border:1px solid #262626}
+
+/* ============ Toast & actions & editor ============ */
+.toast-stack{position:fixed;right:16px;bottom:16px;z-index:3000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{pointer-events:auto;background:#222;color:#fff;padding:10px 12px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:380px;font-size:14px;opacity:.97;transform:translateY(0);transition:.25s ease}
+.toast-item.hide{opacity:0;transform:translateY(6px)}
+.toast-success{background:#166534}
+.toast-warning{background:#92400e}
+.toast-error{background:#7f1d1d}
+
+.message-actions{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;height:32px;margin-top:2px;color:var(--fg-primary);padding:0;line-height:0}
+.message-actions .ic-18{width:18px;height:18px;display:inline-grid;place-items:center}
+.message-actions .ic-18 svg{width:18px!important;height:18px!important;display:block}
+.message-actions .ic-18 img{width:18px;height:18px;display:block}
+.message-actions .action-buttons{display:flex;align-items:center;gap:2px;width:max-content;border-radius:.5rem;height:32px;padding:0}
+.message-actions .action-buttons > *{height:32px}
+.message-group .message-actions button{width:32px;height:32px;border-radius:9999px;color:var(--fg-secondary);background:transparent;border:0;cursor:pointer;line-height:0;opacity:0;transition:opacity .12s ease,background-color .12s ease,color .12s ease}
+.message-group:hover .message-actions button,
+.message-group:focus-within .message-actions button{opacity:1}
+.message-actions button:hover{color:var(--fg-primary);background:var(--btn-ghost-hover)}
+.message-actions button:disabled{opacity:.45;cursor:not-allowed;background:transparent}
+.message-actions button[aria-pressed="true"]{background:var(--btn-ghost-hover);color:var(--fg-primary)}
+.message-actions button:focus-visible{outline:2px solid rgba(255,255,255,.25);outline-offset:2px}
+
+/* Version indicator (n/m) + align */
+.message-actions .version-indicator{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:32px;min-width:42px;padding:0 .25rem;margin:0 .25rem;
+  color:var(--fg-secondary);font-size:12px;line-height:1;font-weight:600;
+  user-select:none;opacity:.88;border-radius:.375rem;
+}
+.message-actions .version-indicator:hover{background:rgba(255,255,255,.04);color:var(--fg-primary)}
+.message-actions button[data-action="ver-prev"],
+.message-actions button[data-action="ver-next"]{width:32px;height:32px}
+html[dir="rtl"] .message-actions .version-indicator{margin-inline:.25rem}
+
+/* Khung editor + field */
+.bg-token-main-surface-tertiary{background:var(--token-surface-tertiary);border:1px solid var(--token-surface-tertiary-border)}
+.message-editor{display:none}
+.message-group.is-editing > .message-editor{display:block}
+.message-editor.hidden{display:none!important;height:0!important;margin:0!important;padding:0!important}
+.message-editor .grid{display:grid;grid-template-columns:1fr;grid-template-rows:auto;gap:0}
+
+/* Editor shell — giống cf-wrap (padding đều 4 cạnh) */
+.message-editor.bg-token-main-surface-tertiary{
+  --_ring: rgba(255,255,255,.06);
+  background:#242628;
+  border-radius:24px;
+  padding:12px; /* đều 4 góc */
+  box-shadow:
+    rgba(255,255,255,0) 0 0 0 0 inset,
+    var(--_ring) 0 0 0 1px inset,
+    rgba(0,0,0,.05) 0 1px 3px 0,
+    rgba(0,0,0,.05) 0 1px 2px -1px;
+}
+
+/* Textarea trong editor — chiều cao, padding đều, scrollbar-gutter ổn định */
+.message-editor textarea.js-msg-editor-text{
+  width:100%;
+  min-height:40px;      /* = cf min */
+  max-height:162px;     /* = cf max */
+  border:0;outline:0;resize:none;background:transparent;color:#E5E7EB;
+  font:400 1rem/1.5 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  padding:12px 14px;            /* đều 4 góc, thoáng hơn top/left */
+  overflow:auto;overflow-x:hidden;
+  scrollbar-gutter:stable both-edges;
+  margin:0;
+}
+.message-editor .invisible{visibility:hidden;white-space:pre-wrap}
+
+/* Buttons trong editor — ↓15% chiều cao & ↑bo tròn */
+.message-editor .btn{
+  min-width:84px;
+  height:31px;                    /* 36px → 31px (≈ -15%) */
+  line-height:31px;
+  border-radius:.9rem;            /* bo tròn hơn */
+  padding:0 .8rem;
+  border:1px solid transparent;
+  font-weight:600;font-size:14px;
+  color:#e5e7eb;background:#2b2b2b;cursor:pointer;
+  transition:background-color .15s ease,border-color .15s ease,color .15s ease
+}
+.message-editor .btn:hover{background:#333}
+.message-editor .btn-primary{background:#0169CC;color:#fff}
+.message-editor .btn-primary:hover{filter:brightness(1.05)}
+.message-editor .btn-secondary{background:#2b2b2b;border-color:rgba(255,255,255,.12)}
+.message-editor .btn-secondary:hover{background:#3a3a3a;border-color:rgba(255,255,255,.2)}
+.message-editor .m-2{margin:.5rem}
+.message-editor .rounded-3xl{border-radius:1.25rem}
+.message-editor .px-3{padding-left:.75rem;padding-right:.75rem}
+.message-editor .py-3{padding-top:.75rem;padding-bottom:.75rem}
+
+/* Print */
+@media print{
+  .message-actions,.toast-stack{display:none!important}
+}
+
+/* Fallback khi .action-buttons nằm trực tiếp dưới .message-group */
+.message-group > .action-buttons{display:flex;align-items:center;gap:2px;height:32px;margin-top:2px;justify-content:flex-end;width:100%}
+.message-group > .action-buttons button{width:32px;height:32px;border-radius:9999px;color:var(--fg-secondary);background:transparent;border:0;cursor:pointer;line-height:0;opacity:0;transition:opacity .12s ease,background-color .12s ease,color .12s ease}
+.message-group:hover > .action-buttons button,
+.message-group:focus-within > .action-buttons button{opacity:1}
+
+/* ============ ★ AI bubble normalize (UX15) ============ */
+.message-bubble.ai{
+  white-space: normal !important;
+  display: block;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  min-height: 0 !important;
+  --bubble-border: transparent;
+  color:#e5e7eb; line-height:1.65; max-width:var(--chat-max-width);
+}
+.message-bubble.ai > .markdown{
+  display: flow-root; box-sizing: border-box;
+  margin: 0 !important; padding: 0 !important;
+  height: auto !important; min-height: 0 !important; max-height: none !important;
+  block-size: auto !important; min-block-size: 0 !important; max-block-size: none !important;
+  max-width: var(--chat-max-width);
+}
+.message-bubble.ai > .markdown > :first-child{ margin-top:0 !important; }
+.message-bubble.ai > .markdown > :last-child{  margin-bottom:0 !important; }
+.message-bubble.ai > .markdown > p:only-child{ margin:0 !important; padding:0 !important; display:inline; }
+.message-bubble.ai .markdown pre{ white-space: pre; }
+.message-bubble.ai .markdown code{ white-space: pre-wrap; }
+
+/* Pending state hint (khớp JS đặt data-state="pending") */
+.message-bubble.ai[data-state="pending"] .markdown{
+  opacity:.7; font-style:italic;
+}
+
+/* NEW: Canceled state (Stop/timeout) */
+.message-bubble.ai[data-state="canceled"] .markdown{
+  opacity:.85; font-style:normal; color:#fbbf24; /* amber-300 vibe, hợp với '(canceled)' */
+}
+
+/* Action bar 32px chuẩn cho AI */
+.message-group[data-role="ai"] .message-actions{
+  height:32px; margin-top:2px; padding:0; line-height:0;
+  display:flex; flex-wrap:wrap; justify-content:flex-end;
+}
+.message-group[data-role="ai"] .message-actions .action-buttons{ height:32px; }
+.message-group[data-role="ai"] .message-actions .action-buttons > *{ height:32px; }
+
+/* COMPAT wrapper cũ */
+.message-bubble.ai > .message-content{
+  margin:0 !important; padding:0 !important;
+  height:auto !important; min-height:0 !important;
+  block-size:auto !important; min-block-size:0 !important;
+  line-height:inherit !important;
+}
+@supports (display: contents){
+  .message-bubble.ai > .message-content{ display: contents !important; }
+}
+
+/* ======= Fallback cho browser KHÔNG hỗ trợ scrollbar-gutter ======= */
+@supports not (scrollbar-gutter: stable){
+  :root{ --sb-gutter: 0px; }
+  main#chat-scroll{ padding-inline: var(--sb-gutter); }
+}
+
+/* ============ NEW: Actions luôn hiện + feedback Copy ============ */
+/* Chỉ luôn hiện với AI; User giữ nguyên hover */
+body.actions-always .message-group[data-role="ai"] .message-actions button{opacity:.88}
+body.actions-always .message-group[data-role="ai"] .message-actions button:hover{opacity:1}
+/* Fallback nếu action-bar đặt trực tiếp dưới .message-group */
+body.actions-always .message-group[data-role="ai"] > .action-buttons button{opacity:.88}
+body.actions-always .message-group[data-role="ai"] > .action-buttons button:hover{opacity:1}
+
+.message-actions button.copied{background:rgba(34,197,94,.18);color:#d1fae5}
+
+/* Khi edit: ẩn action bar để chỉ còn khung nhập */
+.message-group.is-editing .message-actions{display:none!important}
+.message-group.is-editing > .action-buttons{display:none!important}
+/* Nếu body có .actions-always cũng tắt luôn trong lúc edit */
+body.actions-always .message-group.is-editing .message-actions{display:none!important}
+body.actions-always .message-group.is-editing > .action-buttons{display:none!important}
+
+/* =========================================================
+   ★ NEW (Aug-29): Inline editor stretch + right-aligned actions
+   - Giãn full theo hàng & bám vị trí bong bóng
+   - Căn nút về góc phải; Hủy nằm trước Gửi
+========================================================= */
+
+/* Khi bật edit: group không còn căn phải, mà stretch theo hàng */
+.message-group.is-editing{
+  align-items: stretch !important;
+}
+
+/* Editor chiếm full bề ngang của .message-row (<= --content-max-width) */
+.message-group.is-editing > .message-editor{
+  width: 100% !important;
+  max-width: var(--content-max-width);
+  align-self: stretch !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Hàng nút trong editor — chuẩn canh phải */
+.message-editor .editor-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:8px;
+}
+
+/* Fallback: nếu template CHƯA thêm .editor-actions, dùng selector theo class sẵn có để canh phải */
+.message-editor .flex.items-center.gap-2.mt-2{
+  justify-content:flex-end;
+}
+
+/* Ép thứ tự nút: Hủy (trái) → Gửi (phải) kể cả DOM đang ngược */
+.message-editor .js-editor-cancel{ order:1; }
+.message-editor .js-editor-save{ order:2; }
+
+/* === Editor padding align (fine-tune) === */
+.message-group.is-editing > .message-editor{
+  /* giữ đúng khung ngoài: 8 | 8 | 12 (giống footer) */
+  padding: 8px 8px 12px !important;
+}
+
+/* Lề trong textarea: 10 top, 20 bottom, 8 trái/phải → tổng trái = 8(shell) + 8 = 16px */
+.message-group.is-editing > .message-editor .js-msg-editor-text{
+  padding: 10px 10px 20px 0px !important;
+  line-height: 1.58;           /* “giãn thêm tí” khi nội dung dài */
+  letter-spacing: .005em;      /* rất nhẹ để chữ đỡ dày đặc */
+  text-wrap: pretty;           /* trình duyệt mới hỗ trợ → mềm wrap hơn */
+}
+
+/* === Editor left alignment nudge === */
+/* Tổng lề trái = --e-shell-left + --e-text-left */
+:root{
+  --e-shell-left: 2.5px;  /* padding-left của khung editor */
+  --e-text-left: 0px;     /* padding-left của textarea */
+}
+
+.message-group.is-editing > .message-editor{
+  padding: 8px 8px 12px var(--e-shell-left) !important;
+}
+
+.message-group.is-editing > .message-editor .js-msg-editor-text{
+  /* top 10, right 10, bottom 20, left (biến) */
+  padding: 10px 10px 20px var(--e-text-left) !important;
+  line-height: 1.58;
+  letter-spacing: .005em;
+  text-wrap: pretty;
+}
+
+/* =========================================================
+   ★ NEW (Aug-29 → Sep-01): Redo dropdown mini — reuse .cf-menu-panel
+   - Ô nhập mini + nút gửi
+   - Submenu .redo-submenu đặt fixed cạnh panel chính
+   - Overlay trong #cf-menu-portal để click ra ngoài là đóng
+   - Arrow ▸ luôn dạt phải (LTR & RTL)
+========================================================= */
+
+#cf-menu-portal .cf-menu-overlay{
+  position:fixed; inset:0;
+  background:transparent; /* click-catcher, không che nền */
+}
+
+.cf-menu-panel .redo-input-row{
+  display:flex; align-items:center; gap:6px; padding:6px;
+}
+.cf-menu-panel .redo-input-row input{
+  flex:1; min-width:0;
+  background:#2b2b2b; color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px; outline:0;
+  padding:8px 10px;
+  font:500 14px/1.2 "Be Vietnam Pro", system-ui, sans-serif;
+}
+.cf-menu-panel .redo-input-row input:focus{ border-color:rgba(255,255,255,.24); box-shadow:0 0 0 2px rgba(255,255,255,.06) inset; }
+.cf-menu-panel .redo-input-row .redo-mini-send{
+  width:32px; height:32px; border:0; border-radius:9999px; cursor:pointer;
+  display:inline-grid; place-items:center;
+  background:#0169CC; color:#fff;
+}
+.cf-menu-panel .redo-input-row .redo-mini-send:hover{ filter:brightness(1.05); }
+.cf-menu-panel .redo-input-row .redo-mini-send:focus-visible{ outline:2px solid rgba(255,255,255,.25); outline-offset:2px; }
+
+/* Items tương tác */
+#cf-menu-portal .cf-menu-panel ul li{ cursor:pointer; }
+#cf-menu-portal .cf-menu-panel ul li:hover{ background:rgba(255,255,255,.06); }
+
+/* Submenu là 1 panel độc lập đặt cố định cạnh panel chính */
+.cf-menu-panel.redo-submenu{ position:fixed; z-index:1003; }
+
+/* Nhẹ tay: bảo đảm “mũi tên ▸” dạt phải nếu thiếu utility class */
+.cf-menu-panel .redo-has-sub .ml-auto{ margin-left:auto; }
+
+/* (Tùy chọn) giữ chiều cao item gọn tay khi có icon 18px */
+.cf-menu-panel ul li{ min-height:34px; }
+
+#cf-menu-portal .cf-menu-panel li.redo-has-sub { position: relative; display:flex !important; align-items:center; gap:8px; }
+#cf-menu-portal .cf-menu-panel li.redo-has-sub .ic-sub-arrow{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%); opacity:.8; pointer-events:none;
+}
+
+/* Arrow icon (ic-18 cuối cùng) đẩy sang phải — cả LTR/RTL */
+#cf-menu-portal .cf-menu-panel ul li.redo-has-sub span.ic-18:last-child{
+  margin-left:auto !important;
+}
+html[dir="rtl"] #cf-menu-portal .cf-menu-panel ul li.redo-has-sub span.ic-18:last-child{
+  margin-left:0 !important; margin-right:auto !important;
+}
+
+/* ====== Submenu: no-icons & auto-fit theo label (không bị “M…”) ====== */
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons{
+  width:max-content !important;
+  min-width:200px !important;
+  max-width:min(560px,92vw) !important;
+}
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons ul{
+  padding:6px 0 !important;
+  max-width:inherit !important;
+}
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons ul li{
+  display:block !important;
+  grid-template-columns:none !important;
+  align-items:center !important;
+  gap:0 !important;
+  padding:8px 12px !important;
+}
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons ul li .ic-18{
+  display:none !important; width:0 !important; margin:0 !important;
+}
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons ul li > span{
+  display:block !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+  max-width:none !important;
+}
+#cf-menu-portal .cf-menu-panel.redo-submenu.no-icons ul li:hover{
+  background:rgba(255,255,255,.06) !important;
+}

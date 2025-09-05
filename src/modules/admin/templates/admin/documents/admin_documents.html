@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/documents/admin_documents.html -->
+<!-- updated: 2025-08-25 (v1.1.0 – wrapper trang Documents, nhúng fragment) -->
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý văn bản{% endblock %}
+{% block header %}Quản lý văn bản{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-documents-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/documents/admin_documents_fragment.html" %}
+    </div>
+</div>
+{% endblock %}
+
+<title hx-swap-oob="true">Quản lý văn bản</title>

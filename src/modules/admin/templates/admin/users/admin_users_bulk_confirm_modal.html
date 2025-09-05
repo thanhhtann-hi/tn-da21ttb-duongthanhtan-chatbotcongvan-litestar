@@ -1,0 +1,145 @@
+<!-- file: src/modules/admin/templates/admin/users/admin_users_bulk_confirm_modal.html -->
+<!-- updated: 2025-08-24 (v1.7 – backdrop submit button + proper z-index; open handled in JS) -->
+<dialog id="bulkConfirmModal" class="modal" style="padding:0;border:none;background:transparent;">
+    <!-- Backdrop: bấm để đóng (nút submit vô hình) -->
+    <form method="dialog" class="modal-backdrop" aria-label="Đóng (bấm ra ngoài)">
+        <button type="submit" class="backdrop-hit" aria-label="Đóng"></button>
+    </form>
+
+    <style>
+        /* Overlay đen + blur, nằm DƯỚI hộp nội dung */
+        #bulkConfirmModal .modal-backdrop {
+            all: unset;
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: rgba(0, 0, 0, .70);
+            backdrop-filter: blur(2px);
+        }
+
+        #bulkConfirmModal .modal-backdrop .backdrop-hit {
+            all: unset;
+            position: absolute;
+            inset: 0;
+            cursor: default;
+        }
+
+        /* Ngăn scroll chuỗi khi mở */
+        #bulkConfirmModal,
+        #bulkConfirmModal .modal-backdrop {
+            overscroll-behavior: contain
+        }
+
+        /* Hộp nội dung – giống logout modal */
+        #bulkConfirmModal .doc {
+            position: relative;
+            z-index: 1;
+            /* nằm TRÊN overlay */
+            width: 100%;
+            max-width: 20rem;
+            border-radius: 40px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            box-shadow: 0 25px 80px rgba(2, 6, 23, .18);
+            font-family: var(--font-manrope, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial);
+            font-size: 90%;
+        }
+
+        @media (min-width:640px) {
+            #bulkConfirmModal .doc {
+                max-width: 390px
+            }
+        }
+
+        #bulkConfirmModal .wrap {
+            padding: 1.5rem 1rem
+        }
+
+        @media (min-width:640px) {
+            #bulkConfirmModal .wrap {
+                padding: 2.5rem 2rem
+            }
+        }
+
+        #bulkConfirmModal .btn {
+            width: 120px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1;
+            padding: .625rem 0;
+            transition: opacity .075s ease;
+        }
+
+        #bulkConfirmModal .btn:focus {
+            outline: none
+        }
+
+        #bulkConfirmModal .btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+            border: 0;
+        }
+
+        #bulkConfirmModal .btn-cancel:hover {
+            background: #d1d5db
+        }
+
+        #bulkConfirmModal .btn-cancel:focus {
+            box-shadow: 0 0 0 2px #e5e7eb
+        }
+
+        #bulkConfirmModal .btn-ok {
+            background: #1e3a8a;
+            color: #fff;
+            border: 0;
+        }
+
+        #bulkConfirmModal .btn-ok:hover {
+            background: #1b3580
+        }
+
+        #bulkConfirmModal .btn-ok:focus {
+            box-shadow: 0 0 0 2px #bfdbfe
+        }
+    </style>
+
+    <div class="doc mx-auto">
+        <div class="wrap flex flex-col items-center space-y-6">
+            <h3 class="text-lg sm:text-2xl font-semibold text-center text-blue-900 leading-snug">
+                {{ action_label }}
+            </h3>
+
+            <div class="text-center leading-relaxed space-y-[2px]">
+                <p class="text-sm sm:text-base text-gray-600">
+                    Sẽ áp dụng cho <b>{{ affected }}</b> / {{ total }} tài khoản đã chọn.
+                </p>
+                {% if skipped_self or skipped_last_admin or skipped_sso %}
+                <p class="text-xs sm:text-sm text-gray-500">
+                    {% if skipped_self %}Bỏ qua tài khoản của bạn ({{ skipped_self }}). {% endif %}
+                    {% if skipped_last_admin %}Bỏ qua admin active cuối cùng ({{ skipped_last_admin }}). {% endif %}
+                    {% if skipped_sso %}Bỏ qua tài khoản SSO ({{ skipped_sso }}).{% endif %}
+                </p>
+                {% endif %}
+            </div>
+
+            <form
+                class="flex justify-center gap-4 w-full pt-2"
+                hx-post="/admin/users/bulk"
+                hx-target="#users-list-region"
+                hx-select="#users-list-region"
+                hx-swap="outerHTML"
+                hx-disabled-elt="#bulkConfirmModal button[type=submit]">
+                <input type="hidden" name="ids" value="{{ ids_csv }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <button type="button" class="btn btn-cancel"
+                    onclick="try{this.closest('dialog').close()}catch(_){this.closest('dialog').removeAttribute('open')}">
+                    Hủy
+                </button>
+                <button type="submit" class="btn btn-ok">OK</button>
+            </form>
+        </div>
+    </div>
+</dialog>

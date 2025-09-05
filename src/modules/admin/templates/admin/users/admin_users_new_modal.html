@@ -1,0 +1,332 @@
+<!-- file: src/modules/admin/templates/admin/users/admin_users_new_modal.html -->
+<!-- updated: 2025-08-24 (v1.0) -->
+<!-- note: POST -> swap #users-list-region; giữ toàn bộ filter hiện tại qua JS -->
+
+<!-- ╭─ OVERLAY ────────────────────────────────────────────────────────────────╮ -->
+<div id="users-new-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ──────────────────────────────────────────────────────────╮ -->
+<div id="users-new-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="users-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[760px] max-h-[88vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-gray-900 text-center w-full">Tạo người dùng mới</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Điền thông tin bên dưới, các trường có dấu * là bắt buộc.
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="users-new-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-x-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-x-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- FORM -->
+        <form id="admin-users-create-form"
+            hx-post="/admin/users"
+            hx-target="#users-list-region"
+            hx-select="#users-list-region"
+            hx-swap="outerHTML"
+            hx-disabled-elt="#users-submit-btn"
+            autocomplete="off"
+            class="flex flex-col grow min-h-0">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <!-- Hidden filter (JS sẽ set trước khi submit) -->
+            <input type="hidden" name="status" value="">
+            <input type="hidden" name="role" value="">
+            <input type="hidden" name="verified" value="">
+            <input type="hidden" name="provider" value="">
+            <input type="hidden" name="q" value="">
+            <input type="hidden" name="sort" value="">
+            <input type="hidden" name="page" value="">
+            <input type="hidden" name="per_page" value="">
+
+            <!-- BODY -->
+            <div class="modal-scroll-area grow overflow-y-auto px-6 pb-4 pt-2 min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Email -->
+                    <div class="flex flex-col">
+                        <label for="user_email" class="block text-gray-900 font-semibold mb-1 text-[14px]">Email *</label>
+                        <input id="user_email" name="user_email" type="email" required placeholder="vd: user@domain.tld"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Tên hiển thị -->
+                    <div class="flex flex-col">
+                        <label for="user_display_name" class="block text-gray-900 font-semibold mb-1 text-[14px]">Tên hiển thị</label>
+                        <input id="user_display_name" name="user_display_name" type="text" placeholder="vd: Nguyễn Văn A"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Username -->
+                    <div class="flex flex-col">
+                        <label for="user_name" class="block text-gray-900 font-semibold mb-1 text-[14px]">Username</label>
+                        <input id="user_name" name="user_name" type="text" placeholder="vd: nva"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div class="text-xs text-gray-500 mt-1">Tuỳ chọn · phải là duy nhất nếu nhập.</div>
+                    </div>
+
+                    <!-- Vai trò -->
+                    <div class="flex flex-col">
+                        <label for="user_role" class="block text-gray-900 font-semibold mb-1 text-[14px]">Vai trò *</label>
+                        <select id="user_role" name="user_role" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="user" selected>user</option>
+                            <option value="internal">internal</option>
+                            <option value="admin">admin</option>
+                        </select>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="flex flex-col">
+                        <label for="user_status" class="block text-gray-900 font-semibold mb-1 text-[14px]">Trạng thái *</label>
+                        <select id="user_status" name="user_status" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="active" selected>active</option>
+                            <option value="suspended">suspended</option>
+                            <option value="banned">banned</option>
+                            <option value="deactivated">deactivated</option>
+                        </select>
+                    </div>
+
+                    <!-- Verified + Provider -->
+                    <div class="flex flex-col">
+                        <label class="block text-gray-900 font-semibold mb-1 text-[14px]">Xác thực & Provider</label>
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <label class="inline-flex items-center text-[14px] w-fit">
+                                <input type="checkbox" id="user_email_verified" name="user_email_verified" value="1" class="form-checkbox rounded-full" />
+                                <span class="ml-2">Đã xác thực email</span>
+                            </label>
+
+                            <div class="relative">
+                                <select id="user_oauth_provider" name="user_oauth_provider"
+                                    class="ui-select h-[42px] pl-3 pr-9 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                                    <option value="local" selected>local</option>
+                                    <option value="google">google</option>
+                                    <option value="azuread">azuread</option>
+                                    <option value="_other">Khác…</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="provider-other-wrap" class="mt-2 hidden">
+                            <input id="user_oauth_provider_other" type="text" placeholder="Nhập tên provider"
+                                class="h-[40px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        </div>
+                    </div>
+
+                    <!-- Mật khẩu (tuỳ chọn, chỉ khi local) -->
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <label for="user_password" class="block text-gray-900 font-semibold mb-1 text-[14px]">
+                                Mật khẩu (tuỳ chọn)
+                            </label>
+                            <input id="user_password" name="user_password" type="password" placeholder="Để trống để tự phát sinh hoặc không đặt"
+                                class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="user_password_confirm" class="block text-gray-900 font-semibold mb-1 text-[14px]">
+                                Xác nhận mật khẩu
+                            </label>
+                            <input id="user_password_confirm" type="password" placeholder="Nhập lại mật khẩu (nếu có)"
+                                class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                            <div id="users-pass-hint" class="text-xs text-red-600 mt-1 hidden">Mật khẩu không khớp.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ghi chú -->
+                <div class="text-[12.5px] text-gray-500 mt-4">
+                    • Provider <b>local</b> dùng đăng nhập nội bộ bằng email/password. Với OAuth (google/azuread), phần mật khẩu sẽ bỏ qua.<br />
+                    • Backend sẽ hash mật khẩu nếu bạn nhập.
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+                <div class="flex justify-center gap-4 w-full">
+                    <button type="button" id="users-cancel-btn"
+                        class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                         hover:bg-gray-300 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">
+                        Hủy
+                    </button>
+                    <button id="users-submit-btn" type="submit" disabled
+                        class="w-[160px] rounded-full py-2.5 bg-blue-900 text-white font-medium
+                         hover:bg-blue-800 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300
+                         disabled:opacity-50 disabled:cursor-not-allowed text-[14px]">
+                        Tạo người dùng
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Close icon hover swap */
+    #users-new-modal-close .chip-x-hover {
+        display: none
+    }
+
+    #users-new-modal-close:hover .chip-x-normal,
+    #users-new-modal-close:focus .chip-x-normal {
+        display: none
+    }
+
+    #users-new-modal-close:hover .chip-x-hover,
+    #users-new-modal-close:focus .chip-x-hover {
+        display: flex
+    }
+
+    #users-new-modal-close .chip-x-normal svg,
+    #users-new-modal-close .chip-x-hover svg {
+        width: 10px;
+        height: 10px;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    /* Custom SELECT caret */
+    #users-new-modal select.ui-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12l4.5-4.5' stroke='%23343a40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 12px 12px;
+        padding-right: 40px;
+    }
+
+    #users-new-modal select.ui-select:hover {
+        border-color: #9aa3b2
+    }
+
+    #users-new-modal select.ui-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c7d6f7
+    }
+
+    /* Scrollbars */
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    /* Textarea-less: keep checkboxes style */
+    #admin-users-create-form input[type="checkbox"].form-checkbox {
+        accent-color: #1e3a8a !important;
+        appearance: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        border: 2px solid #d1d5db;
+        background: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative;
+    }
+
+    #admin-users-create-form input[type="checkbox"].form-checkbox:checked {
+        background-color: #1e3a8a;
+        border-color: #1e3a8a
+    }
+
+    #admin-users-create-form input[type="checkbox"].form-checkbox:checked:after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 7px;
+        width: 5px;
+        height: 10px;
+        border: solid #fff;
+        border-width: 0 2.5px 2.5px 0;
+        transform: rotate(45deg);
+        border-radius: 1.5px;
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #users-new-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important
+        }
+
+        .users-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            will-change: transform;
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>

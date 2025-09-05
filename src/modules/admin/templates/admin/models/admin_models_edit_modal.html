@@ -1,0 +1,451 @@
+<!-- file: src/modules/admin/templates/admin/models/admin_models_edit_modal.html -->
+<!-- updated: 2025-08-23 (v2.1 – custom select caret, align, consistent UI) -->
+<!-- note: PUT -> /admin/models/{id}; chỉ swap #models-list-region. -->
+
+<!-- ╭─ OVERLAY (click là đóng) ────────────────────────────────────────────────╮ -->
+<div id="models-edit-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ──────────────────────────────────────────────────────────╮ -->
+<div id="models-edit-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="models-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[720px] max-h-[85vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER (không cuộn) -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-gray-900 text-center w-full">Chỉnh sửa mô hình AI</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Cập nhật thông tin cho <span class="font-semibold">{{ model.model_name|e }}</span>.
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="models-edit-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+               w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+               hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-search-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-search-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- FORM: bọc body + footer -->
+        <form id="admin-models-edit-form"
+            hx-put="/admin/models/{{ model.model_id }}"
+            hx-target="#models-list-region"
+            hx-select="#models-list-region"
+            hx-swap="outerHTML"
+            hx-disabled-elt="#models-edit-submit-btn"
+            autocomplete="off"
+            class="flex flex-col grow min-h-0">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+            <!-- Hidden filter state (JS sẽ set trước submit) -->
+            <input type="hidden" name="status" value="">
+            <input type="hidden" name="scope" value="">
+            <input type="hidden" name="tier" value="">
+            <input type="hidden" name="enabled" value="">
+            <input type="hidden" name="provider" value="">
+            <input type="hidden" name="type" value="">
+            <input type="hidden" name="q" value="">
+            <input type="hidden" name="sort" value="">
+            <input type="hidden" name="page" value="">
+            <input type="hidden" name="per_page" value="">
+
+            <!-- BODY (chỉ phần này cuộn) -->
+            <div class="modal-scroll-area grow overflow-y-auto px-6 pb-4 pt-2 min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tên -->
+                    <div class="flex flex-col">
+                        <label for="model_name" class="block text-gray-900 font-semibold mb-1 text-[14px]">Tên mô hình *</label>
+                        <input id="model_name" name="model_name" type="text" required
+                            value="{{ model.model_name|e }}" placeholder="VD: MoE Ultra"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div class="text-xs text-gray-500 mt-1">Tên duy nhất trong hệ thống.</div>
+                    </div>
+
+                    <!-- Nhà cung cấp -->
+                    <div class="flex flex-col">
+                        <label for="model_provider" class="block text-gray-900 font-semibold mb-1 text-[14px]">Nhà cung cấp</label>
+                        <input id="model_provider" name="model_provider" type="text"
+                            value="{{ model.model_provider or '' }}" placeholder="VD: openai / openai/gpt-oss-20b"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Provider Model ID -->
+                    <div class="flex flex-col">
+                        <label for="provider_model_id" class="block text-gray-900 font-semibold mb-1 text-[14px]">ID nhà cung cấp</label>
+                        <input id="provider_model_id" name="provider_model_id" type="text"
+                            value="{{ model.provider_model_id or '' }}" placeholder="VD: gpt-oss-20b"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Loại -->
+                    <div class="flex flex-col">
+                        <label for="model_type" class="block text-gray-900 font-semibold mb-1 text-[14px]">Loại</label>
+                        <input id="model_type" name="model_type" type="text"
+                            value="{{ model.model_type or '' }}" placeholder="VD: chat, moe, vision, rerank…"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Phạm vi -->
+                    <div class="flex flex-col">
+                        <label for="model_access_scope" class="block text-gray-900 font-semibold mb-1 text-[14px]">Phạm vi *</label>
+                        <select id="model_access_scope" name="model_access_scope" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="all" {% if model.model_access_scope=='all' %}selected{% endif %}>Tất cả</option>
+                            <option value="user" {% if model.model_access_scope=='user' %}selected{% endif %}>Người dùng</option>
+                            <option value="internal" {% if model.model_access_scope=='internal' %}selected{% endif %}>Nội bộ</option>
+                            <option value="admin" {% if model.model_access_scope=='admin' %}selected{% endif %}>Quản trị viên</option>
+                        </select>
+                    </div>
+
+                    <!-- Tầng -->
+                    <div class="flex flex-col">
+                        <label for="model_tier" class="block text-gray-900 font-semibold mb-1 text-[14px]">Tầng *</label>
+                        <select id="model_tier" name="model_tier" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="auto" {% if (model.model_tier or 'auto' )=='auto' %}selected{% endif %}>auto</option>
+                            <option value="low" {% if model.model_tier=='low' %}selected{% endif %}>low</option>
+                            <option value="medium" {% if model.model_tier=='medium' %}selected{% endif %}>medium</option>
+                            <option value="high" {% if model.model_tier=='high' %}selected{% endif %}>high</option>
+                        </select>
+                    </div>
+
+                    <!-- Trạng thái -->
+                    <div class="flex flex-col">
+                        <label for="model_status" class="block text-gray-900 font-semibold mb-1 text-[14px]">Trạng thái *</label>
+                        <select id="model_status" name="model_status" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="active" {% if model.model_status=='active' %}selected{% endif %}>active</option>
+                            <option value="preview" {% if model.model_status=='preview' %}selected{% endif %}>preview</option>
+                            <option value="deprecated" {% if model.model_status=='deprecated' %}selected{% endif %}>deprecated</option>
+                            <option value="retired" {% if model.model_status=='retired' %}selected{% endif %}>retired</option>
+                        </select>
+                        <div id="status-retired-hint" class="text-xs text-rose-600 mt-1 {% if model.model_status!='retired' %}hidden{% endif %}">
+                            Trạng thái “retired” sẽ tự động tắt “enabled”.
+                        </div>
+                    </div>
+
+                    <!-- Sort order -->
+                    <div class="flex flex-col">
+                        <label for="model_sort_order" class="block text-gray-900 font-semibold mb-1 text-[14px]">Thứ tự sắp xếp</label>
+                        <input id="model_sort_order" name="model_sort_order" type="text" inputmode="numeric" pattern="-?[0-9]*"
+                            value="{{ '' if model.model_sort_order is none else model.model_sort_order }}"
+                            placeholder="VD: 1, 2, 3… (tuỳ chọn)"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+                </div>
+
+                <!-- Mô tả -->
+                <div class="flex flex-col">
+                    <label for="model_description" class="block text-gray-900 font-semibold mb-1 text-[14px]">Mô tả</label>
+                    <div class="textarea-outer">
+                        <textarea id="model_description" name="model_description" rows="5" maxlength="1000"
+                            placeholder="Mô tả ngắn gọn về mô hình…"
+                            class="w-full resize-none transition-shadow placeholder:text-gray-700 text-[14px]">{{ model.model_description or '' }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Tuỳ chọn bật/tắt -->
+                <div class="flex items-center gap-4 mt-4">
+                    <label class="inline-flex items-center text-[14px] w-fit">
+                        <input type="checkbox" id="model_enabled" name="model_enabled" value="1"
+                            class="form-checkbox rounded-full"
+                            {% if model.model_status=='retired' %}disabled{% endif %}
+                            {% if model.model_enabled %}checked{% endif %} />
+                        <span class="ml-2">Enabled</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+                <div class="flex justify-center gap-4 w-full">
+                    <button type="button" id="models-edit-cancel-btn"
+                        class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                   hover:bg-gray-300 transition-opacity duration-75 focus:outline-none
+                   focus:ring-2 focus:ring-gray-300 text-[14px]">
+                        Hủy
+                    </button>
+                    <button id="models-edit-submit-btn" type="submit" disabled
+                        class="w-[160px] rounded-full py-2.5 bg-blue-900 text-white font-medium
+                   hover:bg-blue-800 transition-opacity duration-75 focus:outline-none
+                   focus:ring-2 focus:ring-blue-300
+                   disabled:opacity-50 disabled:cursor-not-allowed text-[14px]">
+                        Cập nhật mô hình
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .mobile-drawer-handle {
+        display: none !important
+    }
+
+    /* Close icon 10×10 & hover swap */
+    #models-edit-modal-close .chip-search-hover {
+        display: none
+    }
+
+    #models-edit-modal-close:hover .chip-search-normal,
+    #models-edit-modal-close:focus .chip-search-normal {
+        display: none
+    }
+
+    #models-edit-modal-close:hover .chip-search-hover,
+    #models-edit-modal-close:focus .chip-search-hover {
+        display: flex
+    }
+
+    #models-edit-modal-close .chip-search-normal svg,
+    #models-edit-modal-close .chip-search-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    #models-edit-modal-close:active {
+        background: #e8f0fe
+    }
+
+    #models-edit-modal-close {
+        z-index: 10
+    }
+
+    /* ===== Custom SELECT (caret trái hơn, đồng bộ UI) ===== */
+    #models-edit-modal select.ui-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12l4.5-4.5' stroke='%23343a40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        /* ← xít vào trái một chút */
+        background-size: 12px 12px;
+        padding-right: 40px;
+        /* chừa chỗ cho caret */
+        cursor: pointer;
+        transition: box-shadow .15s, border-color .15s;
+    }
+
+    /* IE 11 */
+    #models-edit-modal select.ui-select::-ms-expand {
+        display: none
+    }
+
+    /* Hover / Focus */
+    #models-edit-modal select.ui-select:hover {
+        border-color: #9aa3b2
+    }
+
+    #models-edit-modal select.ui-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c7d6f7
+    }
+
+    /* Disabled */
+    #models-edit-modal select.ui-select:disabled {
+        color: #6b7280;
+        background-color: #f9fafb;
+        cursor: not-allowed;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12l4.5-4.5' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    }
+
+    /* Scrollbar thân */
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px;
+        transition: background .2s
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    .textarea-outer {
+        border: 1.5px solid #9ca3af;
+        border-radius: 20px;
+        background: #fff;
+        transition: border-color .2s, box-shadow .2s;
+        padding: 0;
+        position: relative;
+        height: 120px;
+        min-height: 120px;
+        max-height: 160px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch
+    }
+
+    .textarea-outer:focus-within,
+    .textarea-outer:hover {
+        border-color: #1e3a8a !important;
+        box-shadow: none !important
+    }
+
+    .textarea-outer textarea {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        width: 100%;
+        height: 100%;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 14px !important;
+        font-size: 14px;
+        color: #222;
+        line-height: 1.5;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        resize: none
+    }
+
+    .textarea-outer textarea::placeholder {
+        color: #374151;
+        opacity: 1
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar {
+        width: 7px;
+        background: transparent;
+        border-radius: 8px
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 8px;
+        border: 2px solid #fff;
+        min-height: 32px
+    }
+
+    .textarea-outer textarea::-webkit-scrollbar-track {
+        background: transparent
+    }
+
+    .textarea-outer textarea {
+        scrollbar-width: thin;
+        scrollbar-color: #1e3a8a #fff
+    }
+
+    .textarea-outer textarea:not(:hover):not(:focus) {
+        scrollbar-width: none
+    }
+
+    /* Checkbox style */
+    #admin-models-edit-form input[type="checkbox"].form-checkbox {
+        accent-color: #1e3a8a !important;
+        border-radius: 50% !important;
+        appearance: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        border: 2px solid #d1d5db;
+        background: #fff;
+        cursor: pointer;
+        transition: border-color .2s;
+        position: relative;
+        vertical-align: middle
+    }
+
+    #admin-models-edit-form input[type="checkbox"].form-checkbox:checked {
+        background-color: #1e3a8a;
+        border-color: #1e3a8a
+    }
+
+    #admin-models-edit-form input[type="checkbox"].form-checkbox:checked:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 4px;
+        left: 7px;
+        width: 5px;
+        height: 10px;
+        border: solid #fff;
+        border-width: 0 2.5px 2.5px 0;
+        border-radius: 1.5px;
+        transform: rotate(45deg)
+    }
+
+    /* Mobile sheet – vẫn bo đủ 4 góc */
+    @media (max-width:540px) {
+        #models-edit-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important;
+            padding: 0 !important
+        }
+
+        .models-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px 0 rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            z-index: 10000;
+            will-change: transform
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>

@@ -1,0 +1,33 @@
+<!-- 📄 src/templates/maintenance/503_maintenance.html -->
+<!-- 🕒 Last updated: 2025-07-08 23:30 -->
+{% extends "partials/503_base.html" %}
+
+{% block title %}503 – Bảo trì hệ thống{% endblock %}
+
+{% block content %}
+<section class="flex flex-col items-center justify-center text-center px-6 py-12 space-y-6 font-manrope">
+    <div class="icon-maintenance">
+        {% include "partials/icons/maintenance/icons_maintenance_503.svg" %}
+    </div>
+
+    <h1 class="text-3xl sm:text-4xl font-semibold text-[#053484]">
+        Hệ thống đang bảo&nbsp;trì
+    </h1>
+
+    <p class="max-w-md text-sm sm:text-base text-gray-600 leading-relaxed">
+        Chúng tôi đang thực hiện nâng cấp để phục vụ bạn tốt hơn.<br />
+        Vui lòng quay lại sau vài&nbsp;phút.
+    </p>
+
+    <a href="/" class="inline-block px-6 py-2.5 rounded-full bg-[#053484] text-white text-sm font-medium
+              hover:opacity-90 transition">
+        Thử lại
+    </a>
+
+    <footer class="text-center text-xs text-gray-500 pt-4">
+        <a href="/legal/terms" class="hover:underline">Điều khoản sử dụng</a>
+        <span class="mx-2 select-none">|</span>
+        <a href="/legal/privacy" class="hover:underline">Chính sách riêng tư</a>
+    </footer>
+</section>
+{% endblock %}

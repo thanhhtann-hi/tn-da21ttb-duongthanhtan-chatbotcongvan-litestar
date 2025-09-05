@@ -1,0 +1,424 @@
+<title hx-swap-oob="true">Quản lý thông báo</title>
+<!-- file: src/modules/admin/templates/admin/notify/admin_notify_fragment.html -->
+<!-- updated: 2025-08-23 (v1.1 – OOB <title>) -->
+<!-- note: banner thử nghiệm căn giữa, bỏ viền -->
+
+{% macro calendar_btn_label(start_date, end_date) -%}
+{%- if start_date and end_date -%}
+{%- if start_date == end_date -%}{{ start_date.strftime('%d/%m') }}
+{%- else -%}{{ start_date.strftime('%d/%m') }}–{{ end_date.strftime('%d/%m') }}{%- endif -%}
+{%- else -%}Lịch{%- endif -%}
+{%- endmacro %}
+
+{% set _sort_map = {'new':'Ngày mới nhất','old':'Ngày cũ nhất','az':'A - Z','za':'Z - A'} %}
+{% set sort_key = (current_sort or 'new') %}
+{% set sort_label = _sort_map.get(sort_key, 'Ngày mới nhất') %}
+
+{# QS base: KHÔNG kèm per_page (JS sẽ bơm) #}
+{% set qs_base -%}
+v={{ (filter_v or 'all') }}&sort={{ (filter_sort or 'created_desc') }}{% if q %}&q={{ q|urlencode }}{% endif %}{% if
+filter_start_date %}&start_date={{ filter_start_date.isoformat() }}{% endif %}{% if filter_end_date %}&end_date={{
+filter_end_date.isoformat() }}{% endif %}
+{%- endset %}
+
+<div id="admin-notify-container" class="w-full min-w-0 flex flex-col pl-4 pr-4 pt-4 pb-4"
+    data-current-sort="{{ sort_key }}" data-current-view="{{ filter_v }}" data-page="{{ page or 1 }}"
+    data-per-page="{{ per_page or 10 }}" data-total="{{ total or 0 }}" data-total-pages="{{ total_pages or 1 }}">
+
+    <!-- Toolbar -->
+    <div id="notify-toolbar" class="notify-toolbar w-full min-w-0">
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full min-w-0">
+            <div class="flex items-center">
+                <button id="btn-notify-calendar" type="button"
+                    class="flex items-center justify-start h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 font-medium text-sm leading-none text-gray-900 hover:text-blue-700 focus:text-blue-700 transition-all duration-100 focus:outline-none gap-2 shadow"
+                    {% if filter_start_date and filter_end_date %} data-start="{{ filter_start_date.isoformat() }}"
+                    data-end="{{ filter_end_date.isoformat() }}" {% endif %}>
+                    <span class="inline-flex items-center justify-center w-5 h-5 relative">
+                        <span class="block icon-calendar-default">{% include
+                            "partials/icons/admin/system/icons_admin_setting_calendar_den.svg" %}</span>
+                        <span class="block icon-calendar-hover absolute inset-0 pointer-events-none">{% include
+                            "partials/icons/admin/system/icons_admin_setting_calendar_xanh.svg" %}</span>
+                    </span>
+                    <span id="btn-notify-calendar-label" class="leading-none">{{ calendar_btn_label(filter_start_date,
+                        filter_end_date) }}</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button id="btn-export-csv" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 font-medium text-sm leading-none text-gray-900 hover:text-blue-700 focus:text-blue-700 transition-all duration-100 focus:outline-none gap-2 shadow">
+                    <span class="inline-flex items-center justify-center w-5 h-5 relative">
+                        <span class="block icon-csv-default">{% include
+                            "partials/icons/admin/system/icons_admin_setting_csv_den.svg" %}</span>
+                        <span class="block icon-csv-hover absolute inset-0 pointer-events-none">{% include
+                            "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}</span>
+                    </span>
+                    <span class="leading-none">Xuất CSV</span>
+                </button>
+
+                <button id="btn-open-notify-modal" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-blue-900 text-white font-medium text-sm leading-none hover:bg-blue-800 transition-all duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5">{% include
+                        "partials/icons/admin/system/icons_admin_setting_dau_cong.svg" %}</span>
+                    <span class="leading-none">Tạo thông báo mới</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 w-full min-w-0 mt-1">
+            <div class="flex items-center flex-1 min-w-[250px] gap-3">
+                <label for="notify-search-input" class="sr-only">Tìm kiếm thông báo</label>
+                <form id="notify-search-form" class="relative w-full max-w-[350px] search-wrap" hx-get="/admin/notify"
+                    hx-target="#notify-list-region" hx-select="#notify-list-region" hx-swap="outerHTML"
+                    hx-push-url="true" hx-sync="this:replace">
+                    <input id="notify-search-input" name="q" type="search" inputmode="search"
+                        placeholder="Tìm theo nội dung…" value="{{ (q or '')|e }}"
+                        class="w-full h-[45px] pl-11 pr-3 rounded-full bg-white ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400"
+                        hx-trigger="input changed delay:250ms, search">
+                    <input type="hidden" name="start_date" id="state-start-date"
+                        value="{{ filter_start_date.isoformat() if filter_start_date }}">
+                    <input type="hidden" name="end_date" id="state-end-date"
+                        value="{{ filter_end_date.isoformat() if filter_end_date }}">
+                    <input type="hidden" name="v" id="state-view" value="{{ filter_v or 'all' }}">
+                    <input type="hidden" name="sort" id="state-sort" value="{{ (filter_sort or 'created_desc') }}">
+                    <input type="hidden" name="page" id="state-page" value="{{ page or 1 }}">
+                    <input type="hidden" name="per_page" id="state-per-page" value="{{ per_page or 10 }}">
+                    <span class="absolute left-4 w-5 h-5 flex items-center justify-center pointer-events-none">
+                        <span class="icon-search-default block">{% include
+                            "partials/icons/admin/system/icons_admin_setting_tim_kiem_den.svg" %}</span>
+                        <span class="icon-search-hover block absolute inset-0">{% include
+                            "partials/icons/admin/system/icons_admin_setting_tim_kiem_xanh.svg" %}</span>
+                    </span>
+                </form>
+
+                <div class="relative">
+                    <button id="btn-notify-filter" type="button" aria-haspopup="menu" aria-expanded="false"
+                        class="flex items-center h-[45px] px-3 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span class="w-5 h-5 inline-flex items-center justify-center relative">
+                            <span class="icon-filter-default block">{% include
+                                "partials/icons/admin/system/icons_admin_filter_den.svg" %}</span>
+                            <span class="icon-filter-hover block absolute inset-0 pointer-events-none">{% include
+                                "partials/icons/admin/system/icons_admin_filter_xanh.svg" %}</span>
+                        </span>
+                        <span>Lọc</span>
+                    </button>
+                    <!-- static menu (không dùng khi có JS) -->
+                    <div id="menu-notify-filter" role="menu" aria-labelledby="btn-notify-filter"
+                        class="notify-menu hidden absolute z-20 mt-2 min-w-[220px] rounded-xl bg-white border border-gray-200 shadow-xl overflow-hidden">
+                        <button type="button" role="menuitem" class="menu-item" data-view="all">Tất cả</button>
+                        <button type="button" role="menuitem" class="menu-item" data-view="visible">Thông báo hiển
+                            thị</button>
+                        <button type="button" role="menuitem" class="menu-item" data-view="hidden">Thông báo ẩn</button>
+                    </div>
+                </div>
+
+                <button id="btn-notify-reset" type="button"
+                    class="btn-reset btn-ghost flex items-center h-[45px] px-3 rounded-full text-sm font-semibold"
+                    style="color:#1E3A8A">
+                    <span class="w-5 h-5 inline-flex items-center justify-center mr-1">
+                        {% include "partials/icons/admin/system/icons_admin_reset_xanh.svg" %}
+                    </span>
+                    <span class="reset-label">Đặt lại</span>
+                </button>
+            </div>
+
+            <div class="relative">
+                <button id="btn-notify-sort" type="button" aria-haspopup="menu" aria-expanded="false" data-sort-anchor
+                    class="flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                    <span id="notify-sort-label">
+                        <span class="sort-prefix">Sắp xếp:&nbsp;</span>
+                        <span class="sort-value">{{ sort_label }}</span>
+                    </span>
+                    <span class="w-[18px] h-[18px] inline-flex items-center justify-center relative">
+                        <span class="icon-arrow-default block">{% include
+                            "partials/icons/admin/system/icons_admin_arrow_down_den.svg" %}</span>
+                        <span class="icon-arrow-hover block absolute inset-0 pointer-events-none">{% include
+                            "partials/icons/admin/system/icons_admin_arrow_down_xanh.svg" %}</span>
+                    </span>
+                </button>
+
+                <!-- static menu (không dùng khi có JS) -->
+                <div id="menu-notify-sort" role="menu" aria-labelledby="btn-notify-sort"
+                    class="notify-menu hidden absolute right-0 z-20 mt-2 min-w-[220px] rounded-xl bg-white border border-gray-200 shadow-xl overflow-hidden">
+                    <button type="button" role="menuitem" class="menu-item" data-sort="new">Ngày mới nhất</button>
+                    <button type="button" role="menuitem" class="menu-item" data-sort="old">Ngày cũ nhất</button>
+                    <button type="button" role="menuitem" class="menu-item" data-sort="az">A - Z</button>
+                    <button type="button" role="menuitem" class="menu-item" data-sort="za">Z - A</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Toolbar -->
+
+    <div id="admin-notify-modal-root"></div>
+
+    <!-- LIST REGION -->
+    <div id="notify-list-region">
+        {% if not notifications %}
+        <p class="text-gray-500 italic">Chưa có thông báo nào.</p>
+        {% else %}
+
+        <!-- CARD WRAPPER -->
+        <div class="notify-table-wrap">
+            <div class="notify-card w-full min-w-0 rounded-2xl overflow-hidden shadow border border-gray-200 bg-white">
+
+                <!-- Table -->
+                <div id="admin-notify-table" class="w-full min-w-0">
+                    <table class="min-w-full text-sm table-fixed admin-notify-table">
+                        <colgroup>
+                            <col class="col-select">
+                            <col class="col-content">
+                            <col class="col-roles">
+                            <col class="col-status">
+                            <col class="col-date">
+                            <col class="col-actions">
+                        </colgroup>
+                        <thead class="text-left">
+                            <tr class="bg-[#EEF2FF]">
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-select">
+                                    <label class="cb" aria-label="Chọn tất cả" id="sel-all-wrap">
+                                        <input id="sel-all" type="checkbox"><span class="cb-box"
+                                            aria-hidden="true"></span>
+                                    </label>
+                                </th>
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-content">Nội
+                                    dung</th>
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-roles">Đối
+                                    tượng</th>
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-status">Hiển
+                                    thị</th>
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-date">Ngày
+                                    tạo</th>
+                                <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium th-actions"
+                                    aria-hidden="true"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for n in notifications %}
+                            <tr class="notify-row relative">
+                                <td class="px-4 py-2 border-b border-gray-200 select-cell td-select">
+                                    <label class="cb" aria-label="Chọn thông báo">
+                                        <input id="sel-{{ n.notify_id }}" type="checkbox" class="row-select"
+                                            data-notify-id="{{ n.notify_id }}"
+                                            data-visible="{{ 1 if n.notify_visible else 0 }}">
+                                        <span class="cb-box" aria-hidden="true"></span>
+                                    </label>
+                                </td>
+                                <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis td-content btn-notify-detail cursor-pointer"
+                                    data-notify-id="{{ n.notify_id }}">
+                                    <span class="content-text block w-full overflow-hidden text-ellipsis align-middle">
+                                        {{ n.notify_content[:120]|e }}{% if n.notify_content|length > 120 %}…{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap role-cell td-roles">
+                                    {% for r in n.notify_target_roles %}
+                                    {% set tip = 'Người dùng' if r=='user' else ('Nội bộ' if r=='internal' else ('Quản
+                                    trị viên' if r=='admin' else r)) %}
+                                    <span class="role-token tt" data-tt="{{ tip }}">{{ r }}</span>{% if not loop.last
+                                    %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td class="px-4 py-2 border-b border-gray-200 td-status">
+                                    {% if n.notify_visible %}<span class="status-pill status-pill--green">Hiển
+                                        thị</span>
+                                    {% else %}<span class="status-pill status-pill--red">Đã ẩn</span>{% endif %}
+                                </td>
+                                <td
+                                    class="px-4 py-2 border-b border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis td-date">
+                                    {{ n.notify_created_at.strftime('%d/%m/%Y %H:%M') }}
+                                </td>
+                                <td class="px-3 py-2 border-b border-gray-200 actions-cell td-actions">
+                                    <div class="row-actions flex items-center justify-end gap-1.5">
+                                        <button type="button" class="action-btn row-action-detail tt"
+                                            aria-label="Chi tiết" data-tt="Chi tiết" data-notify-id="{{ n.notify_id }}">
+                                            <span class="inline-flex w-[18px] h-[18px] items-center justify-center">{%
+                                                include "partials/icons/admin/system/icons_admin_setting_info.svg"
+                                                %}</span>
+                                        </button>
+                                        <button type="button" class="action-btn row-action-edit tt" aria-label="Sửa"
+                                            data-tt="Sửa" data-notify-id="{{ n.notify_id }}">
+                                            <span class="inline-flex w-[18px] h-[18px] items-center justify-center">{%
+                                                include "partials/icons/admin/system/icons_admin_setting_pen_edit.svg"
+                                                %}</span>
+                                        </button>
+                                        <button type="button" class="action-btn row-action-delete tt" aria-label="Xoá"
+                                            data-tt="Xoá" data-notify-id="{{ n.notify_id }}">
+                                            <span class="inline-flex w-[18px] h-[18px] items-center justify-center">{%
+                                                include "partials/icons/admin/system/icons_admin_setting_delete.svg"
+                                                %}</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            {# Filler rows: luôn bù tới per_page để đủ 1 trang #}
+                            {% set _pp = per_page or 10 %}
+                            {% set _cur = notifications|length %}
+                            {% set _fill = (_pp - _cur) if (_pp and _pp > _cur) else 0 %}
+                            {% for _i in range(_fill) %}
+                            <tr class="notify-row notify-row--filler" aria-hidden="true">
+                                <td class="px-4 py-2 border-b border-gray-200 td-select"><span
+                                        class="invisible">–</span></td>
+                                <td class="px-4 py-2 border-b border-gray-200 td-content"><span
+                                        class="invisible">–</span></td>
+                                <td class="px-4 py-2 border-b border-gray-200 td-roles"><span class="invisible">–</span>
+                                </td>
+                                <td class="px-4 py-2 border-b border-gray-200 td-status"><span
+                                        class="invisible">–</span></td>
+                                <td class="px-4 py-2 border-b border-gray-200 td-date"><span class="invisible">–</span>
+                                </td>
+                                <td class="px-3 py-2 border-b border-gray-200 td-actions"><span
+                                        class="invisible">–</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination (bên trong card, không border-top, padding đều) -->
+                <div id="notify-pagination"
+                    class="notify-pagination is-attached flex items-center justify-between gap-3 flex-wrap bg-white border-t-0 px-4 py-3"
+                    aria-label="Điều hướng trang">
+
+                    <div class="min-w-[180px] pg-first-area">
+                        {% if show_first_btn %}
+                        <button type="button"
+                            class="group inline-flex items-center justify-center gap-2 h-[45px] px-4 rounded-full bg-white text-sm font-medium text-gray-900 hover:text-blue-700 shrink-0"
+                            hx-get="/admin/notify?page=1&{{ qs_base|trim }}" hx-target="#notify-list-region"
+                            hx-select="#notify-list-region" hx-swap="outerHTML" hx-push-url="true"
+                            aria-controls="notify-list-region">
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="icon-first-default block">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-first-page-den-left.svg" %}
+                                </span>
+                                <span class="icon-first-hover block absolute inset-0 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-first-page-xanh-left.svg"
+                                    %}
+                                </span>
+                            </span>
+                            <span>Về trang 1</span>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 pg-center-area">
+                        <button type="button"
+                            class="group inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-white ring-1 ring-gray-300 text-gray-900 hover:text-blue-700 hover:ring-blue-700 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                            {% if page>1 %}
+                            hx-get="/admin/notify?page={{ page-1 }}&{{ qs_base|trim }}"
+                            hx-target="#notify-list-region" hx-select="#notify-list-region"
+                            hx-swap="outerHTML" hx-push-url="true" aria-controls="notify-list-region"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-[14px] h-[14px] items-center justify-center"
+                                aria-hidden="true">
+                                <span class="block">{% include
+                                    "partials/icons/admin/system/icon-admin-arrow-dai-left-den.svg" %}</span>
+                                <span
+                                    class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-dai-left-xanh.svg" %}
+                                </span>
+                            </span>
+                            <span>Trang trước</span>
+                        </button>
+
+                        <button type="button"
+                            class="inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                            {% if page < total_pages %} hx-get="/admin/notify?page={{ page+1 }}&{{ qs_base|trim }}"
+                            hx-target="#notify-list-region" hx-select="#notify-list-region" hx-swap="outerHTML"
+                            hx-push-url="true" aria-controls="notify-list-region" {% else %} disabled {% endif %}>
+                            <span>Trang sau</span>
+                            <span class="inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-dai-right-trang.svg" %}
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-3 pg-tools-area">
+                        <form id="notify-page-jump-form" class="flex items-center gap-2" hx-get="/admin/notify"
+                            hx-target="#notify-list-region" hx-select="#notify-list-region" hx-swap="outerHTML"
+                            hx-push-url="true" aria-controls="notify-list-region">
+                            <input type="hidden" name="v" value="{{ filter_v or 'all' }}">
+                            <input type="hidden" name="sort" value="{{ (filter_sort or 'created_desc') }}">
+                            <input type="hidden" name="q" value="{{ (q or '') }}">
+                            <input type="hidden" name="start_date"
+                                value="{{ filter_start_date.isoformat() if filter_start_date }}">
+                            <input type="hidden" name="end_date"
+                                value="{{ filter_end_date.isoformat() if filter_end_date }}">
+                            <!-- per_page không gửi: JS bơm -->
+                            <label for="notify-page-input" class="sr-only">Trang</label>
+                            <input id="notify-page-input" name="page" inputmode="numeric" pattern="[0-9]*" type="text"
+                                class="pager-input h-[45px]" value="{{ page }}" placeholder="1" minlength="1"
+                                maxlength="6"
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.max){var m=parseInt(this.max,10)||0;var v=parseInt(this.value||'0',10)||0;if(v>m){this.value=String(m);}}"
+                                min="1" max="{{ total_pages }}">
+                            <button type="submit" class="sr-only">Go</button>
+                        </form>
+
+                        <div class="inline-flex items-center text-sm">
+                            <span class="text-gray-500">of</span>
+                            <span class="ml-1 font-semibold text-gray-900">{{ total_pages }}</span>
+                        </div>
+
+                        <div class="inline-flex items-center">
+                            <button type="button"
+                                class="group w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                                aria-label="Trang trước" {% if page>1 %}
+                                hx-get="/admin/notify?page={{ page-1 }}&{{ qs_base|trim }}"
+                                hx-target="#notify-list-region" hx-select="#notify-list-region"
+                                hx-swap="outerHTML" hx-push-url="true" aria-controls="notify-list-region"
+                                {% else %} disabled {% endif %}>
+                                <span class="relative inline-flex w-5 h-5 items-center justify-center"
+                                    aria-hidden="true">
+                                    <span class="block">{% include
+                                        "partials/icons/admin/system/icon-admin-arrow-ngan-left-den.svg" %}</span>
+                                    <span
+                                        class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                        {% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-xanh.svg" %}
+                                    </span>
+                                </span>
+                            </button>
+
+                            <button type="button"
+                                class="group ml-2 w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                                aria-label="Trang sau" {% if page < total_pages %}
+                                hx-get="/admin/notify?page={{ page+1 }}&{{ qs_base|trim }}"
+                                hx-target="#notify-list-region" hx-select="#notify-list-region" hx-swap="outerHTML"
+                                hx-push-url="true" aria-controls="notify-list-region" {% else %} disabled {% endif %}>
+                                <span class="relative inline-flex w-5 h-5 items-center justify-center"
+                                    aria-hidden="true">
+                                    <span class="block">{% include
+                                        "partials/icons/admin/system/icon-admin-arrow-ngan-right-den.svg" %}</span>
+                                    <span
+                                        class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                        {% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-xanh.svg" %}
+                                    </span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Pagination -->
+            </div>
+        </div>
+        <!-- /notify-card -->
+        {% endif %}
+    </div>
+    <!-- /LIST REGION -->
+
+    <div id="notify-bulk-bar" class="bulk-bar" aria-hidden="true" inert data-csrf="{{ csrf_token }}">
+        <div class="bulk-inner">
+            <div class="bulk-shell">
+                <button type="button" id="btn-bulk-delete" class="bulk-btn">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}</span>
+                    <span class="label" id="bulk-delete-label" aria-live="polite">Ẩn 0 mục</span>
+                </button>
+                <button type="button" id="btn-bulk-export" class="bulk-btn">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg"
+                        %}</span>
+                    <span class="label">Xuất CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

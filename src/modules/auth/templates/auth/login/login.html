@@ -1,0 +1,10 @@
+<!-- 📁 src/modules/auth/templates/auth/login/login.html -->
+<!-- 🕒 Last updated: 2025-07-09 00:45 — thêm pass-through allow_password -->
+{% extends "partials/auth_base.html" %}
+
+{% block title %}TvuMoE - Đăng nhập{% endblock %}
+
+{% block form %}
+{# include fragment with access to csrf_token + allow_password #}
+{% include "auth/login/login_fragment.html" %}
+{% endblock %}

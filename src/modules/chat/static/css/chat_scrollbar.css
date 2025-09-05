@@ -1,0 +1,107 @@
+/* file: src/modules/chat/static/css/chat_scrollbar.css
+   updated: 2025-08-27
+   note: Scrollbar "awake" — mờ khi idle, sáng khi có tương tác (hover/scroll/touch).
+   !! Đây là file DUY NHẤT cho thanh cuộn (loại bỏ mọi CSS scrollbar cũ).
+*/
+
+/* ========= Tham số ========= */
+:root{
+  --sb-size: 10px;
+  --sb-radius: 8px;
+  --sb-track: rgba(255,255,255,.02);
+  --sb-thumb-idle: rgba(255,255,255,.12);
+  --sb-thumb-awake: rgba(255,255,255,.38);
+  --sb-thumb-hover: rgba(255,255,255,.52);
+}
+
+/* ========= Vùng áp dụng ========= */
+#chat-scroll,
+#sidebar,
+#chat-footer-shell .cf-input{
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: var(--sb-thumb-idle) transparent;
+}
+
+#chat-scroll.sb-awake,
+#sidebar.sb-awake,
+#chat-footer-shell .cf-input.sb-awake{
+  scrollbar-color: var(--sb-thumb-awake) transparent;
+}
+
+/* ========= WebKit ========= */
+#chat-scroll::-webkit-scrollbar,
+#sidebar::-webkit-scrollbar,
+#chat-footer-shell .cf-input::-webkit-scrollbar{ width:var(--sb-size); height:var(--sb-size); }
+#chat-scroll::-webkit-scrollbar-track,
+#sidebar::-webkit-scrollbar-track,
+#chat-footer-shell .cf-input::-webkit-scrollbar-track{ background:var(--sb-track); border-radius:var(--sb-radius); }
+#chat-scroll::-webkit-scrollbar-thumb,
+#sidebar::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input::-webkit-scrollbar-thumb{
+  background-color:var(--sb-thumb-idle);
+  border-radius:var(--sb-radius);
+  border:2px solid transparent; background-clip:content-box;
+}
+#chat-scroll.sb-awake::-webkit-scrollbar-thumb,
+#sidebar.sb-awake::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input.sb-awake::-webkit-scrollbar-thumb{ background-color:var(--sb-thumb-awake); }
+#chat-scroll:hover::-webkit-scrollbar-thumb,
+#sidebar:hover::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input:hover::-webkit-scrollbar-thumb{ background-color:var(--sb-thumb-hover); }
+
+/* Textarea cần thanh cuộn riêng */
+#chat-footer-shell .cf-input{
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* ========= Vùng áp dụng ========= */
+#chat-scroll,
+#sidebar,
+#chat-footer-shell .cf-input,
+#notification-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb-idle) transparent;
+}
+
+#chat-scroll.sb-awake,
+#sidebar.sb-awake,
+#chat-footer-shell .cf-input.sb-awake,
+#notification-list.sb-awake {
+  scrollbar-color: var(--sb-thumb-awake) transparent;
+}
+
+/* ========= WebKit ========= */
+#chat-scroll::-webkit-scrollbar,
+#sidebar::-webkit-scrollbar,
+#chat-footer-shell .cf-input::-webkit-scrollbar,
+#notification-list::-webkit-scrollbar {
+  width:var(--sb-size); height:var(--sb-size);
+}
+#chat-scroll::-webkit-scrollbar-track,
+#sidebar::-webkit-scrollbar-track,
+#chat-footer-shell .cf-input::-webkit-scrollbar-track,
+#notification-list::-webkit-scrollbar-track {
+  background:var(--sb-track); border-radius:var(--sb-radius);
+}
+#chat-scroll::-webkit-scrollbar-thumb,
+#sidebar::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input::-webkit-scrollbar-thumb,
+#notification-list::-webkit-scrollbar-thumb {
+  background-color:var(--sb-thumb-idle);
+  border-radius:var(--sb-radius);
+  border:2px solid transparent; background-clip:content-box;
+}
+#chat-scroll.sb-awake::-webkit-scrollbar-thumb,
+#sidebar.sb-awake::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input.sb-awake::-webkit-scrollbar-thumb,
+#notification-list.sb-awake::-webkit-scrollbar-thumb {
+  background-color:var(--sb-thumb-awake);
+}
+#chat-scroll:hover::-webkit-scrollbar-thumb,
+#sidebar:hover::-webkit-scrollbar-thumb,
+#chat-footer-shell .cf-input:hover::-webkit-scrollbar-thumb,
+#notification-list:hover::-webkit-scrollbar-thumb {
+  background-color:var(--sb-thumb-hover);
+}

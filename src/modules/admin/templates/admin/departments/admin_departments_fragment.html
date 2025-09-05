@@ -1,0 +1,402 @@
+<title hx-swap-oob="true">Quản lý phòng ban</title>
+<!-- file: src/modules/admin/templates/admin/departments/admin_departments_fragment.html -->
+<!-- updated: 2025-08-25 (v1.2.0 – colgroup=100%, hard ellipsis for URL, no h-scroll) -->
+<!-- note:
+     - Toolbar 2 hàng: [Row1] Search | CSV + New  ·  [Row2] Reset | Sort
+     - Bảng: table-layout:fixed + colgroup tổng = 100% → cột không bị giãn
+     - Website: dòng URL phụ có .url-ellipsis + title (tooltip), không kéo giãn bảng
+-->
+
+{% set _sort_map = {
+'new':'Mới nhất',
+'old':'Cũ nhất',
+'az':'Tên A–Z',
+'za':'Tên Z–A',
+'alias_az':'Bí danh A–Z',
+'alias_za':'Bí danh Z–A',
+'email_az':'Email A–Z',
+'email_za':'Email Z–A'
+} %}
+{% set sort_key = (current_sort or 'new') %}
+{% set sort_label = _sort_map.get(sort_key, 'Mới nhất') %}
+
+{# QS base (không kèm per_page; JS sẽ bơm) #}
+{% set qs_base -%}
+{% if filter_q %}q={{ filter_q|urlencode }}&{% endif %}sort={{ (filter_sort or 'created_desc') }}
+{%- endset %}
+
+<div id="admin-departments-container"
+    class="w-full min-w-0 flex flex-col pl-4 pr-4 pt-4 pb-4"
+    data-current-sort="{{ sort_key }}"
+    data-q="{{ filter_q or '' }}"
+    data-page="{{ page or 1 }}"
+    data-per-page="{{ per_page or 10 }}"
+    data-total="{{ total or 0 }}"
+    data-total-pages="{{ total_pages or 1 }}">
+
+    <!-- Toolbar -->
+    <div id="departments-toolbar" class="w-full min-w-0 space-y-3">
+
+        <!-- ROW 1: Search (trái) — CSV + New (phải) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- LEFT: Search -->
+            <form id="departments-search-form"
+                class="relative w-full"
+                hx-get="/admin/departments"
+                hx-target="#departments-list-region"
+                hx-select="#departments-list-region"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                hx-sync="this:replace">
+                <input id="departments-search-input"
+                    name="q"
+                    type="search"
+                    inputmode="search"
+                    placeholder="Tìm theo tên, bí danh hoặc email…"
+                    value="{{ (filter_q or '')|e }}"
+                    class="w-full h-[45px] pl-11 pr-3 rounded-full bg-white ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-700 outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
+                    hx-trigger="input changed delay:250ms, search">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none">
+                    <span class="icon-search-default block">
+                        {% include "partials/icons/admin/system/icons_admin_setting_tim_kiem_den.svg" %}
+                    </span>
+                </span>
+
+                {# giữ trạng thái sort/paging #}
+                <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+                <input type="hidden" name="page" value="{{ page or 1 }}">
+                <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+            </form>
+
+            <!-- RIGHT: CSV + New -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button id="btn-departments-export-csv" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 font-medium text-sm leading-none text-gray-900 hover:text-blue-700 focus:text-blue-700 transition-all duration-100 focus:outline-none gap-2 shadow">
+                    <span class="inline-flex items-center justify-center w-5 h-5 relative">
+                        <span class="block icon-csv-default">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_den.svg" %}
+                        </span>
+                        <span class="block icon-csv-hover absolute inset-0 pointer-events-none">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span>Xuất CSV</span>
+                </button>
+
+                <button id="btn-open-departments-new-modal" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-blue-900 text-white font-medium text-sm leading-none hover:bg-blue-800 transition-all duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5">
+                        {% include "partials/icons/admin/system/icons_admin_setting_dau_cong.svg" %}
+                    </span>
+                    <span>Tạo phòng ban</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ROW 2: Reset (trái) — Sort (phải) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- LEFT: Reset -->
+            <div class="flex items-center gap-3">
+                <button id="btn-departments-reset" type="button"
+                    class="btn-reset btn-ghost flex items-center h-[45px] px-3 rounded-full text-sm font-semibold"
+                    style="color:#1E3A8A">
+                    <span class="w-5 h-5 inline-flex items-center justify-center mr-1">
+                        {% include "partials/icons/admin/system/icons_admin_reset_xanh.svg" %}
+                    </span>
+                    <span>Đặt lại</span>
+                </button>
+            </div>
+
+            <!-- RIGHT: Sort -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button id="btn-departments-sort" type="button" aria-haspopup="menu" aria-expanded="false"
+                        class="flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span id="departments-sort-label">
+                            <span class="sort-prefix">Sắp xếp:&nbsp;</span>
+                            <span class="sort-value">{{ sort_label }}</span>
+                        </span>
+                        <span class="w-[18px] h-[18px] inline-flex items-center justify-center relative">
+                            <span class="icon-arrow-default block">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_den.svg" %}
+                            </span>
+                            <span class="icon-arrow-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_xanh.svg" %}
+                            </span>
+                        </span>
+                    </button>
+
+                    <!-- Sort menu (2 cột) -->
+                    <div id="menu-departments-sort" role="menu" aria-labelledby="btn-departments-sort"
+                        class="hidden absolute z-30 right-0 top-full translate-y-2 min-w-[380px]">
+                        <div class="p-1 grid grid-cols-2 gap-1 bg-white border border-gray-200 rounded-xl shadow-xl">
+                            <button type="button" role="menuitem" class="menu-item" data-sort="new">Mới nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="old">Cũ nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="az">Tên A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="za">Tên Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="alias_az">Bí danh A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="alias_za">Bí danh Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="email_az">Email A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="email_za">Email Z–A</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /ROW 2 -->
+
+    </div>
+    <!-- /Toolbar -->
+
+    <div id="admin-departments-modal-root"></div>
+
+    <!-- LIST REGION -->
+    <div id="departments-list-region" class="mt-2">
+        {% if not departments %}
+        <p class="text-gray-500 italic">Chưa có phòng ban nào.</p>
+        {% else %}
+        <div class="w-full min-w-0 rounded-2xl overflow-hidden shadow border border-gray-200 bg-white">
+            <div id="admin-departments-table" class="w-full min-w-0">
+                <table class="min-w-full text-sm table-fixed">
+                    <colgroup>
+                        <!-- Tổng = 100% để không phình ngang -->
+                        <col class="col-select" style="width:4%">
+                        <col style="width:34%">
+                        <col style="width:22%">
+                        <col style="width:14%">
+                        <col style="width:22%">
+                        <col class="col-actions" style="width:4%">
+                    </colgroup>
+                    <thead class="text-left">
+                        <tr class="bg-[#EEF2FF]">
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">
+                                <label class="cb" aria-label="Chọn tất cả" id="sel-all-wrap">
+                                    <input id="sel-all" type="checkbox"><span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Tên phòng ban</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Email</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Điện thoại</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Website</th>
+                            <th class="px-3 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium text-right" aria-hidden="true"></th>
+                        </tr>
+                    </thead>
+
+                    <!-- DATA ROWS -->
+                    <tbody id="departments-tbody">
+                        {% for d in departments %}
+                        <tr class="group">
+                            <td class="px-4 py-2 border-b border-gray-200 align-top">
+                                <label class="cb" aria-label="Chọn phòng ban">
+                                    <input type="checkbox" class="row-select" data-dept-id="{{ d.dept_id }}">
+                                    <span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis">
+                                <div class="font-medium text-gray-900 btn-dept-detail cursor-pointer" data-dept-id="{{ d.dept_id }}">
+                                    {{ d.dept_name|e }}
+                                </div>
+                                <div class="text-gray-500 line-clamp-1">
+                                    {% if d.dept_alias %}<span class="text-gray-400">aka</span> {{ d.dept_alias|e }}{% else %}<span class="text-gray-400">—</span>{% endif %}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    Cập nhật: {{ (d.dept_updated_at or d.dept_created_at).astimezone().strftime('%d/%m/%Y %H:%M') }}
+                                </div>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis text-gray-900">
+                                {{ d.dept_email or '—' }}
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis text-gray-900">
+                                {{ d.dept_phone or '—' }}
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis text-gray-900">
+                                {% if d.dept_website %}
+                                {% set _w = d.dept_website %}
+                                {% if _w.startswith('http://') or _w.startswith('https://') %}
+                                <a href="{{ _w|e }}" class="text-blue-700 hover:underline block max-w-full overflow-hidden text-ellipsis whitespace-nowrap" target="_blank" rel="noopener" title="{{ _w|e }}">Mở website</a>
+                                <div class="url-ellipsis text-xs text-gray-400" title="{{ _w|e }}">{{ _w|e }}</div>
+                                {% else %}
+                                <span class="url-ellipsis" title="{{ _w|e }}">{{ _w|e }}</span>
+                                {% endif %}
+                                {% else %}—{% endif %}
+                            </td>
+
+                            <td class="px-3 py-2 border-b border-gray-200 align-top">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button type="button" class="action-btn row-action-detail tt"
+                                        aria-label="Chi tiết" data-tt="Chi tiết" data-dept-id="{{ d.dept_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_info.svg" %}
+                                        </span>
+                                    </button>
+
+                                    <button type="button" class="action-btn row-action-edit tt"
+                                        aria-label="Sửa" data-tt="Sửa" data-dept-id="{{ d.dept_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_pen_edit.svg" %}
+                                        </span>
+                                    </button>
+
+                                    <button type="button" class="action-btn row-action-delete tt"
+                                        aria-label="Xoá" data-tt="Xoá" data-dept-id="{{ d.dept_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- SMART FILLER (JS sẽ render) -->
+                    <tbody id="departments-filler" aria-hidden="true"></tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="departments-pagination"
+                class="flex items-center justify-between gap-3 flex-wrap bg-white border-t px-4 py-3"
+                aria-label="Điều hướng trang">
+                <div class="min-w-[180px]">
+                    {% if show_first_btn %}
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 h-[45px] px-4 rounded-full bg-white text-sm font-medium text-gray-900 hover:text-blue-700 shrink-0"
+                        hx-get="/admin/departments?page=1&{{ qs_base|trim }}"
+                        hx-target="#departments-list-region"
+                        hx-select="#departments-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="departments-list-region">
+                        <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                            <span class="icon-first-default block">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-den-left.svg" %}
+                            </span>
+                            <span class="icon-first-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-xanh-left.svg" %}
+                            </span>
+                        </span>
+                        <span>Về trang 1</span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-white ring-1 ring-gray-300 text-gray-900 hover:text-blue-700 hover:ring-blue-700 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page>1 %}
+                        hx-get="/admin/departments?page={{ page-1 }}&{{ qs_base|trim }}"
+                        hx-target="#departments-list-region" hx-select="#departments-list-region"
+                        hx-swap="outerHTML" hx-push-url="true" aria-controls="departments-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span class="relative inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-dai-left-den.svg" %}</span>
+                            <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-dai-left-xanh.svg" %}
+                            </span>
+                        </span>
+                        <span>Trang trước</span>
+                    </button>
+
+                    <button type="button"
+                        class="inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page < total_pages %}
+                        hx-get="/admin/departments?page={{ page+1 }}&{{ qs_base|trim }}"
+                        hx-target="#departments-list-region" hx-select="#departments-list-region" hx-swap="outerHTML"
+                        hx-push-url="true" aria-controls="departments-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span>Trang sau</span>
+                        <span class="inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            {% include "partials/icons/admin/system/icon-admin-arrow-dai-right-trang.svg" %}
+                        </span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <form id="departments-page-jump-form"
+                        class="flex items-center gap-2"
+                        hx-get="/admin/departments"
+                        hx-target="#departments-list-region"
+                        hx-select="#departments-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="departments-list-region">
+                        <input type="hidden" name="q" value="{{ filter_q or '' }}">
+                        <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+
+                        <label for="departments-page-input" class="sr-only">Trang</label>
+                        <input id="departments-page-input" name="page" inputmode="numeric" pattern="[0-9]*" type="text"
+                            class="pager-input h-[45px]" value="{{ page }}" placeholder="1"
+                            minlength="1" maxlength="6"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.max){var m=parseInt(this.max,10)||0;var v=parseInt(this.value||'0',10)||0;if(v>m){this.value=String(m);}}"
+                            min="1" max="{{ total_pages }}">
+                        <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+                        <button type="submit" class="sr-only">Go</button>
+                    </form>
+
+                    <div class="inline-flex items-center text-sm">
+                        <span class="text-gray-500">of</span>
+                        <span class="ml-1 font-semibold text-gray-900">{{ total_pages }}</span>
+                    </div>
+
+                    <div class="inline-flex items-center">
+                        <button type="button"
+                            class="group w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang trước"
+                            {% if page>1 %}
+                            hx-get="/admin/departments?page={{ page-1 }}&{{ qs_base|trim }}"
+                            hx-target="#departments-list-region" hx-select="#departments-list-region"
+                            hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-den.svg" %}</span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+
+                        <button type="button"
+                            class="group ml-2 w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang sau"
+                            {% if page < total_pages %}
+                            hx-get="/admin/departments?page={{ page+1 }}&{{ qs_base|trim }}"
+                            hx-target="#departments-list-region" hx-select="#departments-list-region" hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-den.svg" %}</span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- /Pagination -->
+        </div>
+        {% endif %}
+    </div>
+    <!-- /LIST REGION -->
+
+    <!-- Bulk bar -->
+    <div id="departments-bulk-bar" class="bulk-bar" aria-hidden="true" inert data-csrf="{{ csrf_token }}">
+        <div class="bulk-inner">
+            <div class="bulk-shell">
+                <button type="button" id="btn-departments-bulk-delete" class="bulk-btn">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}</span>
+                    <span class="label" id="departments-bulk-delete-label" aria-live="polite">Xoá 0 mục</span>
+                </button>
+                <button type="button" id="btn-departments-bulk-export" class="bulk-btn">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}</span>
+                    <span class="label">Xuất CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- /Bulk bar -->
+</div>

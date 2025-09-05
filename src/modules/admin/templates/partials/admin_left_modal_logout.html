@@ -1,0 +1,97 @@
+{# file: src/modules/admin/templates/partials/admin_left_modal_logout.html #}
+{# updated: 2025-08-03 #}
+{# note: modal luôn bo tròn đồng nhất mọi thiết bị, tối ưu max-width, padding, ngăn scroll không mong muốn khi đóng
+modal #}
+
+{# ───────── OVERLAY ───────── #}
+<div id="logout-modal-overlay" data-state="closed" class="fixed inset-0 z-[9998] duration-75 pointer-events-none
+           data-[state=open]:pointer-events-auto
+           data-[state=open]:bg-black/70
+           data-[state=open]:backdrop-blur-[2px]
+           /* ngăn scroll chuỗi trên mobile/desktop khi modal mở */
+           data-[state=open]:overscroll-contain
+           touch-none
+           data-[state=open]:animate-in data-[state=open]:fade-in-0
+           data-[state=closed]:animate-out data-[state=closed]:fade-out-0" tabindex="-1" aria-hidden="true"></div>
+
+{# ───────── MODAL WRAPPER ───────── #}
+<div id="logout-modal" data-state="closed" data-user-email="{{ user.user_email|e }}" class="fixed inset-0 z-[9999] hidden items-center justify-center px-2
+           /* ngăn scroll chuỗi trên mobile/desktop khi modal mở */
+           overscroll-contain touch-none" role="dialog" aria-modal="true" aria-labelledby="logout-modal-title"
+    aria-describedby="logout-modal-desc" tabindex="-1">
+
+    <div role="document" class="
+            w-full max-w-xs sm:max-w-[390px]
+            rounded-[40px] border border-gray-200
+            bg-white shadow-2xl
+            px-4 py-6 sm:px-8 sm:py-10
+            flex flex-col items-center space-y-6
+            data-[state=open]:animate-in data-[state=open]:zoom-in-95
+            data-[state=closed]:animate-out data-[state=closed]:zoom-out-95
+            font-manrope text-[90%]
+        ">
+
+        {# ▸ Tiêu đề #}
+        <h2 id="logout-modal-title"
+            class="text-lg sm:text-2xl font-semibold text-center text-blue-900 leading-snug break-words">
+            Bạn có chắc muốn đăng xuất không?
+        </h2>
+
+        {# ▸ CỤM 2 DÒNG THÔNG BÁO #}
+        <div id="logout-modal-desc" class="text-center leading-relaxed space-y-[1px] break-words">
+            <p class="text-sm sm:text-base text-gray-600">
+                Đăng xuất khỏi tài khoản
+            </p>
+            <p class="text-sm sm:text-base font-medium text-blue-900 break-all">
+                <span id="logout-modal-username" data-email="{{ user.user_email|e }}" aria-live="polite">
+                    {{ user.user_email|e }}
+                </span>?
+            </p>
+        </div>
+
+        {# ▸ Action buttons (Đồng bộ UI/UX chuẩn các modal notify) #}
+        <div class="flex justify-center gap-4 w-full pt-2">
+            <button id="logout-modal-cancel" type="button" class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium text-[14px]
+                       hover:bg-gray-300 transition-opacity duration-75 focus:outline-none
+                       focus:ring-2 focus:ring-gray-300" data-action="cancel-logout">
+                Hủy
+            </button>
+            <button id="logout-modal-confirm" type="button" class="w-[120px] rounded-full py-2.5 bg-blue-900 text-white font-medium text-[14px]
+                       hover:bg-blue-800 transition-opacity duration-75 focus:outline-none
+                       focus:ring-2 focus:ring-blue-300" data-action="confirm-logout">
+                Đăng xuất
+            </button>
+        </div>
+    </div>
+</div>
+
+{# ───────── Noscript Fallback (tùy chọn) ───────── #}
+<noscript>
+    <div class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60">
+        <div class="bg-white p-4 sm:p-6 rounded-[40px] text-center space-y-4 w-[95vw] max-w-xs">
+            <p>Bạn có chắc muốn đăng xuất không?</p>
+            <p>{{ user.user_email|e }}</p>
+            <a href="/auth/logout" class="inline-block px-4 py-2 rounded bg-blue-900 text-white">Đăng xuất</a>
+            <button onclick="history.back()"
+                class="inline-block px-4 py-2 rounded bg-gray-200 text-gray-800">Hủy</button>
+        </div>
+    </div>
+</noscript>
+
+{# ───────── STYLE NỘI BỘ (giữ motion) ───────── #}
+<style>
+    @media (prefers-reduced-motion: reduce) {
+
+        #logout-modal-overlay,
+        #logout-modal>div {
+            animation: none !important;
+            transition: none !important;
+        }
+    }
+
+    /* đảm bảo khi modal đóng/mở không đẩy trang hoặc sidebar bị scroll chuỗi */
+    #logout-modal-overlay,
+    #logout-modal {
+        overscroll-behavior: contain;
+    }
+</style>

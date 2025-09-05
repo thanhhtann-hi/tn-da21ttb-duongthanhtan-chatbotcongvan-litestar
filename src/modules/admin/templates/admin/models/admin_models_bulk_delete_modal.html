@@ -1,0 +1,177 @@
+<!-- file: src/modules/admin/templates/admin/models/admin_models_bulk_delete_modal.html -->
+<!-- updated: 2025-08-23 (v1.1 – sync ctx: selected_ids/selected_count; ES5-safe; HTMX-only swap) -->
+<!-- note:
+     - Bulk retire (soft-delete) nhiều ModelVariant theo danh sách ids.
+     - CHỈ swap #models-list-region (hx-target + hx-select).
+     - JS sẽ bơm đủ filter: status/scope/tier/enabled/provider/type/q/sort/page/per_page.
+-->
+
+<!-- Overlay (click để đóng) -->
+<div id="models-bulk-delete-modal-overlay"
+    class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-[2px]"></div>
+
+<!-- Modal -->
+<div id="models-bulk-delete-modal" class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+    <div class="models-modal-content w-full max-w-[98vw] sm:max-w-[520px] rounded-[28px]
+              border border-gray-200 bg-white shadow px-0 py-0 flex flex-col
+              font-manrope animate-in zoom-in-95">
+
+        <!-- Header -->
+        <div class="relative flex items-center justify-center min-h-[56px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-red-700 text-center w-full">
+                    Ngừng dùng nhiều mô hình
+                </h2>
+                <div class="mt-1 text-sm text-gray-600 text-center">
+                    Thao tác này sẽ chuyển các mô hình đã chọn sang trạng thái <b>retired</b>.
+                </div>
+            </div>
+
+            <!-- Close -->
+            <button id="models-bulk-delete-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-red-50 hover:ring-red-800 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_do.svg" %}
+                </span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-scroll-area grow overflow-y-auto px-6 pb-6">
+            <div class="rounded-xl bg-red-50 text-red-800 border border-red-100 p-4 text-sm">
+                <div class="font-semibold">Các mô hình sẽ bị <span class="font-bold">retired</span> và bị vô hiệu hóa.</div>
+                <div id="models-bulk-delete-desc" class="mt-1">
+                    Bạn sắp thao tác với
+                    <span class="font-bold">{{ selected_count or 0 }}</span>
+                    mô hình đã chọn.
+                </div>
+                <div class="mt-1 text-[13px] text-red-700/90">
+                    Dữ liệu vẫn được lưu trữ và có thể kích hoạt lại (ngoại trừ khi quy ước hệ thống không cho bỏ trạng thái retired).
+                </div>
+            </div>
+
+            <!-- Form POST bulk-retire -->
+            <form id="admin-models-bulk-delete-form"
+                method="POST"
+                action="/admin/models/bulk-delete"
+                hx-post="/admin/models/bulk-delete"
+                hx-target="#models-list-region"
+                hx-select="#models-list-region"
+                hx-swap="outerHTML"
+                hx-headers='{"X-CSRF-Token":"{{ csrf_token }}"}'
+                hx-disabled-elt="#models-bulk-delete-submit"
+                class="mt-5 flex items-center justify-center gap-4"
+                data-selected-count="{{ selected_count or 0 }}">
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <!-- Danh sách ID (CSV) -->
+                <input type="hidden" name="ids" id="models-bulk-delete-ids" value="{{ selected_ids or '' }}">
+
+                <!-- Filter state (JS sẽ set trước submit) -->
+                <input type="hidden" name="status" value="">
+                <input type="hidden" name="scope" value="">
+                <input type="hidden" name="tier" value="">
+                <input type="hidden" name="enabled" value="">
+                <input type="hidden" name="provider" value="">
+                <input type="hidden" name="type" value="">
+                <input type="hidden" name="q" value="">
+                <input type="hidden" name="sort" value="">
+                <input type="hidden" name="page" value="">
+                <input type="hidden" name="per_page" value="">
+
+                <button type="button" id="models-bulk-delete-cancel"
+                    class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                       hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">
+                    Hủy
+                </button>
+
+                <button id="models-bulk-delete-submit" type="submit"
+                    class="w-[160px] rounded-full py-2.5 bg-red-700 text-white font-medium
+                       hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300 text-[14px]"
+                    {% if not selected_count or selected_count==0 %}disabled{% endif %}>
+                    Ngừng dùng các mục
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* ── SCOPED SVG reset: chỉ áp cho modal này ── */
+    #models-bulk-delete-modal svg {
+        width: auto !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        display: block
+    }
+
+    .models-modal-content {
+        box-shadow: 0 10px 32px rgba(0, 0, 0, .13);
+        border: 1.5px solid #e5e7eb;
+        background: #fff
+    }
+
+    @keyframes zoom-in-95 {
+        from {
+            transform: scale(.95);
+            opacity: .7
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1
+        }
+    }
+
+    /* Hover swap icon (đen → đỏ) */
+    #models-bulk-delete-modal-close .chip-hover {
+        display: none
+    }
+
+    #models-bulk-delete-modal-close:hover .chip-normal,
+    #models-bulk-delete-modal-close:focus .chip-normal {
+        display: none
+    }
+
+    #models-bulk-delete-modal-close:hover .chip-hover,
+    #models-bulk-delete-modal-close:focus .chip-hover {
+        display: flex
+    }
+
+    /* Ép kích thước X = 10×10 */
+    #models-bulk-delete-modal-close .chip-normal svg,
+    #models-bulk-delete-modal-close .chip-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #models-bulk-delete-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important;
+            padding: 0 !important
+        }
+
+        .models-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 22px 22px 0 0 !important;
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0
+        }
+    }
+</style>

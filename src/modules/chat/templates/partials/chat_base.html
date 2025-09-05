@@ -1,0 +1,114 @@
+<!-- file: src/modules/chat/templates/partials/chat_base.html -->
+<!-- updated: 2025-08-29 (UX15 + scrollbar-gutter polyfill + actions-always) -->
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <!-- [0] Seed CSRF meta from cookie *before* deferred scripts -->
+    <script>
+        (function () {
+            try {
+                var raw = document.cookie || '', val = '';
+                raw.split('; ').forEach(function (seg) {
+                    var i = seg.indexOf('=');
+                    if (i < 0) return;
+                    var k = decodeURIComponent(seg.slice(0, i));
+                    if (k === 'csrftoken') val = decodeURIComponent(seg.slice(i + 1));
+                });
+                if (val) {
+                    var m = document.querySelector('meta[name="csrf-token"]');
+                    if (!m) {
+                        m = document.createElement('meta');
+                        m.setAttribute('name', 'csrf-token');
+                        m.setAttribute('content', val);
+                        document.head.appendChild(m);
+                    }
+                }
+            } catch (e) { }
+        })();
+    </script>
+
+    <!-- [1] Meta -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block page_title %}{% endblock %}</title>
+    {% if csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">{% endif %}
+
+    {% set ASSET_VER = (asset_ver|default('20250829-UX15')) %}
+
+    <!-- [3] Styles -->
+    <link rel="stylesheet" href="/static/css/tailwind.css?v={{ ASSET_VER }}" />
+    <link rel="stylesheet" href="/static/css/chat_base.css?v={{ ASSET_VER }}" />
+    <link rel="stylesheet" href="/static/css/chat_header.css?v={{ ASSET_VER }}" />
+    <link rel="stylesheet" href="/static/css/chat_sidebar_left.css?v={{ ASSET_VER }}" />
+    <link rel="stylesheet" href="/static/css/chat_scrollbar.css?v={{ ASSET_VER }}" />
+
+    <!-- [3.1] Polyfill căn trục khi browser KHÔNG hỗ trợ scrollbar-gutter -->
+    <script>
+        (function () {
+            var supports = 'scrollbarGutter' in document.documentElement.style;
+            if (supports) return;
+            var box = document.createElement('div');
+            box.style.cssText = 'position:absolute;top:-9999px;width:100px;height:100px;overflow:scroll;';
+            document.documentElement.appendChild(box);
+            var sbw = box.offsetWidth - box.clientWidth;
+            box.remove();
+            var perSide = (sbw / 2) + 'px';
+            document.documentElement.style.setProperty('--sb-gutter', perSide);
+            window.addEventListener('resize', function () {
+                document.documentElement.style.setProperty('--sb-gutter', perSide);
+            }, { passive: true });
+        })();
+    </script>
+
+    <!-- [4] HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/head-support.js"></script>
+    <script defer src="/static/js/chat_htmx_safe_config.js?v={{ ASSET_VER }}"></script>
+</head>
+
+<body class="h-screen flex text-sm bg-[#181818] text-white overflow-hidden actions-always"
+    hx-ext="head-support" hx-boost="true"
+    hx-target="#chat-root" hx-select="#chat-root" hx-swap="outerHTML" hx-push-url="true">
+
+    <!-- [5] Sidebar (persist) -->
+    <aside id="sidebar" class="flex flex-col h-full shrink-0 bg-[#181818] border-r border-gray-700 transition-all duration-300">
+        {% include "partials/chat_sidebar_left.html" %}
+    </aside>
+
+    <!-- [6] Main (SPA-swapped) -->
+    <div id="chat-root" {% if chat_id %}data-chat-id="{{ chat_id }}" {% endif %}
+        class="flex flex-col flex-1 overflow-hidden min-w-0 w-full max-w-full">
+        {% block chat_header %}{% include "partials/chat_header.html" %}{% endblock %}
+
+        <main id="chat-scroll"
+            class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full max-w-full box-border
+                   px-6 pb-8 flex flex-col items-center{% if is_notify_all %} bg-[#1F1F1F]{% endif %}"
+            role="main">
+            {% block chat_messages %}{% endblock %}
+        </main>
+
+        {% block chat_footer %}{% include "partials/chat_footer.html" %}{% endblock %}
+    </div>
+
+    <!-- [7] Modal root -->
+    <div id="chat-modal-root"></div>
+
+    <!-- [8] Scripts -->
+    <script defer src="/static/js/chat_base.js?v={{ ASSET_VER }}"></script>
+    <script defer src="/static/js/chat_header.js?v={{ ASSET_VER }}"></script>
+    <script defer src="/static/js/chat_sidebar_left.js?v={{ ASSET_VER }}"></script>
+    <script defer src="/static/js/chat_tooltip_portal.js?v={{ ASSET_VER }}"></script>
+    <script defer src="/static/js/maintenance.js?v={{ ASSET_VER }}"></script>
+    <script defer src="/static/js/chat_paste_guard.js?v={{ ASSET_VER }}"></script>
+    <!-- Quan trọng: footer trước, guard sau -->
+    <script defer src="/static/js/chat_footer.js?v={{ ASSET_VER }}"></script>
+
+    <!-- Scrollbar awake -->
+    <script defer src="/static/js/chat_scroll_awake.js?v={{ ASSET_VER }}"></script>
+</body>
+
+</html>

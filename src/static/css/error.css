@@ -1,0 +1,28 @@
+/* 📄 src/static/css/error.css */
+/* 🕒 Last updated: 2025-07-08 23:50 */
+/* Styles riêng cho trang lỗi 404 */
+
+.error-icon {
+    margin-bottom: 1.5rem;
+}
+
+.error-icon svg {
+    width: 120px;
+    height: 120px;
+}
+
+@media (min-width: 640px) {
+    .error-icon svg {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* Nút “Về trang chủ” đã có styles từ Tailwind, chỉ thêm transition mượt */
+a.inline-block {
+    transition: opacity 0.2s ease-in-out;
+}
+
+a.inline-block:hover {
+    opacity: 0.9;
+}

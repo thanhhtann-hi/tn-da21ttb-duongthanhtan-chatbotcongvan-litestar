@@ -1,0 +1,25 @@
+<!-- file: src/modules/chat/templates/partials/chat_notify_list_fragment.html -->
+<!-- updated: 2025-08-25 -->
+<!-- note: Căn text/padding chuẩn; ẩn tooltip native; nội dung 2 dòng (line-clamp). -->
+
+{% if notifications %}
+{% for rec in notifications %}
+<li data-id="{{ rec.notify_id }}" data-read="{{ 'true' if rec.read_at else 'false' }}"
+    class="cursor-pointer rounded-md px-3 py-2 hover:bg-[#374151] focus:bg-[#374151] transition-colors"
+    aria-label="Xem thông báo" aria-haspopup="dialog" aria-controls="chat-modal-root" role="button" tabindex="0"
+    hx-get="/chat/notify/detail/{{ rec.notify_id }}" hx-target="#chat-modal-root" hx-swap="innerHTML" hx-push-url="false">
+
+    <div class="flex flex-col gap-1 min-w-0 leading-snug">
+        <span class="{% if rec.read_at %}text-gray-400{% else %}text-white{% endif %} text-[13px] block"
+            style="-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;">
+            {{ rec.notification.notify_content }}
+        </span>
+        <span class="text-[12px] text-[#B1B1B1]">
+            {{ rec.notification.notify_created_at.strftime('%d/%m/%Y %H:%M') }}
+        </span>
+    </div>
+</li>
+{% endfor %}
+{% else %}
+<li class="text-center text-gray-500 text-sm italic py-4">Không có thông báo mới.</li>
+{% endif %}

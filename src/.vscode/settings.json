@@ -1,0 +1,45 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/node_modules": true
+    },
+    "search.exclude": {
+        "**/__pycache__": true,
+        "**/node_modules": true
+    },
+    "files.watcherExclude": {
+        "**/__pycache__/**": true,
+        "**/node_modules/**": true
+    },
+
+    // Auto-format on save
+    "[javascript]": {
+        "editor.formatOnSave": true
+    },
+    "[html]": {
+        "editor.formatOnSave": true
+    },
+    "[css]": {
+        "editor.formatOnSave": true
+    },
+    "[scss]": {
+        "editor.formatOnSave": true
+    },
+    "[tailwindcss]": {
+        "editor.formatOnSave": true
+    },
+
+    // Giúp VS Code hiểu @apply của Tailwind/PostCSS
+    "css.lint.unknownAtRules": "ignore",
+    "less.lint.unknownAtRules": "ignore",
+    "scss.lint.unknownAtRules": "ignore",
+    "css.validate": false,
+
+    // Xét file .css là PostCSS để parser @apply, @tailwind, v.v.
+    "files.associations": {
+        "*.css": "postcss"
+    },
+
+    // Nếu cần chỉ định config của Tailwind CSS IntelliSense
+    "tailwindCSS.experimental.configFile": "./tailwind.config.js"
+}

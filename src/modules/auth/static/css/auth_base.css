@@ -1,0 +1,25 @@
+/* 📁 modules/auth/static/css/auth_base.css */
+/* 🕒 Last updated: 2025-07-06 16:45 (override logo visibility on coarse pointers) */
+
+.font-manrope {
+    font-family: 'Manrope', sans-serif;
+}
+
+/* Ẩn Aside cho mọi thiết bị cảm ứng */
+@media (pointer: coarse) {
+    aside {
+        display: none !important;
+    }
+
+    /* Hiện lại logo mini trên mọi thiết bị cảm ứng, dù class xl:hidden */
+    a.xl\:hidden {
+        display: block !important;
+    }
+}
+
+/* Chỉ hiện Aside khi chuột “fine” (laptop/desktop) và width ≥ 1280px */
+@media (pointer: fine) and (min-width: 1280px) {
+    aside {
+        display: flex !important;
+    }
+}

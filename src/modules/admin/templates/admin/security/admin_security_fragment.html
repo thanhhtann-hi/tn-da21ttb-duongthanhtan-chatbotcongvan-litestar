@@ -1,0 +1,79 @@
+<title hx-swap-oob="true">Quản lý hệ thống</title>
+<!-- 📄 src/modules/admin/templates/admin/security/admin_security_fragment.html -->
+<!-- 🕒 Updated: 2025-07-09 21:30 – Loại bỏ phần Thông báo toàn hệ thống -->
+<form id="admin-security-form" hx-post="/admin/security" hx-target="#admin-security-form" hx-swap="outerHTML"
+    class="space-y-6">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+    <!-- Cho phép đăng ký -->
+    <div class="flex items-center">
+        <input id="system_register" name="system_register" type="checkbox" class="h-4 w-4 text-blue-600 peer" {% if
+            settings.system_register %}checked{% endif %} />
+        <label for="system_register" class="ml-2 text-gray-700 select-none">Cho phép đăng ký</label>
+    </div>
+
+    <!-- Bắt buộc login OAuth -->
+    <div class="flex items-center">
+        <input id="system_login" name="system_login" type="checkbox" class="h-4 w-4 text-blue-600 peer" {% if
+            settings.system_login %}checked{% endif %} />
+        <label for="system_login" class="ml-2 text-gray-700 select-none">Bắt buộc đăng nhập OAuth</label>
+    </div>
+
+    <!-- Chế độ bảo trì -->
+    <div class="flex items-center">
+        <input id="system_maintenance" name="system_maintenance" type="checkbox" class="h-4 w-4 text-red-600 peer" {% if
+            settings.system_maintenance %}checked{% endif %} />
+        <label for="system_maintenance" class="ml-2 text-gray-700 select-none">Bật chế độ bảo trì</label>
+    </div>
+
+    <!-- Giới hạn domain OAuth -->
+    <div>
+        <label for="system_domain_mode" class="block mb-1 text-gray-700">Giới hạn domain OAuth</label>
+        <select id="system_domain_mode" name="system_domain_mode"
+            class="block w-full border border-gray-300 rounded p-2">
+            <option value="none" {% if settings.system_domain_mode=='none' %}selected{% endif %}>Không giới hạn</option>
+            <option value="tvu" {% if settings.system_domain_mode=='tvu' %}selected{% endif %}>Chỉ @tvu.edu.vn</option>
+            <option value="tvu_and_sttvu" {% if settings.system_domain_mode=='tvu_and_sttvu' %}selected{% endif %}>
+                @tvu.edu.vn và @st.tvu.edu.vn
+            </option>
+        </select>
+    </div>
+
+    <!-- Submit -->
+    <div class="flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            Lưu thay đổi
+        </button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('htmx:load', attachSecurityFormLogic);
+    attachSecurityFormLogic();
+    function attachSecurityFormLogic() {
+        const form = document.getElementById('admin-security-form');
+        if (!form) return;
+        const chkRegister = form.querySelector('#system_register');
+        const chkLogin = form.querySelector('#system_login');
+        const chkMaintenance = form.querySelector('#system_maintenance');
+
+        toggleAB();
+        chkMaintenance.addEventListener('change', toggleAB);
+        chkRegister.addEventListener('change', ensureAtLeastOneAB);
+        chkLogin.addEventListener('change', ensureAtLeastOneAB);
+
+        function toggleAB() {
+            const isM = chkMaintenance.checked;
+            chkRegister.disabled = chkLogin.disabled = isM;
+            chkRegister.parentElement.classList.toggle('opacity-50', isM);
+            chkLogin.parentElement.classList.toggle('opacity-50', isM);
+        }
+        function ensureAtLeastOneAB(e) {
+            if (chkMaintenance.checked) return;
+            if (!chkRegister.checked && !chkLogin.checked) {
+                e.target.checked = true;
+                alert('Phải bật ít nhất “Cho phép đăng ký” hoặc “Bắt buộc đăng nhập OAuth”.');
+            }
+        }
+    }
+</script>

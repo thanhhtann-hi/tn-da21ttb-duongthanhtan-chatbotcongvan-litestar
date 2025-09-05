@@ -1,0 +1,156 @@
+<!-- file: src/modules/admin/templates/partials/admin_base.html -->
+<!-- updated: 2025-09-03 (v2.3 – fix notify *calendar* modal filename; keep load order) -->
+<!-- note:
+     - Tích hợp đầy đủ Documents (CSS/JS + modals) giống Users/Departments.
+     - Banner “Phiên bản thử nghiệm” bám đáy cột phải (không dính sidebar).
+     - Thứ tự script: base → left → portal → feature (notify, models, tools, users, departments, documents)
+       → header/search → modals (notify/models/tools/users/departments/documents).
+-->
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Admin{% endblock %}</title>
+
+    {% if csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">{% endif %}
+    <meta name="current-user-email" content="{{ user.user_email|e }}">
+    <meta name="current-user-display" content="{{ (user.user_display_name or user.user_name)|e }}">
+
+    <link rel="icon" href="/static/images/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
+
+    {% block extra_head %}{% endblock %}
+
+    <!-- Base styles -->
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+    <link rel="stylesheet" href="/static/css/admin_base.css" />
+    <link rel="stylesheet" href="/static/css/admin_header.css" />
+    <link rel="stylesheet" href="/static/css/admin_left.css" />
+
+    <!-- Fragment styles -->
+    <link rel="stylesheet" href="/static/css/admin_notify_fragment.css" />
+    <link rel="stylesheet" href="/static/css/admin_models_fragment.css" />
+    <link rel="stylesheet" href="/static/css/admin_tools_fragment.css" />
+    <link rel="stylesheet" href="/static/css/admin_users_fragment.css" />
+    <link rel="stylesheet" href="/static/css/admin_departments_fragment.css" />
+    <link rel="stylesheet" href="/static/css/admin_documents_fragment.css" />
+    {% block extra_css %}{% endblock %}
+
+    <!-- HTMX + head-support -->
+    <script defer src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://unpkg.com/htmx.org/dist/ext/head-support.js"></script>
+    <!-- Safe config (CSRF, hooks, ES5-safe) -->
+    <script defer src="/static/js/htmx_safe_config.js"></script>
+</head>
+
+<body class="h-screen flex font-manrope bg-gray-50 text-gray-900 overflow-hidden" hx-ext="head-support">
+    <noscript>
+        <div class="p-4 bg-red-100 text-red-700 text-center">
+            Trình duyệt của bạn đang tắt JavaScript. Đăng nhập quản trị cần JavaScript để hoạt động.
+        </div>
+    </noscript>
+
+    <div id="app-root" class="flex h-full w-full min-h-0">
+        {% include "partials/admin_left.html" %}
+
+        <!-- Cột phải (mốc neo banner đáy) -->
+        <div class="flex-1 flex flex-col overflow-hidden min-h-0 relative">
+            {% include "partials/admin_header.html" %}
+
+            <main id="admin-frame" class="flex-1 overflow-y-auto min-h-0 bg-white" hx-history-elt="true">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Banner thử nghiệm — dính đáy cột phải -->
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none z-10 pb-1">
+                <span class="text-[12px] leading-none text-gray-600 select-none">Phiên bản thử nghiệm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal / Toast root (dùng chung) -->
+    <div id="modal-root"></div>
+    <div id="toast-root" class="fixed inset-0 z-[99999] pointer-events-none"></div>
+
+    <script>
+        window.CURRENT_ADMIN_EMAIL = "{{ user.user_email|e }}";
+        window.CURRENT_ADMIN_DISPLAY_NAME = "{{ (user.user_display_name or user.user_name)|e }}";
+    </script>
+
+    <!-- ===== Scripts (defer, CHUẨN THỨ TỰ) ===== -->
+
+    <!-- Base -->
+    <script defer src="/static/js/admin_base.js"></script>
+    <script defer src="/static/js/admin_left.js"></script>
+
+    <!-- Portal (tooltip, v.v.) -->
+    <script defer src="/static/js/tt_portal.js"></script>
+
+    <!-- ========== Feature modules (core) ========== -->
+    <!-- Notify -->
+    <script defer src="/static/js/admin_notify.js"></script>
+    <script defer src="/static/js/admin_notify_bulk_modals.js"></script>
+
+    <!-- Models (Mô hình AI) -->
+    <script defer src="/static/js/admin_models.js"></script>
+    <script defer src="/static/js/admin_models_bulk_feedback.js"></script>
+
+    <!-- Tools (Tiện ích hệ thống) -->
+    <script defer src="/static/js/admin_tools.js"></script>
+    <script defer src="/static/js/admin_tools_bulk.js"></script>
+
+    <!-- Users (Quản lý người dùng) -->
+    <script defer src="/static/js/admin_users.js"></script>
+    <script defer src="/static/js/admin_users_bulk.js"></script>
+
+    <!-- Departments (Phòng ban) -->
+    <script defer src="/static/js/admin_departments.js"></script>
+    <script defer src="/static/js/admin_departments_bulk.js"></script>
+
+    <!-- Documents (Văn bản) -->
+    <script defer src="/static/js/admin_documents.js"></script>
+    <script defer src="/static/js/admin_documents_bulk.js"></script>
+
+    <!-- ========== Header/Search (sau feature core, trước modals) ========== -->
+    <script defer src="/static/js/admin_header.js"></script>
+    <script defer src="/static/js/admin_header_modal_search.js"></script>
+
+    <!-- ========== Modals (theo nhóm tính năng) ========== -->
+    <!-- Notify modals -->
+    <script defer src="/static/js/admin_notify_new_modal.js"></script>
+    <script defer src="/static/js/admin_notify_detail_modal.js"></script>
+    <script defer src="/static/js/admin_notify_edit_modal.js"></script>
+    <script defer src="/static/js/admin_notify_delete_modal.js"></script>
+    <!-- fixed filename: calendar -->
+    <script defer src="/static/js/admin_notify_calendar_modal.js"></script>
+
+    <!-- Models modals -->
+    <script defer src="/static/js/admin_models_new_modal.js"></script>
+    <script defer src="/static/js/admin_models_edit_modal.js"></script>
+    <script defer src="/static/js/admin_models_detail_modal.js"></script>
+    <script defer src="/static/js/admin_models_delete_modal.js"></script>
+    <script defer src="/static/js/admin_models_bulk_delete_modal.js"></script>
+    <script defer src="/static/js/admin_models_bulk_export_modal.js"></script>
+
+    <!-- Tools modals -->
+    <script defer src="/static/js/admin_tools_modal.js"></script>
+
+    <!-- Users modals -->
+    <script defer src="/static/js/admin_users_modal.js"></script>
+
+    <!-- Departments modals -->
+    <script defer src="/static/js/admin_departments_modal.js"></script>
+
+    <!-- Documents modals -->
+    <script defer src="/static/js/admin_documents_modal.js"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

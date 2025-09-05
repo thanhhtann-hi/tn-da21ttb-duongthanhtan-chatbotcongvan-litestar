@@ -1,0 +1,16 @@
+<!-- file: src/modules/admin/templates/admin/notify/admin_notify.html -->
+<!-- updated: 2025-08-11 -->
+<!-- note: đổi id wrapper thành admin-notify-page để tránh trùng id với bảng -->
+
+{% extends "partials/admin_base.html" %}
+
+{% block title %}Quản lý thông báo hệ thống{% endblock %}
+{% block header %}Quản lý thông báo hệ thống{% endblock %}
+
+{% block content %}
+<div class="flex-1 w-full min-w-0 flex flex-col">
+    <div id="admin-notify-page" class="w-full min-w-0 flex-1 flex flex-col">
+        {% include "admin/notify/admin_notify_fragment.html" %}
+    </div>
+</div>
+{% endblock %}

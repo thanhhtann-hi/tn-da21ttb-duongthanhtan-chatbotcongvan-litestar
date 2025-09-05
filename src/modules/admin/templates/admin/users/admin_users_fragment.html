@@ -1,0 +1,606 @@
+<title hx-swap-oob="true">Quản lý người dùng</title>
+<!-- file: src/modules/admin/templates/admin/users/admin_users_fragment.html -->
+<!-- updated: 2025-08-24 (v1.4.2 – thêm avatar user + giữ nguyên layout & bulk UX) -->
+<!-- note:
+     - Toolbar 2 hàng: [Row1] Search | CSV + New  ·  [Row2] Filter | Sort
+     - List: Avatar + Email + tên hiển thị/username · Role · Status · Verified · Provider · Actions
+     - Bulk bar: activate / suspend / deactivate / verify / unverify / export (đếm & tự disable)
+-->
+
+{% set _sort_map = {
+'new':'Mới nhất',
+'old':'Cũ nhất',
+'name_az':'Tên hiển thị A–Z',
+'name_za':'Tên hiển thị Z–A',
+'email_az':'Email A–Z',
+'email_za':'Email Z–A',
+'role_az':'Vai trò A–Z',
+'role_za':'Vai trò Z–A',
+'status_az':'Trạng thái A–Z',
+'status_za':'Trạng thái Z–A'
+} %}
+{% set sort_key = (current_sort or 'new') %}
+{% set sort_label = _sort_map.get(sort_key, 'Mới nhất') %}
+
+{# QS base (không kèm per_page; JS sẽ bơm) #}
+{% set qs_base -%}
+status={{ (filter_status or 'all') }}&role={{ (filter_role or 'all') }}&verified={{ (filter_verified or 'all') }}{% if filter_provider %}&provider={{ filter_provider|urlencode }}{% endif %}{% if filter_q %}&q={{ filter_q|urlencode }}{% endif %}&sort={{ (filter_sort or 'created_desc') }}
+{%- endset %}
+
+<div id="admin-users-container"
+    class="w-full min-w-0 flex flex-col pl-4 pr-4 pt-4 pb-4"
+    data-current-sort="{{ sort_key }}"
+    data-status="{{ filter_status or 'all' }}"
+    data-role="{{ filter_role or 'all' }}"
+    data-verified="{{ filter_verified or 'all' }}"
+    data-provider="{{ filter_provider or '' }}"
+    data-q="{{ filter_q or '' }}"
+    data-page="{{ page or 1 }}"
+    data-per-page="{{ per_page or 10 }}"
+    data-total="{{ total or 0 }}"
+    data-total-pages="{{ total_pages or 1 }}">
+
+    <!-- Toolbar -->
+    <div id="users-toolbar" class="w-full min-w-0 space-y-3">
+
+        <!-- ROW 1: Search (trái) — CSV + New (phải) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- LEFT: Search -->
+            <form id="users-search-form"
+                class="relative w-full"
+                hx-get="/admin/users"
+                hx-target="#users-list-region"
+                hx-select="#users-list-region"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                hx-sync="this:replace">
+                <input id="users-search-input"
+                    name="q"
+                    type="search"
+                    inputmode="search"
+                    placeholder="Tìm kiếm theo tên hoặc email..."
+                    value="{{ (filter_q or '')|e }}"
+                    class="w-full h-[45px] pl-11 pr-3 rounded-full bg-white ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-700 outline-none text-[15px] text-gray-900 placeholder:text-gray-400"
+                    hx-trigger="input changed delay:250ms, search">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none">
+                    <span class="icon-search-default block">
+                        {% include "partials/icons/admin/system/icons_admin_setting_tim_kiem_den.svg" %}
+                    </span>
+                </span>
+
+                {# giữ trạng thái filter/sort/paging #}
+                <input type="hidden" name="status" value="{{ filter_status or 'all' }}">
+                <input type="hidden" name="role" value="{{ filter_role or 'all' }}">
+                <input type="hidden" name="verified" value="{{ filter_verified or 'all' }}">
+                <input type="hidden" name="provider" value="{{ filter_provider or '' }}">
+                <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+                <input type="hidden" name="page" value="{{ page or 1 }}">
+                <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+            </form>
+
+            <!-- RIGHT: CSV + New -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button id="btn-users-export-csv" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 font-medium text-sm leading-none text-gray-900 hover:text-blue-700 focus:text-blue-700 transition-all duration-100 focus:outline-none gap-2 shadow">
+                    <span class="inline-flex items-center justify-center w-5 h-5 relative">
+                        <span class="block icon-csv-default">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_den.svg" %}
+                        </span>
+                        <span class="block icon-csv-hover absolute inset-0 pointer-events-none">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span>Xuất CSV</span>
+                </button>
+
+                <button id="btn-open-users-new-modal" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-blue-900 text-white font-medium text-sm leading-none hover:bg-blue-800 transition-all duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5">
+                        {% include "partials/icons/admin/system/icons_admin_setting_dau_cong.svg" %}
+                    </span>
+                    <span>Tạo người dùng</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ROW 2: Bộ lọc (trái) — Sắp xếp (phải) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- LEFT: Filter -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button id="btn-users-filter" type="button" aria-haspopup="dialog" aria-expanded="false"
+                        class="inline-flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span class="w-5 h-5 inline-flex items-center justify-center relative">
+                            <span class="icon-filter-default block">
+                                {% include "partials/icons/admin/system/icons_admin_filter_den.svg" %}
+                            </span>
+                            <span class="icon-filter-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icons_admin_filter_xanh.svg" %}
+                            </span>
+                        </span>
+                        <span>Bộ lọc</span>
+                        <!-- đã bỏ badge số -->
+                    </button>
+
+                    <!-- FILTER POPOVER (dọc) -->
+                    <div id="menu-users-filter"
+                        role="dialog"
+                        aria-labelledby="btn-users-filter"
+                        aria-modal="false"
+                        class="hidden absolute z-20 mt-2 min-w-[360px] max-w-[520px] rounded-xl bg-white border border-gray-200 shadow-xl p-3"
+                        data-init-status="{{ filter_status or 'all' }}"
+                        data-init-role="{{ filter_role or 'all' }}"
+                        data-init-verified="{{ filter_verified or 'all' }}"
+                        data-init-provider="{{ filter_provider or '' }}">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Status -->
+                            <section>
+                                <div class="text-xs font-semibold text-gray-500 mb-1">Trạng thái</div>
+                                <div class="flex flex-col gap-2" role="radiogroup" aria-label="Trạng thái" data-filter-group="status">
+                                    {% for st in ['all','active','suspended','banned','deactivated'] %}
+                                    <button type="button"
+                                        class="filter-pill"
+                                        role="radio"
+                                        data-k="status" data-v="{{ st }}"
+                                        aria-checked="{{ 'true' if (filter_status or 'all')==st else 'false' }}">{{ st }}</button>
+                                    {% endfor %}
+                                </div>
+                            </section>
+
+                            <!-- Role -->
+                            <section>
+                                <div class="text-xs font-semibold text-gray-500 mb-1">Vai trò</div>
+                                <div class="flex flex-col gap-2" role="radiogroup" aria-label="Vai trò" data-filter-group="role">
+                                    {% for r in ['all','admin','user','internal'] %}
+                                    <button type="button"
+                                        class="filter-pill"
+                                        role="radio"
+                                        data-k="role" data-v="{{ r }}"
+                                        aria-checked="{{ 'true' if (filter_role or 'all')==r else 'false' }}">{{ r }}</button>
+                                    {% endfor %}
+                                </div>
+                            </section>
+
+                            <!-- Verified -->
+                            <section>
+                                <div class="text-xs font-semibold text-gray-500 mb-1">Xác thực email</div>
+                                <div class="flex flex-col gap-2" role="radiogroup" aria-label="Xác thực email" data-filter-group="verified">
+                                    {% for v in ['all','yes','no'] %}
+                                    <button type="button"
+                                        class="filter-pill"
+                                        role="radio"
+                                        data-k="verified" data-v="{{ v }}"
+                                        aria-checked="{{ 'true' if (filter_verified or 'all')==v else 'false' }}">{{ v }}</button>
+                                    {% endfor %}
+                                </div>
+                            </section>
+
+                            <!-- Provider -->
+                            <section>
+                                <div class="text-xs font-semibold text-gray-500 mb-1">Nhà cung cấp đăng nhập</div>
+                                <div class="flex flex-col gap-2" role="radiogroup" aria-label="Nhà cung cấp" data-filter-group="provider">
+                                    <button type="button"
+                                        class="filter-pill"
+                                        role="radio"
+                                        data-k="provider" data-v=""
+                                        aria-checked="{{ 'true' if not filter_provider else 'false' }}">all</button>
+                                    <button type="button"
+                                        class="filter-pill"
+                                        role="radio"
+                                        data-k="provider" data-v="local"
+                                        aria-checked="{{ 'true' if (filter_provider or '')=='local' else 'false' }}">local</button>
+                                    <input id="users-filter-provider-input"
+                                        type="text"
+                                        placeholder="vd: google, azuread, okta…"
+                                        value="{{ filter_provider if (filter_provider not in ['', 'local']) else '' }}"
+                                        class="filter-text w-full"
+                                        data-k="provider" />
+                                </div>
+                                <div class="text-[11px] text-gray-500 mt-1">Gõ để lọc theo provider khác.</div>
+                            </section>
+                        </div>
+
+                        <div class="mt-3 flex items-center justify-end gap-2">
+                            <button id="btn-users-reset"
+                                type="button"
+                                class="inline-flex items-center h-[38px] px-3 rounded-full text-sm font-semibold"
+                                style="color:#1E3A8A">
+                                <span class="w-5 h-5 inline-flex items-center justify-center mr-1">
+                                    {% include "partials/icons/admin/system/icons_admin_reset_xanh.svg" %}
+                                </span>
+                                <span>Đặt lại</span>
+                            </button>
+                            <button id="btn-users-apply"
+                                type="button"
+                                class="h-[38px] px-4 rounded-full bg-blue-900 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Sort -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button id="btn-users-sort" type="button" aria-haspopup="menu" aria-expanded="false"
+                        class="flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span id="users-sort-label">
+                            <span class="sort-prefix">Sắp xếp:&nbsp;</span>
+                            <span class="sort-value">{{ sort_label }}</span>
+                        </span>
+                        <span class="w-[18px] h-[18px] inline-flex items-center justify-center relative">
+                            <span class="icon-arrow-default block">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_den.svg" %}
+                            </span>
+                            <span class="icon-arrow-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_xanh.svg" %}
+                            </span>
+                        </span>
+                    </button>
+
+                    <!-- Sort menu (2 cột) -->
+                    <div id="menu-users-sort" role="menu" aria-labelledby="btn-users-sort"
+                        class="hidden absolute z-30 right-0 top-full translate-y-2 min-w-[420px]">
+                        <div class="p-1 grid grid-cols-2 gap-1 bg-white border border-gray-200 rounded-xl shadow-xl">
+                            <button type="button" role="menuitem" class="menu-item" data-sort="new">Mới nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="old">Cũ nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="name_az">Tên hiển thị A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="name_za">Tên hiển thị Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="email_az">Email A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="email_za">Email Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="role_az">Vai trò A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="role_za">Vai trò Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="status_az">Trạng thái A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="status_za">Trạng thái Z–A</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /ROW 2 -->
+
+    </div>
+    <!-- /Toolbar -->
+
+    <div id="admin-users-modal-root"></div>
+
+    <!-- LIST REGION -->
+    <div id="users-list-region" class="mt-2">
+        {% if not users %}
+        <p class="text-gray-500 italic">Chưa có người dùng nào.</p>
+        {% else %}
+        <div class="w-full min-w-0 rounded-2xl overflow-hidden shadow border border-gray-200 bg-white">
+            <div id="admin-users-table" class="w-full min-w-0">
+                <table class="min-w-full text-sm table-fixed">
+                    <colgroup>
+                        <col style="width:44px">
+                        <col style="width:36%">
+                        <col style="width:10%">
+                        <col style="width:12%">
+                        <col style="width:10%">
+                        <col style="width:12%">
+                        <col style="width:10%">
+                    </colgroup>
+                    <thead class="text-left">
+                        <tr class="bg-[#EEF2FF]">
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">
+                                <label class="cb" aria-label="Chọn tất cả" id="sel-all-wrap">
+                                    <input id="sel-all" type="checkbox"><span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Người dùng</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Vai trò</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Trạng thái</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Verified</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Nhà cung cấp</th>
+                            <th class="px-3 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium text-right" aria-hidden="true"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="users-tbody">
+                        {% for u in users %}
+                        {% set _provider = (u.user_oauth_provider or 'local')|lower %}
+                        {% set _is_sso = _provider != 'local' %}
+                        <tr class="group">
+                            <td class="px-4 py-2 border-b border-gray-200 align-top">
+                                <label class="cb" aria-label="Chọn người dùng">
+                                    <input type="checkbox"
+                                        class="row-select"
+                                        data-user-id="{{ u.user_id }}"
+                                        data-status="{{ u.user_status }}"
+                                        data-role="{{ u.user_role }}"
+                                        data-verified="{{ 1 if (u.user_email_verified or _is_sso) else 0 }}"
+                                        data-provider="{{ _provider }}"
+                                        data-sso="{{ 1 if _is_sso else 0 }}">
+                                    <span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </td>
+
+                            <!-- Cột “Người dùng”: avatar + tên + email/@username -->
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    {% set _avatar = (u.settings.setting_user_avatar_url
+                                    if (u.settings and u.settings.setting_user_avatar_url)
+                                    else '/static/images/img_user.webp') %}
+                                    <img
+                                        src="{{ _avatar|e }}"
+                                        alt="Avatar {{ (u.user_display_name or u.user_name or u.user_email)|e }}"
+                                        class="w-9 h-9 rounded-full object-cover ring-1 ring-gray-200 shadow-sm shrink-0"
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer"
+                                        onerror="this.onerror=null;this.src='/static/images/img_user.webp';" />
+
+                                    <div class="min-w-0">
+                                        <div class="font-medium text-gray-900 btn-user-detail cursor-pointer" data-user-id="{{ u.user_id }}">
+                                            {{ (u.user_display_name or u.user_name or u.user_email)|e }}
+                                        </div>
+                                        <div class="text-gray-500 line-clamp-1">
+                                            {{ u.user_email|e }}
+                                            {% if u.user_name %} · <span class="text-gray-400">@{{ u.user_name|e }}</span>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap">
+                                <span class="status-pill
+                  {% if u.user_role=='admin' %}status-pill--purple
+                  {% elif u.user_role=='internal' %}status-pill--blue
+                  {% else %}status-pill--slate{% endif %}">
+                                    {{ u.user_role }}
+                                </span>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap">
+                                <span class="status-pill
+                  {% if u.user_status=='active' %}status-pill--green
+                  {% elif u.user_status in ['suspended','banned'] %}status-pill--red
+                  {% else %}status-pill--gray{% endif %}">
+                                    {{ u.user_status }}
+                                </span>
+                            </td>
+
+                            <!-- Verified: SSO luôn coi là đã xác thực -->
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap text-gray-900">
+                                <div class="{{ 'provider-state provider-state--on' if (u.user_email_verified or _is_sso) else 'provider-state provider-state--off' }}">
+                                    {{ 'Đã xác thực' if (u.user_email_verified or _is_sso) else 'Chưa xác thực' }}
+                                </div>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap text-gray-900">
+                                {{ (_provider or 'local')|e }}
+                            </td>
+
+                            <td class="px-3 py-2 border-b border-gray-200 align-top">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button type="button" class="action-btn row-action-detail tt" aria-label="Chi tiết" data-tt="Chi tiết" data-user-id="{{ u.user_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_info.svg" %}
+                                        </span>
+                                    </button>
+
+                                    <button type="button" class="action-btn row-action-edit tt" aria-label="Sửa" data-tt="Sửa" data-user-id="{{ u.user_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_pen_edit.svg" %}
+                                        </span>
+                                    </button>
+
+                                    {% if _is_sso %}
+                                    <!-- Sao read-only cho SSO: luôn vàng, không click, tooltip mặc định -->
+                                    <button type="button"
+                                        class="action-btn"
+                                        aria-label="Xác thực SSO"
+                                        aria-disabled="true"
+                                        title="Tài khoản đăng nhập qua {{ _provider }}, không thể chỉnh sửa xác thực.">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/tools/icons_admin_tools_ngoisao_vang.svg" %}
+                                        </span>
+                                    </button>
+                                    {% else %}
+                                    <!-- Local: cho phép toggle -->
+                                    <button type="button" class="action-btn row-action-toggle-verified tt"
+                                        aria-label="{{ 'Bỏ xác thực' if u.user_email_verified else 'Xác thực email' }}"
+                                        data-tt="{{ 'Bỏ xác thực' if u.user_email_verified else 'Xác thực email' }}"
+                                        data-user-id="{{ u.user_id }}"
+                                        data-verified="{{ 1 if u.user_email_verified else 0 }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% if u.user_email_verified %}
+                                            {% include "partials/icons/admin/tools/icons_admin_tools_ngoisao_vang.svg" %}
+                                            {% else %}
+                                            {% include "partials/icons/admin/tools/icons_admin_tools_ngoisao_xanh.svg" %}
+                                            {% endif %}
+                                        </span>
+                                    </button>
+                                    {% endif %}
+
+                                    <button type="button" class="action-btn row-action-delete tt"
+                                        aria-label="Vô hiệu hoá (soft delete)"
+                                        data-tt="Vô hiệu hoá"
+                                        data-user-id="{{ u.user_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- SMART FILLER (JS sẽ render) -->
+                    <tbody id="users-filler" aria-hidden="true"></tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="users-pagination"
+                class="flex items-center justify-between gap-3 flex-wrap bg-white border-t px-4 py-3"
+                aria-label="Điều hướng trang">
+                <div class="min-w-[180px]">
+                    {% if show_first_btn %}
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 h-[45px] px-4 rounded-full bg-white text-sm font-medium text-gray-900 hover:text-blue-700 shrink-0"
+                        hx-get="/admin/users?page=1&{{ qs_base|trim }}"
+                        hx-target="#users-list-region"
+                        hx-select="#users-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="users-list-region">
+                        <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                            <span class="icon-first-default block">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-den-left.svg" %}
+                            </span>
+                            <span class="icon-first-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-xanh-left.svg" %}
+                            </span>
+                        </span>
+                        <span>Về trang 1</span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-white ring-1 ring-gray-300 text-gray-900 hover:text-blue-700 hover:ring-blue-700 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page>1 %}
+                        hx-get="/admin/users?page={{ page-1 }}&{{ qs_base|trim }}"
+                        hx-target="#users-list-region" hx-select="#users-list-region"
+                        hx-swap="outerHTML" hx-push-url="true" aria-controls="users-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span class="relative inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-dai-left-den.svg" %}</span>
+                            <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-dai-left-xanh.svg" %}
+                            </span>
+                        </span>
+                        <span>Trang trước</span>
+                    </button>
+
+                    <button type="button"
+                        class="inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page < total_pages %}
+                        hx-get="/admin/users?page={{ page+1 }}&{{ qs_base|trim }}"
+                        hx-target="#users-list-region" hx-select="#users-list-region" hx-swap="outerHTML"
+                        hx-push-url="true" aria-controls="users-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span>Trang sau</span>
+                        <span class="inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            {% include "partials/icons/admin/system/icon-admin-arrow-dai-right-trang.svg" %}
+                        </span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <form id="users-page-jump-form"
+                        class="flex items-center gap-2"
+                        hx-get="/admin/users"
+                        hx-target="#users-list-region"
+                        hx-select="#users-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="users-list-region">
+                        <input type="hidden" name="status" value="{{ filter_status or 'all' }}">
+                        <input type="hidden" name="role" value="{{ filter_role or 'all' }}">
+                        <input type="hidden" name="verified" value="{{ filter_verified or 'all' }}">
+                        <input type="hidden" name="provider" value="{{ filter_provider or '' }}">
+                        <input type="hidden" name="q" value="{{ filter_q or '' }}">
+                        <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+
+                        <label for="users-page-input" class="sr-only">Trang</label>
+                        <input id="users-page-input" name="page" inputmode="numeric" pattern="[0-9]*" type="text"
+                            class="pager-input h-[45px]" value="{{ page }}" placeholder="1"
+                            minlength="1" maxlength="6"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.max){var m=parseInt(this.max,10)||0;var v=parseInt(this.value||'0',10)||0;if(v>m){this.value=String(m);}}"
+                            min="1" max="{{ total_pages }}">
+                        <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+                        <button type="submit" class="sr-only">Go</button>
+                    </form>
+
+                    <div class="inline-flex items-center text-sm">
+                        <span class="text-gray-500">of</span>
+                        <span class="ml-1 font-semibold text-gray-900">{{ total_pages }}</span>
+                    </div>
+
+                    <div class="inline-flex items-center">
+                        <button type="button"
+                            class="group w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang trước"
+                            {% if page>1 %}
+                            hx-get="/admin/users?page={{ page-1 }}&{{ qs_base|trim }}"
+                            hx-target="#users-list-region" hx-select="#users-list-region"
+                            hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-den.svg" %}</span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+
+                        <button type="button"
+                            class="group ml-2 w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang sau"
+                            {% if page < total_pages %}
+                            hx-get="/admin/users?page={{ page+1 }}&{{ qs_base|trim }}"
+                            hx-target="#users-list-region" hx-select="#users-list-region" hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">{% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-den.svg" %}</span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- /Pagination -->
+        </div>
+        {% endif %}
+    </div>
+    <!-- /LIST REGION -->
+
+    <!-- Bulk bar (đã tinh giản + đếm) -->
+    <div id="users-bulk-bar" class="bulk-bar" aria-hidden="true" inert data-csrf="{{ csrf_token }}">
+        <div class="bulk-inner">
+            <div class="bulk-shell">
+                <button type="button" id="btn-users-bulk-activate" class="bulk-btn" title="Kích hoạt các tài khoản đủ điều kiện">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_xanh.svg" %}</span>
+                    <span class="label" id="users-bulk-activate-label">Kích hoạt (0)</span>
+                </button>
+
+                <button type="button" id="btn-users-bulk-suspend" class="bulk-btn" title="Tạm ngưng tài khoản đang hoạt động">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_den.svg" %}</span>
+                    <span class="label" id="users-bulk-suspend-label">Tạm ngưng (0)</span>
+                </button>
+
+                <button type="button" id="btn-users-bulk-deactivate" class="bulk-btn" title="Vô hiệu hoá (soft delete)">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}</span>
+                    <span class="label" id="users-bulk-deactivate-label">Vô hiệu hoá (0)</span>
+                </button>
+
+                <span class="bulk-sep" aria-hidden="true"></span>
+
+                <button type="button" id="btn-users-bulk-verify" class="bulk-btn" title="Chỉ áp dụng cho tài khoản local chưa xác thực">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_xanh.svg" %}</span>
+                    <span class="label" id="users-bulk-verify-label">Xác thực (0)</span>
+                </button>
+
+                <button type="button" id="btn-users-bulk-unverify" class="bulk-btn" title="Chỉ áp dụng cho tài khoản local đã xác thực">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_den.svg" %}</span>
+                    <span class="label" id="users-bulk-unverify-label">Bỏ xác thực (0)</span>
+                </button>
+
+                <span class="bulk-sep" aria-hidden="true"></span>
+
+                <button type="button" id="btn-users-bulk-export" class="bulk-btn" title="Xuất CSV theo lựa chọn/ bộ lọc">
+                    <span class="icon">{% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}</span>
+                    <span class="label">Xuất CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- /Bulk bar -->
+</div>

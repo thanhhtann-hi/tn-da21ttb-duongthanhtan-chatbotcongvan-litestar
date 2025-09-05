@@ -1,0 +1,179 @@
+<!-- file: src/modules/chat/templates/partials/chat_sidebar_left.html -->
+<!-- updated: 2025-08-19 -->
+
+{% set _display = (user.user_display_name or user.user_name or (user.user_email.split('@')[0] if user.user_email else
+'Người dùng')) %}
+{% set _role_raw = (user.user_role or 'user') %}
+{% set _role_map = {'admin':'Quản trị viên', 'internal':'Nội bộ', 'user':'Người dùng'} %}
+{% set _role = _role_map.get(_role_raw, _role_raw|capitalize) %}
+{% set _avatar = (user.setting_user_avatar_url or user.user_avatar_url or user.user_photo or
+'/static/images/img_user.webp') %}
+
+<template id="tpl-icon-header-trash">{% include "partials/icons/chat_header/icon_header_trash.svg" %}</template>
+
+<div id="sidebar-shell" class="relative flex flex-col h-full overflow-visible bg-[var(--sidebar-bg)]">
+
+    <!-- [1] HEADER] -->
+    <header
+        class="sidebar-header relative z-[60] h-[60px] flex items-center justify-between border-b border-gray-700 px-3 bg-[var(--sidebar-bg)]">
+        <div id="sidebar-header-slot" class="relative w-9 h-9 flex items-center justify-center leading-none">
+            <img id="sidebar-logo" src="/static/images/icon_bars_lef_tvu.webp" alt="logo" width="24" height="24"
+                class="block w-[24px] h-[24px] min-w-[24px] min-h-[24px] object-contain select-none transition-opacity duration-150" />
+            <button id="btn-toggle-sidebar-collapsed" aria-label="Mở rộng thanh bên"
+                class="icon-btn sidebar-toggle absolute inset-0 m-auto hidden w-[var(--chat-sidebar-icon-box)] h-[var(--chat-sidebar-icon-box)] rounded-full hover:bg-[#374151] transition-all duration-150">
+                <span class="inline-flex items-center justify-center w-[18px] h-[18px]">
+                    {% include "partials/icons/chat_bars_left/icon_bars_left_sliderbars_in.svg" %}
+                </span>
+            </button>
+        </div>
+
+        <button id="btn-toggle-sidebar-open" aria-label="Thu gọn thanh bên"
+            class="icon-btn sidebar-toggle w-[var(--chat-sidebar-icon-box)] h-[var(--chat-sidebar-icon-box)] rounded-full hover:bg-[#374151] transition-all duration-150 hidden">
+            <span class="inline-flex items-center justify-center w-[18px] h-[18px]">
+                {% include "partials/icons/chat_bars_left/icon_bars_left_sliderbars_in.svg" %}
+            </span>
+        </button>
+    </header>
+
+    <!-- [2] NAV SCROLLER -->
+    <div id="sidebar-scroll" class="scroll-area flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <nav id="sidebar-nav" class="flex-1 min-h-0 space-y-1 w-full px-3 text-sm select-none overflow-visible">
+
+            <!-- QUICK (PINNED) -->
+            <div id="sidebar-quick" class="sidebar-quick space-y-1">
+                <a id="sidebar-new-chat" href="/chat" hx-get="/chat" hx-target="#chat-root" hx-select="#chat-root"
+                    hx-swap="outerHTML" hx-push-url="true" hx-boost="false"
+                    class="sidebar-link group relative flex items-center justify-between w-full">
+                    <div class="flex items-center">
+                        <span class="sidebar-icon shrink-0">
+                            {% include "partials/icons/chat_bars_left/icon_bars_left_new_chat.svg" %}
+                        </span>
+                        <span class="sidebar-label truncate">Tạo chat mới</span>
+                    </div>
+                    <span
+                        class="shortcut group-hover:visible group-hover:opacity-100 invisible opacity-0 text-sm text-[#B1B1B1]">Ctrl&nbsp;+&nbsp;Alt&nbsp;+&nbsp;N</span>
+                    <span
+                        class="sidebar-tooltip group-hover:opacity-100 absolute left-full top-1/2 -translate-y-1/2 ml-3 text-[10px] text-gray-100 bg-[#111827] rounded-xl px-2 py-0.5 opacity-0 pointer-events-none transition">Đoạn
+                        chat mới</span>
+                </a>
+
+                <a href="#" class="sidebar-link group relative flex items-center justify-between w-full"
+                    aria-label="Tìm kiếm đoạn chat">
+                    <div class="flex items-center">
+                        <span class="sidebar-icon shrink-0">{% include
+                            "partials/icons/chat_bars_left/icon_bars_left_search.svg" %}</span>
+                        <span class="sidebar-label truncate">Tìm kiếm đoạn chat</span>
+                    </div>
+                    <span
+                        class="shortcut group-hover:visible group-hover:opacity-100 invisible opacity-0 text-sm text-[#B1B1B1]">Ctrl&nbsp;+&nbsp;F</span>
+                    <span
+                        class="sidebar-tooltip group-hover:opacity-100 absolute left-full top-1/2 -translate-y-1/2 ml-3 text-[10px] text-gray-100 bg-[#111827] rounded-xl px-2 py-0.5 opacity-0 pointer-events-none transition">Tìm
+                        kiếm đoạn chat</span>
+                </a>
+
+                <a href="#" class="sidebar-link group relative flex items-center justify-between w-full"
+                    aria-label="Lưu trữ">
+                    <div class="flex items-center">
+                        <span class="sidebar-icon shrink-0">{% include
+                            "partials/icons/chat_bars_left/icon_bars_left_library.svg" %}</span>
+                        <span class="sidebar-label truncate">Lưu trữ</span>
+                    </div>
+                    <span
+                        class="shortcut group-hover:visible group-hover:opacity-100 invisible opacity-0 text-sm text-[#B1B1B1]">Ctrl&nbsp;+&nbsp;Shift&nbsp;+&nbsp;A</span>
+                    <span
+                        class="sidebar-tooltip group-hover:opacity-100 absolute left-full top-1/2 -translate-y-1/2 ml-3 text-[10px] text-gray-100 bg-[#111827] rounded-xl px-2 py-0.5 opacity-0 pointer-events-none transition">Lưu
+                        trữ</span>
+                </a>
+            </div>
+
+            <div class="only-when-open" style="height:calc(var(--chat-sidebar-icon-box) * .1)"></div>
+
+            <a id="sidebar-project-new" href="/projects/new"
+                class="sidebar-link only-when-open relative flex items-center justify-between w-full"
+                aria-label="Dự án mới">
+                <div class="flex items-center">
+                    <span class="sidebar-icon shrink-0">{% include
+                        "partials/icons/chat_bars_left/icon_bars_left_folder_create_trang.svg" %}</span>
+                    <span class="sidebar-label truncate">Dự án mới</span>
+                </div>
+            </a>
+
+            {% for i in [1,2,3,4] %}
+            <a href="#"
+                class="sidebar-link only-when-open has-row-actions group relative flex items-center justify-between w-full"
+                aria-label="Dự án {{ i }}" data-proj="Dự án {{ i }}">
+                <div class="flex items-center">
+                    <span class="sidebar-icon shrink-0">{% include
+                        "partials/icons/chat_bars_left/icon_bars_left_folder_trang.svg" %}</span>
+                    <span class="sidebar-label truncate">Dự án {{ i }}</span>
+                </div>
+                <div class="row-actions">
+                    <button type="button" class="row-more icon-btn hover:bg-[#374151] transition"
+                        aria-label="Tùy chọn Dự án {{ i }}" aria-haspopup="menu" aria-expanded="false"
+                        data-rowmenu="open">
+                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">{% include
+                            "partials/icons/chat_bars_left/icon_bars_left_more.svg" %}</span>
+                    </button>
+                </div>
+            </a>
+            {% endfor %}
+
+            <a href="/projects"
+                class="sidebar-link only-when-open group relative flex items-center justify-between w-full is-view-more"
+                aria-label="Xem thêm dự án">
+                <div class="flex items-center">
+                    <span class="sidebar-icon shrink-0">{% include "partials/icons/chat_header/icon_header_more.svg"
+                        %}</span>
+                    <span class="sidebar-label truncate">Xem thêm</span>
+                </div>
+            </a>
+
+            <div class="only-when-open sidebar-spacer" aria-hidden="true"></div>
+
+            <div id="sidebar-chat-title" class="sidebar-link only-when-open is-static is-plain-left is-muted"
+                role="presentation">
+                <span class="sidebar-label truncate">Đoạn chat</span>
+            </div>
+
+            <!-- ▼ KHỐI LIST TỰ ĐỘNG (HTMX) – đổi hx-target="this" -->
+            <div id="sidebar-chat-list" hx-get="/chat/sidebar/list" hx-trigger="load, chat:refresh from:body"
+                hx-target="this" hx-swap="outerHTML" hx-push-url="false">
+                <div class="only-when-open text-xs text-gray-400 px-2 py-2">Đang tải danh sách…</div>
+            </div>
+            <!-- ▲ HẾT KHỐI TỰ ĐỘNG ▲ -->
+
+        </nav>
+    </div>
+
+    <!-- [3] FOOTER -->
+    <footer
+        class="sidebar-footer relative z-[60] border-t border-gray-700 w-full px-3 py-2 flex flex-col gap-1 bg-[var(--sidebar-bg)]">
+        <a href="#" class="sidebar-link group relative flex items-center justify-between w-full"
+            aria-label="Lịch gửi Email">
+            <div class="flex items-center relative">
+                <span class="sidebar-icon shrink-0">{% include
+                    "partials/icons/chat_bars_left/icon_bars_left_calendar_time.svg" %}</span>
+                <span class="sidebar-label truncate">Lịch gửi Email</span>
+            </div>
+            <span
+                class="shortcut group-hover:visible group-hover:opacity-100 invisible opacity-0 text-sm text-[#B1B1B1]">Ctrl&nbsp;+&nbsp;E</span>
+        </a>
+
+        <div id="sidebar-user"
+            class="sidebar-link group relative flex items-center justify-between w-full cursor-default select-none">
+            <div class="flex items-center gap-0 min-w-0">
+                <span class="sidebar-icon shrink-0">
+                    <img src="{{ _avatar }}" alt="{{ _display }}" class="w-6 h-6 rounded-full object-cover"
+                        onerror="this.src='/static/images/img_user.webp'">
+                </span>
+                <span class="sidebar-label truncate text-sm">{{ _display }}</span>
+            </div>
+            <span
+                class="shortcut group-hover:visible group-hover:opacity-100 invisible opacity-0 text-sm text-[#B1B1B1]">{{
+                _role }}</span>
+            <span
+                class="sidebar-tooltip absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-xl bg-[#111827] px-2 py-0.5 text-[10px] text-gray-100 opacity-0 pointer-events-none group-hover:opacity-100 transition">{{
+                _display }} {{ _role }}</span>
+        </div>
+    </footer>
+</div>

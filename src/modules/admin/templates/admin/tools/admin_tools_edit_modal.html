@@ -1,0 +1,323 @@
+<!-- file: src/modules/admin/templates/admin/tools/admin_tools_edit_modal.html -->
+<!-- updated: 2025-08-23 (v1.0) -->
+<!-- note: PUT -> /admin/tools/{id}; chỉ swap #tools-list-region. -->
+
+<!-- ╭─ OVERLAY (click là đóng) ────────────────────────────────────────────────╮ -->
+<div id="tools-edit-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ──────────────────────────────────────────────────────────╮ -->
+<div id="tools-edit-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="tools-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[680px] max-h-[85vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-gray-900 text-center w-full">Chỉnh sửa tiện ích</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Cập nhật thông tin cho <span class="font-semibold">{{ tool.tool_name|e }}</span>.
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="tools-edit-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-x-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-x-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- FORM -->
+        <form id="admin-tools-edit-form"
+            hx-put="/admin/tools/{{ tool.tool_id }}"
+            hx-target="#tools-list-region"
+            hx-select="#tools-list-region"
+            hx-swap="outerHTML"
+            hx-disabled-elt="#tools-edit-submit-btn"
+            autocomplete="off"
+            class="flex flex-col grow min-h-0">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+            <!-- Hidden filter (JS set trước submit) -->
+            <input type="hidden" name="enabled" value="">
+            <input type="hidden" name="scope" value="">
+            <input type="hidden" name="q" value="">
+            <input type="hidden" name="sort" value="">
+            <input type="hidden" name="page" value="">
+            <input type="hidden" name="per_page" value="">
+
+            <!-- BODY (cuộn) -->
+            <div class="modal-scroll-area grow overflow-y-auto px-6 pb-4 pt-2 min-h-0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Tên -->
+                    <div class="flex flex-col">
+                        <label for="tool_name" class="block text-gray-900 font-semibold mb-1 text-[14px]">Tên tiện ích *</label>
+                        <input id="tool_name" name="tool_name" type="text" required
+                            value="{{ tool.tool_name|e }}" placeholder="VD: web_search"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                        <div class="text-xs text-gray-500 mt-1">Tên duy nhất (slug), dùng làm mã công cụ.</div>
+                    </div>
+
+                    <!-- Phạm vi -->
+                    <div class="flex flex-col">
+                        <label for="tool_access_scope" class="block text-gray-900 font-semibold mb-1 text-[14px]">Phạm vi *</label>
+                        <select id="tool_access_scope" name="tool_access_scope" required
+                            class="ui-select h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900">
+                            <option value="all" {% if tool.tool_access_scope=='all' %}selected{% endif %}>Tất cả</option>
+                            <option value="user" {% if tool.tool_access_scope=='user' %}selected{% endif %}>Người dùng</option>
+                            <option value="internal" {% if tool.tool_access_scope=='internal' %}selected{% endif %}>Nội bộ</option>
+                            <option value="admin" {% if tool.tool_access_scope=='admin' %}selected{% endif %}>Quản trị viên</option>
+                        </select>
+                    </div>
+
+                    <!-- Thứ tự -->
+                    <div class="flex flex-col">
+                        <label for="tool_sort_order" class="block text-gray-900 font-semibold mb-1 text-[14px]">Thứ tự sắp xếp</label>
+                        <input id="tool_sort_order" name="tool_sort_order" type="text" inputmode="numeric" pattern="-?[0-9]*"
+                            value="{{ '' if tool.tool_sort_order is none else tool.tool_sort_order }}"
+                            placeholder="VD: 1, 2, 3… (tuỳ chọn)"
+                            class="h-[42px] px-3 rounded-xl bg-white ring-1 ring-gray-300 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400" />
+                    </div>
+
+                    <!-- Trạng thái bật/tắt -->
+                    <div class="flex flex-col">
+                        <label class="block text-gray-900 font-semibold mb-1 text-[14px]">&nbsp;</label>
+                        <label class="inline-flex items-center text-[14px] w-fit">
+                            <input type="checkbox" id="tool_enabled" name="tool_enabled" value="1"
+                                class="form-checkbox rounded-full"
+                                {% if tool.tool_enabled %}checked{% endif %} />
+                            <span class="ml-2">Enabled</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Mô tả -->
+                <div class="flex flex-col mt-4">
+                    <label for="tool_description" class="block text-gray-900 font-semibold mb-1 text-[14px]">Mô tả</label>
+                    <div class="textarea-outer">
+                        <textarea id="tool_description" name="tool_description" rows="5" maxlength="1000"
+                            placeholder="Mô tả chức năng của tiện ích…"
+                            class="w-full resize-none transition-shadow placeholder:text-gray-700 text-[14px]">{{ tool.tool_description or '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+                <div class="flex justify-center gap-4 w-full">
+                    <button type="button" id="tools-edit-cancel-btn"
+                        class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                         hover:bg-gray-300 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-gray-300 text-[14px]">
+                        Hủy
+                    </button>
+                    <button id="tools-edit-submit-btn" type="submit" disabled
+                        class="w-[160px] rounded-full py-2.5 bg-blue-900 text-white font-medium
+                         hover:bg-blue-800 transition-opacity duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300
+                         disabled:opacity-50 disabled:cursor-not-allowed text-[14px]">
+                        Cập nhật tiện ích
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Close icon hover swap */
+    #tools-edit-modal-close .chip-x-hover {
+        display: none
+    }
+
+    #tools-edit-modal-close:hover .chip-x-normal,
+    #tools-edit-modal-close:focus .chip-x-normal {
+        display: none
+    }
+
+    #tools-edit-modal-close:hover .chip-x-hover,
+    #tools-edit-modal-close:focus .chip-x-hover {
+        display: flex
+    }
+
+    #tools-edit-modal-close .chip-x-normal svg,
+    #tools-edit-modal-close .chip-x-hover svg {
+        width: 10px;
+        height: 10px;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    /* Custom SELECT caret */
+    #tools-edit-modal select.ui-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 20 20' fill='none'><path d='M5.5 7.5L10 12l4.5-4.5' stroke='%23343a40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 12px 12px;
+        padding-right: 40px;
+    }
+
+    #tools-edit-modal select.ui-select:hover {
+        border-color: #9aa3b2
+    }
+
+    #tools-edit-modal select.ui-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #c7d6f7
+    }
+
+    /* Scrollbars */
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    /* Textarea frame */
+    .textarea-outer {
+        border: 1.5px solid #9ca3af;
+        border-radius: 20px;
+        background: #fff;
+        transition: border-color .2s, box-shadow .2s;
+        height: 120px;
+        min-height: 120px;
+        max-height: 160px;
+        overflow: hidden;
+        display: flex
+    }
+
+    .textarea-outer:focus-within,
+    .textarea-outer:hover {
+        border-color: #1e3a8a !important
+    }
+
+    .textarea-outer textarea {
+        border: none !important;
+        outline: none !important;
+        background: transparent !important;
+        width: 100%;
+        height: 100%;
+        padding: 14px !important;
+        font-size: 14px;
+        color: #222;
+        line-height: 1.5;
+        resize: none;
+        overflow-y: auto
+    }
+
+    .textarea-outer textarea::placeholder {
+        color: #374151;
+        opacity: 1
+    }
+
+    /* Checkbox look */
+    #admin-tools-edit-form input[type="checkbox"].form-checkbox {
+        accent-color: #1e3a8a !important;
+        appearance: none !important;
+        width: 22px !important;
+        height: 22px !important;
+        border: 2px solid #d1d5db;
+        background: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative
+    }
+
+    #admin-tools-edit-form input[type="checkbox"].form-checkbox:checked {
+        background-color: #1e3a8a;
+        border-color: #1e3a8a
+    }
+
+    #admin-tools-edit-form input[type="checkbox"].form-checkbox:checked:after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 7px;
+        width: 5px;
+        height: 10px;
+        border: solid #fff;
+        border-width: 0 2.5px 2.5px 0;
+        transform: rotate(45deg);
+        border-radius: 1.5px
+    }
+
+    /* Mobile sheet */
+    @media (max-width:540px) {
+        #tools-edit-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important
+        }
+
+        .tools-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            will-change: transform
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>

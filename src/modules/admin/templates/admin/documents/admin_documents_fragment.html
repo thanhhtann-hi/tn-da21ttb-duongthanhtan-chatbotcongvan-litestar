@@ -1,0 +1,492 @@
+<!-- file: src/modules/admin/templates/admin/documents/admin_documents_fragment.html -->
+<!-- updated: 2025-08-25 (v1.1.0 – NO edit; list + filter + sort + paging + bulk delete/export) -->
+<!-- note:
+     - Toolbar 2 hàng:
+       [Row1] Search + Quick ChatID
+       [Row2] Filter(Status) | Sort | Export CSV | New
+     - Hành động hàng: chỉ Detail + Delete (không có Edit)
+     - Bulk bar: Delete / Export CSV (đếm động)
+-->
+
+{% set _sort_map = {
+'new':'Mới nhất',
+'old':'Cũ nhất',
+'az':'Tiêu đề A–Z',
+'za':'Tiêu đề Z–A',
+'status_az':'Trạng thái A–Z',
+'status_za':'Trạng thái Z–A'
+} %}
+{% set sort_key = (current_sort or 'new') %}
+{% set sort_label = _sort_map.get(sort_key, 'Mới nhất') %}
+
+{# Query-string base (không đụng per_page; JS sẽ bơm) #}
+{% set qs_base -%}
+status={{ (filter_status or 'all') }}{% if filter_chat_id %}&chat_id={{ filter_chat_id|urlencode }}{% endif %}{% if filter_q %}&q={{ filter_q|urlencode }}{% endif %}&sort={{ (filter_sort or 'created_desc') }}
+{%- endset %}
+
+<div id="admin-documents-container"
+    class="w-full min-w-0 flex flex-col pl-4 pr-4 pt-4 pb-4"
+    data-current-sort="{{ sort_key }}"
+    data-status="{{ filter_status or 'all' }}"
+    data-chat-id="{{ filter_chat_id or '' }}"
+    data-q="{{ filter_q or '' }}"
+    data-page="{{ page or 1 }}"
+    data-per-page="{{ per_page or 10 }}"
+    data-total="{{ total or 0 }}"
+    data-total-pages="{{ total_pages or 1 }}">
+
+    <!-- Toolbar -->
+    <div id="docs-toolbar" class="w-full min-w-0 space-y-3">
+
+        <!-- ROW 1: Search + Quick chat -->
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Search -->
+            <form id="docs-search-form"
+                class="relative w-full max-w-[420px]"
+                hx-get="/admin/documents"
+                hx-target="#documents-list-region"
+                hx-select="#documents-list-region"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                hx-sync="this:replace">
+                <input id="docs-search-input"
+                    name="q"
+                    type="search"
+                    inputmode="search"
+                    placeholder="Tìm theo tiêu đề hoặc đường dẫn…"
+                    value="{{ (filter_q or '')|e }}"
+                    class="w-full h-[45px] pl-11 pr-3 rounded-full bg-white ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400"
+                    hx-trigger="input changed delay:250ms, search">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none">
+                    <span class="icon-search-default block">
+                        {% include "partials/icons/admin/system/icons_admin_setting_tim_kiem_den.svg" %}
+                    </span>
+                </span>
+
+                <!-- giữ trạng thái filter/sort/paging -->
+                <input type="hidden" name="status" value="{{ filter_status or 'all' }}">
+                <input type="hidden" name="chat_id" value="{{ filter_chat_id or '' }}">
+                <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+                <input type="hidden" name="page" value="{{ page or 1 }}">
+                <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+            </form>
+
+            <!-- Quick chat_id -->
+            <form id="docs-chat-form"
+                class="relative w-[240px] hidden md:block"
+                hx-get="/admin/documents"
+                hx-target="#documents-list-region"
+                hx-select="#documents-list-region"
+                hx-swap="outerHTML"
+                hx-push-url="true"
+                hx-sync="this:replace">
+                <input name="chat_id"
+                    type="text"
+                    placeholder="Lọc theo Chat ID…"
+                    value="{{ (filter_chat_id or '')|e }}"
+                    class="w-full h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-700 outline-none text-sm text-gray-900 placeholder:text-gray-400"
+                    hx-trigger="change delay:200ms, keyup changed delay:500ms">
+                <input type="hidden" name="status" value="{{ filter_status or 'all' }}">
+                <input type="hidden" name="q" value="{{ filter_q or '' }}">
+                <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+                <input type="hidden" name="page" value="{{ page or 1 }}">
+                <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+            </form>
+        </div>
+
+        <!-- ROW 2: Filter (left) — Sort / CSV / New (right) -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- LEFT: Filter -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button id="btn-docs-filter" type="button" aria-haspopup="menu" aria-expanded="false"
+                        class="inline-flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span class="w-5 h-5 inline-flex items-center justify-center relative">
+                            <span class="icon-filter-default block">
+                                {% include "partials/icons/admin/system/icons_admin_filter_den.svg" %}
+                            </span>
+                            <span class="icon-filter-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icons_admin_filter_xanh.svg" %}
+                            </span>
+                        </span>
+                        <span>Bộ lọc</span>
+                    </button>
+
+                    <div id="menu-docs-filter"
+                        role="menu"
+                        aria-labelledby="btn-docs-filter"
+                        class="hidden absolute z-20 mt-2 min-w-[320px] rounded-xl bg-white border border-gray-200 shadow-xl p-2">
+                        <div class="grid grid-cols-1 gap-2">
+                            <!-- Status -->
+                            <div>
+                                <div class="text-xs font-semibold text-gray-500 mb-1">Trạng thái</div>
+                                <div class="flex flex-wrap gap-1">
+                                    {% for s in ['all','new','routed','reviewed'] %}
+                                    <button type="button" role="menuitem"
+                                        class="menu-item px-3 py-1.5 rounded-full ring-1 ring-gray-200 text-sm {% if (filter_status or 'all')==s %}bg-blue-50 text-blue-800 ring-blue-300{% else %}bg-white text-gray-900 hover:ring-blue-600{% endif %}"
+                                        data-k="status" data-v="{{ s }}">{{ s }}</button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2 flex items-center justify-end gap-2">
+                            <button id="btn-docs-reset" type="button"
+                                class="inline-flex items-center h-[38px] px-3 rounded-full text-sm font-semibold"
+                                style="color:#1E3A8A">
+                                <span class="w-5 h-5 inline-flex items-center justify-center mr-1">
+                                    {% include "partials/icons/admin/system/icons_admin_reset_xanh.svg" %}
+                                </span>
+                                <span>Đặt lại</span>
+                            </button>
+                            <button id="btn-docs-apply" type="button"
+                                class="h-[38px] px-4 rounded-full bg-blue-900 text-white text-sm font-medium hover:bg-blue-800">Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Sort, CSV, New -->
+            <div class="flex items-center gap-3">
+                <!-- Sort -->
+                <div class="relative">
+                    <button id="btn-docs-sort" type="button" aria-haspopup="menu" aria-expanded="false"
+                        class="flex items-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 text-sm font-medium text-gray-900 hover:text-blue-700 focus:text-blue-700 gap-2">
+                        <span id="docs-sort-label">
+                            <span class="sort-prefix">Sắp xếp:&nbsp;</span>
+                            <span class="sort-value">{{ sort_label }}</span>
+                        </span>
+                        <span class="w-[18px] h-[18px] inline-flex items-center justify-center relative">
+                            <span class="icon-arrow-default block">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_den.svg" %}
+                            </span>
+                            <span class="icon-arrow-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icons_admin_arrow_down_xanh.svg" %}
+                            </span>
+                        </span>
+                    </button>
+
+                    <!-- Sort menu -->
+                    <div id="menu-docs-sort" role="menu" aria-labelledby="btn-docs-sort"
+                        class="hidden absolute z-30 right-0 top-full translate-y-2 min-w-[360px]">
+                        <div class="p-1 grid grid-cols-2 gap-1 bg-white border border-gray-200 rounded-xl shadow-xl">
+                            <button type="button" role="menuitem" class="menu-item" data-sort="new">Mới nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="old">Cũ nhất</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="az">Tiêu đề A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="za">Tiêu đề Z–A</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="status_az">Trạng thái A–Z</button>
+                            <button type="button" role="menuitem" class="menu-item" data-sort="status_za">Trạng thái Z–A</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-docs-export-csv" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-white ring-1 ring-gray-300 hover:ring-blue-700 focus:ring-blue-700 font-medium text-sm leading-none text-gray-900 hover:text-blue-700 focus:text-blue-700 transition-all duration-100 focus:outline-none gap-2 shadow">
+                    <span class="inline-flex items-center justify-center w-5 h-5 relative">
+                        <span class="block icon-csv-default">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_den.svg" %}
+                        </span>
+                        <span class="block icon-csv-hover absolute inset-0 pointer-events-none">
+                            {% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}
+                        </span>
+                    </span>
+                    <span>Xuất CSV</span>
+                </button>
+
+                <button id="btn-open-docs-new-modal" type="button"
+                    class="flex items-center justify-center h-[45px] px-4 rounded-full bg-blue-900 text-white font-medium text-sm leading-none hover:bg-blue-800 transition-all duration-75 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow gap-2">
+                    <span class="inline-flex items-center justify-center w-5 h-5">
+                        {% include "partials/icons/admin/system/icons_admin_setting_dau_cong.svg" %}
+                    </span>
+                    <span>Tạo văn bản mới</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- /Toolbar -->
+
+    <div id="admin-docs-modal-root"></div>
+
+    <!-- LIST REGION -->
+    <div id="documents-list-region" class="mt-2">
+        {% if not documents %}
+        <p class="text-gray-500 italic">Chưa có văn bản nào.</p>
+        {% else %}
+        <div class="w-full min-w-0 rounded-2xl overflow-hidden shadow border border-gray-200 bg-white">
+            <div id="admin-docs-table" class="w-full min-w-0">
+                <table class="min-w-full text-sm table-fixed">
+                    <colgroup>
+                        <col style="width:44px">
+                        <col style="width:34%">
+                        <col style="width:18%">
+                        <col style="width:12%">
+                        <col style="width:26%">
+                        <col style="width:10%">
+                    </colgroup>
+                    <thead class="text-left">
+                        <tr class="bg-[#EEF2FF]">
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">
+                                <label class="cb" aria-label="Chọn tất cả" id="sel-all-wrap">
+                                    <input id="sel-all" type="checkbox"><span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Tiêu đề văn bản</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Phiên chat</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Trạng thái</th>
+                            <th class="px-4 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium">Tệp</th>
+                            <th class="px-3 py-2 border-b border-gray-200 text-[#1E3A8A] font-medium text-right" aria-hidden="true"></th>
+                        </tr>
+                    </thead>
+
+                    <!-- DATA ROWS -->
+                    <tbody id="docs-tbody">
+                        {% for d in documents %}
+                        <tr class="group">
+                            <td class="px-4 py-2 border-b border-gray-200 align-top">
+                                <label class="cb" aria-label="Chọn văn bản">
+                                    <input type="checkbox"
+                                        class="row-select"
+                                        data-doc-id="{{ d.doc_id }}"
+                                        data-status="{{ d.doc_status }}">
+                                    <span class="cb-box" aria-hidden="true"></span>
+                                </label>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap overflow-hidden text-ellipsis">
+                                <div class="font-medium text-gray-900 btn-doc-detail cursor-pointer" data-doc-id="{{ d.doc_id }}">
+                                    {{ (d.doc_title or '(Không tiêu đề)')|e }}
+                                </div>
+                                <div class="text-gray-500 line-clamp-1">{{ d.doc_file_path }}</div>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    <span>Cập nhật: {{ (d.doc_updated_at or d.doc_created_at).astimezone().strftime('%d/%m/%Y %H:%M') }}</span>
+                                </div>
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap text-gray-900">
+                                {% if d.chat %}
+                                <div class="font-medium line-clamp-1">{{ d.chat.chat_title or '—' }}</div>
+                                <div class="text-xs text-gray-500">{{ d.doc_chat_id }}</div>
+                                {% else %}
+                                <span class="text-gray-500">—</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap">
+                                {% if d.doc_status == 'reviewed' %}
+                                <span class="status-pill status-pill--green">reviewed</span>
+                                {% elif d.doc_status == 'routed' %}
+                                <span class="status-pill status-pill--indigo">routed</span>
+                                {% elif d.doc_status == 'new' %}
+                                <span class="status-pill status-pill--yellow">new</span>
+                                {% else %}
+                                <span class="status-pill status-pill--gray">{{ d.doc_status }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="px-4 py-2 border-b border-gray-200 align-top whitespace-nowrap">
+                                <div class="text-gray-900 overflow-hidden text-ellipsis">{{ d.doc_file_path }}</div>
+                                <div class="text-xs text-gray-500 overflow-hidden text-ellipsis">{{ d.doc_ocr_text_path }}</div>
+                            </td>
+
+                            <td class="px-3 py-2 border-b border-gray-200 align-top">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <button type="button"
+                                        class="action-btn row-action-detail tt"
+                                        aria-label="Chi tiết" data-tt="Chi tiết"
+                                        data-doc-id="{{ d.doc_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_info.svg" %}
+                                        </span>
+                                    </button>
+
+                                    <!-- NO edit button (theo rule mới) -->
+
+                                    <button type="button"
+                                        class="action-btn row-action-delete tt"
+                                        aria-label="Xoá" data-tt="Xoá"
+                                        data-doc-id="{{ d.doc_id }}">
+                                        <span class="inline-flex w-[18px] h-[18px] items-center justify-center">
+                                            {% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}
+                                        </span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <!-- Filler rows để giữ chiều cao -->
+                    {% set _pp = per_page or 10 %}
+                    {% set _cur = documents|length %}
+                    {% set _fill = (_pp - _cur) if (_pp and _pp > _cur) else 0 %}
+                    {% if _fill > 0 %}
+                    <tbody aria-hidden="true">
+                        {% for _i in range(_fill) %}
+                        <tr class="doc-row doc-row--filler">
+                            <td class="px-4 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                            <td class="px-4 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                            <td class="px-4 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                            <td class="px-4 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                            <td class="px-4 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                            <td class="px-3 py-2 border-b border-gray-200"><span class="invisible">–</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% endif %}
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="docs-pagination"
+                class="flex items-center justify-between gap-3 flex-wrap bg-white border-t px-4 py-3"
+                aria-label="Điều hướng trang">
+                <div class="min-w-[180px]">
+                    {% if show_first_btn %}
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 h-[45px] px-4 rounded-full bg-white text-sm font-medium text-gray-900 hover:text-blue-700 shrink-0"
+                        hx-get="/admin/documents?page=1&{{ qs_base|trim }}"
+                        hx-target="#documents-list-region"
+                        hx-select="#documents-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="documents-list-region">
+                        <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                            <span class="icon-first-default block">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-den-left.svg" %}
+                            </span>
+                            <span class="icon-first-hover block absolute inset-0 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-first-page-xanh-left.svg" %}
+                            </span>
+                        </span>
+                        <span>Về trang 1</span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button"
+                        class="group inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-white ring-1 ring-gray-300 text-gray-900 hover:text-blue-700 hover:ring-blue-700 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page>1 %}
+                        hx-get="/admin/documents?page={{ page-1 }}&{{ qs_base|trim }}"
+                        hx-target="#documents-list-region" hx-select="#documents-list-region"
+                        hx-swap="outerHTML" hx-push-url="true" aria-controls="documents-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span class="relative inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            <span class="block">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-dai-left-den.svg" %}
+                            </span>
+                            <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                {% include "partials/icons/admin/system/icon-admin-arrow-dai-left-xanh.svg" %}
+                            </span>
+                        </span>
+                        <span>Trang trước</span>
+                    </button>
+
+                    <button type="button"
+                        class="inline-flex items-center justify-center gap-2 px-4 h-[45px] w-[150px] rounded-full bg-blue-900 text-white font-medium hover:bg-blue-800 shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                        {% if page < total_pages %}
+                        hx-get="/admin/documents?page={{ page+1 }}&{{ qs_base|trim }}"
+                        hx-target="#documents-list-region" hx-select="#documents-list-region" hx-swap="outerHTML"
+                        hx-push-url="true" aria-controls="documents-list-region"
+                        {% else %} disabled {% endif %}>
+                        <span>Trang sau</span>
+                        <span class="inline-flex w-[14px] h-[14px] items-center justify-center" aria-hidden="true">
+                            {% include "partials/icons/admin/system/icon-admin-arrow-dai-right-trang.svg" %}
+                        </span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <form id="docs-page-jump-form"
+                        class="flex items-center gap-2"
+                        hx-get="/admin/documents"
+                        hx-target="#documents-list-region"
+                        hx-select="#documents-list-region"
+                        hx-swap="outerHTML"
+                        hx-push-url="true"
+                        aria-controls="documents-list-region">
+                        <input type="hidden" name="status" value="{{ filter_status or 'all' }}">
+                        <input type="hidden" name="chat_id" value="{{ filter_chat_id or '' }}">
+                        <input type="hidden" name="q" value="{{ filter_q or '' }}">
+                        <input type="hidden" name="sort" value="{{ filter_sort or 'created_desc' }}">
+
+                        <label for="docs-page-input" class="sr-only">Trang</label>
+                        <input id="docs-page-input" name="page" inputmode="numeric" pattern="[0-9]*" type="text"
+                            class="pager-input h-[45px]" value="{{ page }}" placeholder="1"
+                            minlength="1" maxlength="6"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'');if(this.max){var m=parseInt(this.max,10)||0;var v=parseInt(this.value||'0',10)||0;if(v>m){this.value=String(m);}}"
+                            min="1" max="{{ total_pages }}">
+                        <input type="hidden" name="per_page" value="{{ per_page or 10 }}">
+                        <button type="submit" class="sr-only">Go</button>
+                    </form>
+
+                    <div class="inline-flex items-center text-sm">
+                        <span class="text-gray-500">of</span>
+                        <span class="ml-1 font-semibold text-gray-900">{{ total_pages }}</span>
+                    </div>
+
+                    <div class="inline-flex items-center">
+                        <button type="button"
+                            class="group w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang trước"
+                            {% if page>1 %}
+                            hx-get="/admin/documents?page={{ page-1 }}&{{ qs_base|trim }}"
+                            hx-target="#documents-list-region" hx-select="#documents-list-region"
+                            hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-den.svg" %}
+                                </span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-left-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+
+                        <button type="button"
+                            class="group ml-2 w-[45px] h-[45px] pg-square ring-1 ring-gray-300 bg-white text-gray-900 hover:text-blue-700 hover:ring-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center shrink-0"
+                            aria-label="Trang sau"
+                            {% if page < total_pages %}
+                            hx-get="/admin/documents?page={{ page+1 }}&{{ qs_base|trim }}"
+                            hx-target="#documents-list-region" hx-select="#documents-list-region" hx-swap="outerHTML" hx-push-url="true"
+                            {% else %} disabled {% endif %}>
+                            <span class="relative inline-flex w-5 h-5 items-center justify-center" aria-hidden="true">
+                                <span class="block">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-den.svg" %}
+                                </span>
+                                <span class="block absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none">
+                                    {% include "partials/icons/admin/system/icon-admin-arrow-ngan-right-xanh.svg" %}
+                                </span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- /Pagination -->
+        </div>
+        {% endif %}
+    </div>
+    <!-- /LIST REGION -->
+
+    <!-- Bulk bar -->
+    <div id="documents-bulk-bar" class="bulk-bar" aria-hidden="true" inert data-csrf="{{ csrf_token }}">
+        <div class="bulk-inner">
+            <div class="bulk-shell">
+                <button type="button" id="btn-bulk-delete" class="bulk-btn">
+                    <span class="icon">
+                        {% include "partials/icons/admin/system/icons_admin_setting_delete.svg" %}
+                    </span>
+                    <span class="label" id="bulk-delete-label" aria-live="polite">Xoá 0 mục</span>
+                </button>
+                <button type="button" id="btn-bulk-export" class="bulk-btn">
+                    <span class="icon">
+                        {% include "partials/icons/admin/system/icons_admin_setting_csv_xanh.svg" %}
+                    </span>
+                    <span class="label">Xuất CSV</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- /Bulk bar -->
+</div>

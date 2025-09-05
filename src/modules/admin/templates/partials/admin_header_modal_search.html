@@ -1,0 +1,109 @@
+<!-- -------------------------------------------------------------------
+File     : src/modules/admin/templates/partials/admin_header_modal_search.html
+Updated  : 2025-08-03
+Note     : Thêm position:fixed cho modal-open, chặn scroll hoàn toàn
+--------------------------------------------------------------------- -->
+
+<!-- ╭─ OVERLAY ──────────────────────────────────────────────╮ -->
+<div id="admin-search-modal-overlay" data-state="closed" class="fixed inset-0 z-[9998] duration-75 pointer-events-none
+            overscroll-contain touch-none
+            data-[state=open]:pointer-events-auto
+            data-[state=open]:bg-overlay
+            data-[state=open]:backdrop-blur-[2px]
+            data-[state=open]:animate-in data-[state=open]:fade-in-0
+            data-[state=closed]:animate-out data-[state=closed]:fade-out-0" aria-hidden="true"></div>
+
+<!-- ╭─ MODAL WRAPPER ────────────────────────────────────────╮ -->
+<div id="admin-search-modal" data-state="closed" class="fixed inset-0 z-[9999] hidden items-center justify-center
+            overscroll-contain touch-none" role="dialog" aria-modal="true" tabindex="-1">
+
+    <!-- ╭─ MODAL PANEL ────────────────────────────────────────╮ -->
+    <div class="duration-75
+                w-full max-w-[98vw] sm:max-w-[480px] min-h-[440px] max-h-[440px]
+                rounded-[32px] border border-gray-200 bg-white shadow-modal
+                px-0 py-0 flex flex-col font-manrope
+                data-[state=open]:animate-in data-[state=open]:zoom-in-95
+                data-[state=closed]:animate-out data-[state=closed]:zoom-out-95">
+
+        <!-- HEADER: input + nút X -->
+        <div class="flex items-center justify-between min-h-[64px] ps-7 pe-4">
+            <input type="text" autocomplete="off" class="w-full border-none bg-transparent text-[17px] font-normal
+                          focus:outline-none focus:ring-0 placeholder-gray-400
+                          placeholder:text-[#8b95a1]" placeholder="Tìm kiếm bất kỳ thông tin nào..." />
+
+            <!-- Nút X -->
+            <button id="admin-search-modal-close" type="button" class="header-chip-search shrink-0 flex items-center justify-center
+                           w-10 h-10 rounded-full ring-1 ring-gray-300
+                           hover:ring-blue-700 transition-all bg-white cursor-pointer
+                           shadow ms-4 group hover:bg-blue-50 focus:outline-none" aria-label="Đóng">
+                <span class="chip-search-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-search-hover flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- BODY (để dev sau) -->
+        <div class="grow overflow-y-auto my-2"></div>
+    </div>
+</div>
+
+<!-- ╭─ STYLE NỘI BỘ ──────────────────────────────────────────╮ -->
+<style>
+    /* TRIỆT TIÊU MỌI SCROLL KHI MODAL MỞ */
+    html.modal-open,
+    body.modal-open {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        overscroll-behavior: contain !important;
+        touch-action: none !important;
+    }
+
+    #admin-search-modal-overlay[data-state="open"],
+    #admin-search-modal[data-state="open"] {
+        overscroll-behavior: contain !important;
+        touch-action: none !important;
+    }
+
+    /* Đổi icon đen → xanh khi hover */
+    #admin-search-modal .chip-search-hover {
+        display: none;
+    }
+
+    #admin-search-modal-close:hover .chip-search-normal,
+    #admin-search-modal-close:focus .chip-search-normal {
+        display: none;
+    }
+
+    #admin-search-modal-close:hover .chip-search-hover,
+    #admin-search-modal-close:focus .chip-search-hover {
+        display: flex;
+    }
+
+    #admin-search-modal-close .chip-search-normal svg,
+    #admin-search-modal-close .chip-search-hover svg {
+        width: 10px !important;
+        height: 10px !important;
+        margin: auto;
+        display: block;
+    }
+
+    #admin-search-modal-close:active {
+        background: #e8f0fe;
+    }
+
+    @media (max-width:540px) {
+        #admin-search-modal>div {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+</style>

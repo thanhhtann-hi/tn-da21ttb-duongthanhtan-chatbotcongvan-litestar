@@ -1,0 +1,336 @@
+<!-- file: src/modules/admin/templates/admin/users/admin_users_detail_modal.html -->
+<!-- updated: 2025-08-24 (v1.1 – FIX: ưu tiên 'row', loại 'user') -->
+<!-- note: Modal xem chi tiết User (read-only). Không submit, chỉ đóng. -->
+
+{% set U = row or usr or target_user or user_item or member or viewing_user or view_user or edit_user or u %}
+{% if not U %}{% set U = {} %}{% endif %}
+{% set _prov = (U.user_oauth_provider or 'local') %}
+
+<!-- ╭─ OVERLAY (click = close) ───────────────────────────────────────╮ -->
+<div id="users-detail-modal-overlay" data-state="open"
+    class="fixed inset-0 z-[9998] duration-75 pointer-events-auto bg-black/70 backdrop-blur-[2px] animate-in fade-in-0"
+    tabindex="-1" aria-hidden="false"></div>
+
+<!-- ╭─ MODAL WRAPPER ─────────────────────────────────────────────────╮ -->
+<div id="users-detail-modal" data-state="open"
+    class="fixed inset-0 z-[9999] flex items-center justify-center"
+    role="dialog" aria-modal="true" tabindex="-1">
+
+    <div class="users-modal-content duration-75
+              w-full max-w-[98vw] sm:max-w-[760px] max-h-[88vh]
+              rounded-[32px] border border-gray-200 bg-white shadow-modal
+              px-0 py-0 flex flex-col font-manrope animate-in zoom-in-95
+              overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="relative flex items-center justify-center min-h-[60px] px-6 py-4">
+            <div class="flex-1 flex flex-col items-center">
+                <h2 class="text-lg font-semibold text-blue-main text-center w-full">Chi tiết người dùng</h2>
+                <div class="mt-1 text-sm text-gray-600 text-center font-normal leading-tight">
+                    Thông tin của
+                    <span class="font-semibold">{{ U.user_display_name or U.user_name or U.user_email }}</span>
+                </div>
+            </div>
+            <!-- Close -->
+            <button id="users-detail-modal-close" type="button"
+                class="absolute right-6 top-1/2 -translate-y-1/2 shrink-0 flex items-center justify-center
+                     w-10 h-10 rounded-full ring-1 ring-gray-300 bg-white shadow
+                     hover:bg-blue-50 hover:ring-blue-900 transition-all focus:outline-none"
+                aria-label="Đóng">
+                <span class="chip-x-normal flex items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_den.svg" %}
+                </span>
+                <span class="chip-x-hover hidden items-center justify-center w-4 h-4">
+                    {% include "partials/icons/admin_header/admin_header_x_xanh.svg" %}
+                </span>
+            </button>
+        </div>
+        <hr class="border-t border-gray-200 m-0" />
+
+        <!-- BODY (scroll) -->
+        <div class="modal-scroll-area grow overflow-y-auto px-6 pb-5 pt-3 min-h-0 text-[14px] text-[#222]">
+
+            <!-- Top: Email + Role/Status/Verified -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Email</label>
+                    <p class="text-gray-900 m-0 font-medium break-words">{{ U.user_email or '—' }}</p>
+                </div>
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Username</label>
+                    <p class="text-gray-900 m-0 break-words">{{ U.user_name or '—' }}</p>
+                </div>
+
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Tên hiển thị</label>
+                    <p class="text-gray-900 m-0 break-words">{{ U.user_display_name or '—' }}</p>
+                </div>
+                <div class="flex items-start gap-2 flex-wrap">
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Vai trò</label>
+                        <span class="pill
+              {% if U.user_role=='admin' %}pill--purple
+              {% elif U.user_role=='internal' %}pill--blue
+              {% elif U.user_role=='user' %}pill--slate
+              {% else %}pill--gray{% endif %}">
+                            {{ U.user_role or 'user' }}
+                        </span>
+                    </div>
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Trạng thái</label>
+                        <span class="pill
+              {% if U.user_status=='active' %}pill--green
+              {% elif U.user_status in ['suspended','banned','deactivated'] %}pill--red
+              {% else %}pill--gray{% endif %}">
+                            {{ U.user_status or 'active' }}
+                        </span>
+                    </div>
+                    <div>
+                        <label class="block text-[14px] text-blue-main font-semibold mb-1">Xác thực email</label>
+                        {% if U.user_email_verified %}
+                        <span class="pill pill--green">verified</span>
+                        {% else %}
+                        <span class="pill pill--gray">unverified</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Provider</label>
+                    <span class="pill
+            {% if _prov=='google' %}pill--amber
+            {% elif _prov=='azuread' %}pill--indigo
+            {% elif _prov=='local' %}pill--slate
+            {% else %}pill--yellow{% endif %}">
+                        {{ _prov }}
+                    </span>
+                </div>
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">User ID</label>
+                    <code class="text-xs text-gray-700 bg-gray-100 px-2 py-1 rounded break-all">{{ U.user_id or '—' }}</code>
+                </div>
+            </div>
+
+            <!-- Timestamps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Tạo lúc</label>
+                    <p class="text-gray-900 m-0">
+                        {{ (U.user_created_at).astimezone().strftime('%d/%m/%Y %H:%M') if U.user_created_at else '—' }}
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-[14px] text-blue-main font-semibold mb-1">Cập nhật</label>
+                    <p class="text-gray-900 m-0">
+                        {{ (U.user_updated_at).astimezone().strftime('%d/%m/%Y %H:%M') if U.user_updated_at else '—' }}
+                    </p>
+                </div>
+            </div>
+
+            {% if U.user_note %}
+            <div class="flex flex-col w-full mt-4">
+                <label class="block text-blue-main font-semibold mb-1 text-[14px]">Ghi chú</label>
+                <div class="textarea-outer mt-[4px]">
+                    <textarea readonly rows="4"
+                        class="w-full h-full resize-none transition-shadow text-[14px] text-[#222] bg-transparent outline-none border-none"
+                        style="background:transparent;color:#222;font-size:14px;line-height:1.5;padding:14px;min-height:0;max-height:100%;box-shadow:none;">{{ U.user_note }}</textarea>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- FOOTER -->
+        <div class="shrink-0 px-6 py-3 border-t border-gray-100 bg-white">
+            <div class="flex justify-center">
+                <button type="button" id="users-detail-modal-close-btn"
+                    class="w-[120px] rounded-full py-2.5 bg-gray-200 text-gray-700 font-medium
+                       hover:bg-gray-300 transition-opacity duration-75 focus:outline-none
+                       focus:ring-2 focus:ring-gray-300 text-[14px]">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-blue-main {
+        color: #1e3a8a !important
+    }
+
+    .modal-scroll-area::-webkit-scrollbar {
+        width: 10px;
+        background: transparent
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb {
+        background: #b5bbc6;
+        border-radius: 14px;
+        border: 3px solid #f3f4f6;
+        min-height: 48px
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-thumb:hover {
+        background: #6b7280
+    }
+
+    .modal-scroll-area::-webkit-scrollbar-track {
+        background: #f3f4f6;
+        border-radius: 14px
+    }
+
+    .modal-scroll-area {
+        scrollbar-color: #b5bbc6 #f3f4f6;
+        scrollbar-width: thin
+    }
+
+    #users-detail-modal-close .chip-x-hover {
+        display: none
+    }
+
+    #users-detail-modal-close:hover .chip-x-normal,
+    #users-detail-modal-close:focus .chip-x-normal {
+        display: none
+    }
+
+    #users-detail-modal-close:hover .chip-x-hover,
+    #users-detail-modal-close:focus .chip-x-hover {
+        display: flex
+    }
+
+    #users-detail-modal-close .chip-x-normal svg,
+    #users-detail-modal-close .chip-x-hover svg {
+        width: 10px;
+        height: 10px;
+        margin: auto;
+        display: block;
+        line-height: 0
+    }
+
+    .textarea-outer {
+        border: 1.5px solid #9ca3af;
+        border-radius: 20px;
+        background: #fff;
+        transition: border-color .2s, box-shadow .2s;
+        height: 120px;
+        min-height: 120px;
+        max-height: 160px;
+        overflow: hidden;
+        display: flex
+    }
+
+    .textarea-outer:focus-within,
+    .textarea-outer:hover {
+        border-color: #1e3a8a !important
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        height: 24px;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1;
+        border: 1px solid transparent
+    }
+
+    .pill--green {
+        background: #ecfdf5;
+        color: #065f46;
+        border-color: #a7f3d0
+    }
+
+    .pill--gray {
+        background: #f3f4f6;
+        color: #374151;
+        border-color: #e5e7eb
+    }
+
+    .pill--red {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca
+    }
+
+    .pill--indigo {
+        background: #e0e7ff;
+        color: #3730a3;
+        border-color: #c7d2fe
+    }
+
+    .pill--purple {
+        background: #f3e8ff;
+        color: #6b21a8;
+        border-color: #e9d5ff
+    }
+
+    .pill--blue {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border-color: #dbeafe
+    }
+
+    .pill--slate {
+        background: #e2e8f0;
+        color: #1e293b;
+        border-color: #cbd5e1
+    }
+
+    .pill--amber {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a
+    }
+
+    .pill--yellow {
+        background: #fef9c3;
+        color: #92400e;
+        border-color: #fde68a
+    }
+
+    @media (max-width:540px) {
+        #users-detail-modal {
+            align-items: flex-end !important;
+            justify-content: flex-end !important
+        }
+
+        .users-modal-content {
+            width: 100vw !important;
+            max-width: none !important;
+            border-radius: 28px !important;
+            box-shadow: 0 -8px 40px rgba(44, 46, 60, .13);
+            position: fixed !important;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-height: 92vh;
+            overflow: hidden;
+            animation: drawerIn .25s cubic-bezier(.25, .8, .5, 1) both;
+            will-change: transform
+        }
+
+        .modal-scroll-area {
+            max-height: calc(92vh - 70px);
+            overflow-y: auto;
+            padding-bottom: 16px;
+            padding-top: 0
+        }
+    }
+
+    @keyframes drawerIn {
+        from {
+            transform: translateY(60px);
+            opacity: 0
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1
+        }
+    }
+</style>
